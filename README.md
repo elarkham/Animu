@@ -1,19 +1,20 @@
-# Animu
+Animu
+=====
 
-To start your Phoenix app:
+Full stack video streaming webapp for watching, sharing and managing
+media in a local network. This app serves as a “Hello World” for
+introducing myself to new technologies and as such is never made with
+the intention of use in a production system. This is the third iteration
+using the phoenix frameowrk as the backend and a react/redux combo for
+the frontend.
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-  * Start Phoenix endpoint with `mix phoenix.server`
+Setup
+=====
+
+ * Install dependencies with `mix deps.get`
+ * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
+ * Start Phoenix endpoint with `mix phoenix.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
-
-## Learn more
-
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: http://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+###### Version 3.0.1
