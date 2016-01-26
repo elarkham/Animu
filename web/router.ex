@@ -19,8 +19,13 @@ defmodule Animu.Router do
     get "*path", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", Animu do
-  #   pipe_through :api
-  # end
+
+  scope "/api", Animu do
+    pipe_through :api
+
+    scope "/v1" do
+      post "/registrations", RegistrationController, :create
+    end
+  end
+
 end

@@ -27,3 +27,10 @@ import_config "#{Mix.env}.exs"
 config :phoenix, :generators,
   migration: true,
   binary_id: false
+
+config :guardian, Guardian,
+  issuer: "Animu",
+  ttl: { 3, :days },
+  verify_issuer: true,
+  secret_key: temp_key,
+  serializer: Animu.GuardianSerializer
