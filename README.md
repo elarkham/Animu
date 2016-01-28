@@ -1,7 +1,7 @@
 Animu
 =====
 
-Web stack video streaming webapp for watching, sharing and managing
+Video streaming webapp for watching, sharing and managing
 media in a local network. This app serves as a “Hello World” for
 introducing myself to new technologies and as such is never made with
 the intention of use in a production system. This is the third iteration
