@@ -30,6 +30,7 @@
   "dependencies": {
     "bourbon": "^4.2.6",
     "bourbon-neat": "^1.7.2",
+    "es6-promise": "^3.0.2",
     "history": "^2.0.0-rc2",
     "invariant": "^2.2.0",
     "isomorphic-fetch": "^2.2.1",

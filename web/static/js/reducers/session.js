@@ -1,9 +1,22 @@
+import Constants from '../constants';
+
 const initialState = {
-  currentUser: null,
-  socket: null,
-  error: null,
+    current_user: null,
+    error: null
 };
 
 export default function reducer(state = initialState, action = {}) {
-  return state;
+    switch( action.type ){
+        case Constants.CURRENT_USER:
+            return { ...state, current_user: action.currentUser, error: null };
+
+        case Constants.SESSION_ERROR:
+            return { ...state, error: action.error };
+
+        case Constants.USER_LOGGED_OUT:
+            return initialState;
+
+        default:
+            return state;
+    }
 }
