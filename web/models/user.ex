@@ -1,6 +1,8 @@
 defmodule Animu.User do
   use Animu.Web, :model
 
+  @derive {Poison.Encoder, only: [:id, :first_name, :last_name, :email, :username]}
+
   schema "users" do
     field :first_name, :string
     field :last_name, :string
@@ -13,9 +15,8 @@ defmodule Animu.User do
     timestamps
   end
 
-  @required_fields ~w(first_name last_name username )
+  @required_fields ~w(first_name last_name username password)
   @optional_fields ~w(email encrypted_password)
-  @derive {Poison.Encoder, only: [:id, :first_name, :last_name, :email, :username]}
 
   def changeset(model, params \\ :empty) do
     model

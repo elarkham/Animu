@@ -11,6 +11,8 @@ defmodule Animu.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Guardian.Plug.VerifyHeader
+    plug Guardian.Plug.LoadResource
   end
 
   scope "/", Animu do
@@ -24,7 +26,13 @@ defmodule Animu.Router do
     pipe_through :api
 
     scope "/v1" do
-      post "/registrations", RegistrationController, :create
+      post "/register", RegistrationController, :create
+
+      post   "/sessions", SessionController, :create
+      delete "/sessions", SessionController, :delete
+
+      get "/current_user", CurrentUserController, :show
+
     end
   end
 
