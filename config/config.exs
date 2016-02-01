@@ -32,5 +32,5 @@ config :guardian, Guardian,
   issuer: "Animu",
   ttl: { 3, :days },
   verify_issuer: true,
-  secret_key: temp_key,
+  secret_key: "temp_key",
   serializer: Animu.GuardianSerializer
