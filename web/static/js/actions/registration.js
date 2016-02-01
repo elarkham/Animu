@@ -1,4 +1,4 @@
-import { pushPath }  from 'redux-simple-router';
+import { pushPath }  from 'react-router-redux';
 import Constants     from '../constants';
 import { httpPost }  from '../utils';
 
