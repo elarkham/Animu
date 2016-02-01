@@ -4,8 +4,9 @@
 /deps
 /*.ez
 /node_modules
-/priv/static/css/application.css
-/priv/static/js/application.js
+/priv/static/css/main.css
+/priv/static/css/main.scss
+/priv/static/js/app.js
 
 
 # Generate on crash by the VM
