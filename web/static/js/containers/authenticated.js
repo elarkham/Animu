@@ -2,7 +2,7 @@ import React            from 'react';
 import { connect }      from 'react-redux';
 import Actions          from '../actions/session';
 import { routeActions } from 'react-router-redux';
-import Header           from '../layouts/header';
+//import Header           from '../layouts/header';
 
 class AuthenticatedContainer extends React.Component {
     componentDidMount() {
