@@ -6,7 +6,7 @@ defmodule Animu.CurrentUserController do
   def show(conn, _) do
     case decode_and_verify_token(conn) do
       {:ok, _claims} ->
-        user = Gaurdian.Plug.current_resource(conn)
+        user = Guardian.Plug.current_resource(conn)
 
         conn
         |> put_status(:ok)
@@ -15,14 +15,14 @@ defmodule Animu.CurrentUserController do
       {:error, _reason} ->
         conn
         |> put_status(:not_found)
-        |> render(Animu.SessionView, "error,json", error: "Not Found")
+        |> render(Animu.SessionView, "error.json", error: "Not Found")
     end
   end
 
   defp decode_and_verify_token(conn) do
     conn
-    |> Gaurdian.Plug.current_token
-    |> Gaurdian.decode_and_verify
+    |> Guardian.Plug.current_token
+    |> Guardian.decode_and_verify
   end
 
 end

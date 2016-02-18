@@ -15,25 +15,24 @@ defmodule Animu.Router do
     plug Guardian.Plug.LoadResource
   end
 
-  scope "/", Animu do
-    pipe_through :browser # Use the default browser stack
-
-    get "*path", PageController, :index
-  end
-
-
   scope "/api", Animu do
     pipe_through :api
 
     scope "/v1" do
       post "/register", RegistrationController, :create
 
-      post   "/sessions", SessionController, :create
-      delete "/sessions", SessionController, :delete
+      post   "/session", SessionController, :create
+      delete "/session", SessionController, :delete
 
       get "/current_user", CurrentUserController, :show
 
     end
+  end
+
+  scope "/", Animu do
+    pipe_through :browser # Use the default browser stack
+
+    get "*path", PageController, :index
   end
 
 end
