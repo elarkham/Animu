@@ -3,6 +3,8 @@ import { connect }      from 'react-redux';
 import Actions          from '../actions/session';
 import { routeActions } from 'react-router-redux';
 
+import Sidebar          from '../layouts/sidebar';
+
 class AuthenticatedContainer extends React.Component {
   componentDidMount() {
     const { dispatch, current_user } = this.props;
@@ -20,8 +22,10 @@ class AuthenticatedContainer extends React.Component {
     if( !current_user ) return false;
 
     return (
-      <div className = "application-container">
-        <div className="main-container">
+      <div id="authenticated-container">
+        <Sidebar/>
+
+        <div id="main-container">
           {this.props.children}
         </div>
       </div>

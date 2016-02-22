@@ -1,3 +1,36 @@
 // - - - - - - - - - - - - - - - - - - -
 // - - layout
 // global layout classes - height, width, padding, margin, etc.
+
+#root-container {
+  position: relative;
+  width: 100%;
+}
+
+#authenticated-container {
+  position: relative;
+  width: 100%;
+}
+
+#sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 240px;
+
+  background-color: #333;
+  box-shadow: 3px 1px 6px 0px rgba(50, 50, 50, 0.75);
+
+  .logo {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    margin-left: -10px;
+  }
+}
+
+#main-container {
+  position: relative;
+  margin-left: 250px;
+}
+

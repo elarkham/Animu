@@ -9,7 +9,9 @@
       "modulesDirectory": "modules",
       "modulesImportFile": "_modules.scss",
       "moduleFiles": [
-        "_example-module.scss"
+        "_example-module.scss",
+        "_logo.scss",
+        "_sidebar-list.scss"
       ]
     }
   },
@@ -19,7 +21,6 @@
       "libs"
     ],
     "files": [
-      "application.scss",
       "global/_base.scss",
       "global/_layout.scss",
       "global/_settings.scss",
