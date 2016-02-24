@@ -9,9 +9,10 @@
       "modulesDirectory": "modules",
       "modulesImportFile": "_modules.scss",
       "moduleFiles": [
-        "_example-module.scss",
+        "_card.scss",
+        "_content-box.scss",
         "_logo.scss",
-        "_sidebar-list.scss"
+        "_menu-list.scss"
       ]
     }
   },

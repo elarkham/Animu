@@ -2,6 +2,8 @@ import React              from 'react';
 import {connect}          from 'react-redux';
 import {setDocumentTitle} from '../../utils';
 
+import RecentWatched      from './recent'
+
 class HomeIndex extends React.Component {
   componentDidMount() {
     setDocumentTitle('Home');
@@ -12,8 +14,9 @@ class HomeIndex extends React.Component {
 
     return (
       <div>
-        <h1>Home</h1>
-        <h5>Hello {first_name} {last_name}</h5>
+        <RecentWatched />
+        <RecentWatched />
+        <RecentWatched />
       </div>
     );
   }

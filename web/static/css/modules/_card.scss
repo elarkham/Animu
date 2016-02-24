@@ -1,0 +1,30 @@
+// - - - - - - - - - - - - - - - - - - -
+// - - card module
+// styles for the card module
+
+.card {
+  display: block;
+
+  margin: 1rem;
+
+  //box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  padding-bottom: 8px;
+  border-bottom: 10px solid transparent;
+
+  &:hover {
+    //box-shadow: 1px 10px 20px rgba(0,0,0,0.19), 1px 6px 6px rgba(0,0,0,0.30);
+    border-bottom: 10px solid #fff;
+  }
+}
+
+.card-v {
+  @extend .card;
+  width: 210px;
+  height: 310px;
+  img {
+    border-radius: inherit;
+    width: 100%;
+    height: 100%;
+  }
+}
+
