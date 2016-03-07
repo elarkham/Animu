@@ -3,19 +3,24 @@
 // styles for the content-box module
 .content-box {
   display: block;
-  margin: 15px 25px 25px 25px;
+  margin: 0px 0px 0px 0px;
+  padding-left: 15px;
+  position: relative;
+  z-index: 4;
+
   height: auto;
   width:  auto;
-  //background-color: lighten(#eeeded, 4);
-  background-color: #333;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+
+  background-color: lighten(#333, 15);
 }
 
 .content-box-header {
-  color: #fff;
+  color: #FFF;
+
   font-family: 'Hind' 'Source Sans Pro';
   font-size: 1.7em;
   font-weight: 500;
+
   padding-left: 10px;
   padding-top:  10px;
   margin-bottom: 0px;
@@ -26,4 +31,14 @@
 .content-box-body {
   display: flex;
   flex-wrap: wrap;
+}
+
+.is-black {
+  &.content-box {
+    background-color: lighten(#333, 5);
+  }
+
+  .content-box-header {
+    color: #FFF
+  }
 }

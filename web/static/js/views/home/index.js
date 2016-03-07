@@ -2,7 +2,8 @@ import React              from 'react';
 import {connect}          from 'react-redux';
 import {setDocumentTitle} from '../../utils';
 
-import RecentWatched      from './recent'
+import RecentWatched        from './watched'
+import SeasionalReleases    from './seasional'
 
 class HomeIndex extends React.Component {
   componentDidMount() {
@@ -15,8 +16,7 @@ class HomeIndex extends React.Component {
     return (
       <div>
         <RecentWatched />
-        <RecentWatched />
-        <RecentWatched />
+        <SeasionalReleases />
       </div>
     );
   }

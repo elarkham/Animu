@@ -17,20 +17,40 @@
   top: 0;
   bottom: 0;
   left: 0;
-  width: 240px;
+
+  width: 224px;
+  font-size: 1em;
+  .logo {
+    font-size: 3.2em;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: -10px;
+  }
+
+  @media(min-width: 1000px){
+    width: 224px;
+    font-size: 1em;
+    .logo {
+      font-size: 3.2em;
+      margin-top: 15px;
+      margin-bottom: 15px;
+      margin-left: -10px;
+    }
+  }
 
   background-color: #333;
   box-shadow: 3px 1px 6px 0px rgba(50, 50, 50, 0.75);
 
-  .logo {
-    margin-top: 15px;
-    margin-bottom: 10px;
-    margin-left: -10px;
-  }
+
 }
 
 #main-container {
   position: relative;
-  margin-left: 250px;
+
+  margin-left: 224px;
+
+  @media(min-width: 1000px ){
+    margin-left: 224px;
+  }
 }
 

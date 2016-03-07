@@ -1,9 +1,9 @@
-import React              from 'react';
+import React from 'react';
 
-class RecentWatched extends React.Component {
+class Watched extends React.Component {
   render() {
     let cards = [];
-    for( let i = 0; i < 6; i++ ) {
+    for( let i = 0; i < 4; i++ ) {
       cards.push(
         <div className="card-v">
           <img src="http://animu.org/assets/video/current_season/Dimension%20W/poster.jpg" />
@@ -12,7 +12,7 @@ class RecentWatched extends React.Component {
     }
 
     return (
-      <section className="content-box">
+      <section className="content-box is-black">
         <h3 className="content-box-header">Last Watched</h3>
         <div className="content-box-body">
           {cards}
@@ -23,4 +23,4 @@ class RecentWatched extends React.Component {
 
 }
 
-export default RecentWatched;
+export default Watched;
