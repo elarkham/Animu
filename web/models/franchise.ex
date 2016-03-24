@@ -24,7 +24,7 @@ defmodule Animu.Franchise do
     timestamps
   end
 
-  @required_fields ~w(slug titles)
+  @required_fields ~w(titles slug)
   @optional_fields ~w()
 
   @doc """

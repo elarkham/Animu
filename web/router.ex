@@ -26,6 +26,12 @@ defmodule Animu.Router do
 
       get "/current_user", CurrentUserController, :show
 
+      resources "franchises", FranchiseController, except: [:new]
+
+      resources "tvseries", TVSeriesController, except: [:new] do
+        resources "episodes", EpisodeController, except: [:new]
+      end
+
     end
   end
 

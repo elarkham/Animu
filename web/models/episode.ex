@@ -14,7 +14,7 @@ defmodule Animu.Episode do
     field :season_number, :integer
 
     belongs_to :tv_series, Animu.TVSeries
-    has_one :video: Animu.Video
+    has_one :video, Animu.Video
 
     field :airdate, Ecto.DateTime
     timestamps
