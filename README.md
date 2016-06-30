@@ -5,8 +5,7 @@ Video streaming webapp for watching, sharing and managing
 media in a local network. This app serves as a “Hello World” for
 introducing myself to new technologies and as such is never made with
 the intention of use in a production system. This is the third iteration
-using the phoenix frameowrk as the backend and a react/redux combo for
-the frontend.
+using the phoenix frameowrk as the backend and elm-lang for the frontend.
 
 Setup
 =====
