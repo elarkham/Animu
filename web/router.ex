@@ -26,10 +26,10 @@ defmodule Animu.Router do
 
       get "/current_user", CurrentUserController, :show
 
-      resources "franchises", FranchiseController, except: [:new]
+      resources "/franchises", FranchiseController, except: [:new]
 
-      resources "tvseries", TVSeriesController, except: [:new] do
-        resources "episodes", EpisodeController, except: [:new]
+      resources "/tvseries", TVSeriesController, except: [:new] do
+        resources "/episodes", EpisodeController, except: [:new]
       end
 
     end
@@ -38,7 +38,7 @@ defmodule Animu.Router do
   scope "/", Animu do
     pipe_through :browser # Use the default browser stack
 
-    get "*path", PageController, :index
+    get "/*path", PageController, :index
   end
 
 end
