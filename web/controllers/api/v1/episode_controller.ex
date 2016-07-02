@@ -63,7 +63,7 @@ defmodule Animu.EpisodeController do
       {:error, changeset } ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render("error.json", changeset: episode)
+        |> render("error.json", changeset: changeset)
     end
   end
 
