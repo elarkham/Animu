@@ -23,6 +23,9 @@ config :logger, :console,
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
 
+# Configure Ecto
+config :animu, ecto_repos: [Animu.Repo]
+
 # Configure phoenix generators
 config :phoenix, :generators,
   migration: true,

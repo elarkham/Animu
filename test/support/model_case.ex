@@ -26,10 +26,11 @@ defmodule Animu.ModelCase do
   end
 
   setup tags do
-    unless tags[:async] do
-      Ecto.Adapters.SQL.restart_test_transaction(Animu.Repo, [])
-    end
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Animu.Repo)
 
+    unless tags[:async] do
+      Ecto.Adapters.SQL.Sandbox.mode(Animu.Repo, {:shared, self()})
+    end
     :ok
   end
 
@@ -55,7 +56,9 @@ defmodule Animu.ModelCase do
       iex> {:password, "is unsafe"} in changeset.errors
       true
   """
-  def errors_on(model, data) do
-    model.__struct__.changeset(model, data).errors
+  def errors_on(struct, data) do
+    struct.__struct__.changeset(struct, data)
+    |> Ecto.Changeset.traverse_errors(&MyApp.ErrorHelpers.translate_error/1)
+    |> Enum.flat_map(fn {key, errors} -> for msg <- errors, do: {key, msg} end)
   end
 end

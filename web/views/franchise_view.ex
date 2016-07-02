@@ -1,6 +1,5 @@
 defmodule Animu.FranchiseView do
   use Animu.Web, :view
-  alias Animu.Franchise
 
   # List of Franchises
   def render("index.json", %{franchises: franchises}) do
