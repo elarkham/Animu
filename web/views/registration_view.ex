@@ -6,10 +6,7 @@ defmodule Animu.Registration do
       %{} |> Map.put(field, render_detail(detail))
     end)
 
-    %{
-      errors: errors
-    }
-
+    %{ errors: errors }
   end
 
   defp render_detail({message, values}) do
