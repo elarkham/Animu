@@ -1,47 +1,23 @@
 {
   "name": "animu",
-  "version": "3.0.1",
-  "description": "Full stack video streaming webapp for watching, sharing and managing media in a local network. This app serves as a \"Hello World\" for introducing myself to new technologies and as such is never made with the intention of use in a production system. This is the third iteration using the phoenix frameowrk as the backend and a react/redux combo for the frontend. ",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "version": "3.0.2",
   "author": "Ethan Larkham",
   "license": "MIT",
-  "devDependencies": {
-    "babel-core": "^6.4.5",
-    "babel-loader": "^6.2.1",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "babel-preset-es2015": "^6.3.13",
-    "babel-preset-react": "^6.3.13",
-    "babel-preset-stage-0": "^6.3.13",
-    "babel-preset-stage-2": "^6.3.13",
-    "css-burrito": "^1.6.1",
-    "css-loader": "^0.23.1",
-    "extract-text-webpack-plugin": "^1.0.1",
-    "node-libs-browser": "^1.0.0",
-    "node-sass": "^3.4.2",
-    "sass-loader": "^3.1.2",
-    "style-loader": "^0.13.0",
-    "webpack": "^1.12.12"
+  "repository" : {},
+  "scripts": {
+    "deploy": "brunch build --production",
+    "watch": "brunch watch --stdin"
   },
   "dependencies": {
-    "bourbon": "^4.2.6",
-    "bourbon-neat": "^1.7.2",
-    "es6-promise": "^3.0.2",
-    "history": "^2.0.0-rc2",
-    "invariant": "^2.2.0",
-    "isomorphic-fetch": "^2.2.1",
-    "react": "^0.14.6",
-    "react-dom": "^0.14.6",
-    "react-redux": "^4.0.6",
-    "react-router": "^2.0.0-rc5",
-    "react-router-redux": "^2.1.0",
-    "redux": "^3.0.5",
-    "redux-logger": "^2.4.0",
-    "redux-thunk": "^1.0.3",
-    "phoenix": "file:deps/phoenix"
+    "phoenix": "file:deps/phoenix",
+    "phoenix_html": "file:deps/phoenix_html"
+  },
+  "devDependencies": {
+    "babel-brunch": "~6.0.0",
+    "brunch": "2.7.4",
+    "clean-css-brunch": "~2.0.0",
+    "css-brunch": "~2.0.0",
+    "javascript-brunch": "~2.0.0",
+    "uglify-js-brunch": "~2.0.1"
   }
 }
