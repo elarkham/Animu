@@ -35,5 +35,8 @@ defmodule Animu.Router do
       resources "/users", UserController, except: [:new]
 
       #resources "/franchises" FranchiseController, except: [:new]
+    end
+
   end
+
 end

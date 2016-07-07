@@ -2,7 +2,7 @@ defmodule Animu.User do
   use Animu.Web, :model
 
   @derive {Poison.Encoder, only:
-      [ :id.
+      [ :id,
         :first_name, :last_name,
         :email,
         :username
@@ -36,8 +36,8 @@ defmodule Animu.User do
   defp generate_encrypted_password(current_changeset) do
     case current_changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        put_changes( current_changeset, :encrypted_password,
-                     Comeonin.Bcrypt.hashpwsalt(password) )
+        put_change( current_changeset, :encrypted_password,
+                    Comeonin.Bcrypt.hashpwsalt(password) )
       _->
         current_changeset
     end
