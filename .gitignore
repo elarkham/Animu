@@ -3,14 +3,17 @@
 /db
 /deps
 /*.ez
-/node_modules
-/priv/static/css/main.css
-/priv/static/css/main.scss
-/priv/static/js/app.js
 
-
-# Generate on crash by the VM
+# Generated on crash by the VM
 erl_crash.dump
+
+# Static artifacts
+/node_modules
+
+# Since we are building assets from web/static,
+# we ignore priv/static. You may want to comment
+# this depending on your deployment strategy.
+/priv/static/
 
 # The config/prod.secret.exs file by default contains sensitive
 # data and you should not commit it into version control.
@@ -19,4 +22,3 @@ erl_crash.dump
 # secrets file as long as you replace its contents by environment
 # variables.
 /config/prod.secret.exs
-

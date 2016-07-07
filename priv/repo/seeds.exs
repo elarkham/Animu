@@ -5,22 +5,7 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     Animu.Repo.insert!(%Animu.SomeModel{})
+#     PhoenixTest.Repo.insert!(%PhoenixTest.SomeModel{})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
-
-alias Animu.{Repo, User}
-
-[
-  %{
-    first_name: "Ethan",
-    last_name:  "Larkham",
-    email:      "ethanlarkham@gmail.com",
-    username:   "elarkham",
-    password:   "password"
-  },
-]
-
-|> Enum.map(&User.changeset(%User{}, &1))
-|> Enum.each(&Repo.insert!(&1))

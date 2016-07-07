@@ -5,12 +5,15 @@
 # is restricted to this project.
 use Mix.Config
 
+# General application configuration
+config :animu,
+  ecto_repos: [Animu.Repo]
+
 # Configures the endpoint
 config :animu, Animu.Endpoint,
   url: [host: "localhost"],
-  root: Path.dirname(__DIR__),
-  secret_key_base: "3oYFZfmSD8SA9tpj6Pzn3ajf4eBK/QQeoEKkseDFqYmTDZKW6L38zTzy+WEtigCp",
-  render_errors: [accepts: ~w(html json)],
+  secret_key_base: "8RUI1CjD9XzQaHIUL3A6bBkokIUjTAUzMBWUwjn8n9hCwERFljL+DcIT+cQsrfYx",
+  render_errors: [view: Animu.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Animu.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
@@ -23,17 +26,15 @@ config :logger, :console,
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
 
-# Configure Ecto
-config :animu, ecto_repos: [Animu.Repo]
-
-# Configure phoenix generators
+# Configure Phoenix generators
 config :phoenix, :generators,
   migration: true,
   binary_id: false
 
+# Configure Authentication
 config :guardian, Guardian,
   issuer: "Animu",
-  ttl: { 3, :days },
+  ttl: {3, :days},
   verify_issuer: true,
   secret_key: "temp_key",
   serializer: Animu.GuardianSerializer

@@ -1,3 +1,3 @@
 defmodule Animu.LayoutViewTest do
-  use Animu.ConnCase, async: true
+  use PhoenixTest.ConnCase, async: true
 end

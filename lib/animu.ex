@@ -4,15 +4,16 @@ defmodule Animu do
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
+    import Supervisor.Spec
 
+    # Define workers and child supervisors to be supervised
     children = [
-      # Start the endpoint when the application starts
-      supervisor(Animu.Endpoint, []),
       # Start the Ecto repository
       supervisor(Animu.Repo, []),
-      # Here you could define other workers and supervisors as children
-      # worker(Animu.Worker, [arg1, arg2, arg3]),
+      # Start the endpoint when the application starts
+      supervisor(Animu.Endpoint, []),
+      # Start your own worker by calling: PhoenixTest.Worker.start_link(arg1, arg2, arg3)
+      # worker(PhoenixTest.Worker, [arg1, arg2, arg3]),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
