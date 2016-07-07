@@ -12,9 +12,9 @@ Setup
 
  * Install dependencies with `mix deps.get`
  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
- * Install NPM and run `npm install`, this is for react/redux
+ * Install NPM and run `npm install`, this is for brunch+elm
  * Start Phoenix endpoint with `mix phoenix.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-###### Version 3.0.1
+###### Version 3.0.2
