@@ -2,8 +2,8 @@ defmodule Animu.FranchiseControllerTest do
   use Animu.ConnCase
 
   alias Animu.Franchise
-  @valid_attrs %{cover_image: %{}, creator: "some content", description: "some content", gallery: %{}, poster_image: %{}, slug: "some content", tags: [], titles: %{}, trailers: []}
-  @invalid_attrs %{}
+  @valid_attrs %{cover_image: %{}, creator: "some person", description: "A description of franchise", gallery: %{}, poster_image: %{}, slug: "some-slug", tags: [], titles: %{"english" => "some_title"}, trailers: []}
+  @invalid_attrs %{slug: "", titles: %{}}
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
@@ -15,7 +15,8 @@ defmodule Animu.FranchiseControllerTest do
   end
 
   test "shows chosen resource", %{conn: conn} do
-    franchise = Repo.insert! %Franchise{}
+    changeset = Franchise.changeset(%Franchise{}, %{titles: %{"english"=>"old_title"}, slug: "old-slug"})
+    franchise = Repo.insert! changeset
     conn = get conn, franchise_path(conn, :show, franchise)
     assert json_response(conn, 200)["data"] == %{"id" => franchise.id,
       "titles" => franchise.titles,
@@ -47,20 +48,23 @@ defmodule Animu.FranchiseControllerTest do
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn} do
-    franchise = Repo.insert! %Franchise{}
+    changeset = Franchise.changeset(%Franchise{}, %{titles: %{"english"=>"old_title"}, slug: "old-slug"})
+    franchise = Repo.insert! changeset
     conn = put conn, franchise_path(conn, :update, franchise), franchise: @valid_attrs
     assert json_response(conn, 200)["data"]["id"]
     assert Repo.get_by(Franchise, @valid_attrs)
   end
 
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
-    franchise = Repo.insert! %Franchise{}
+    changeset = Franchise.changeset(%Franchise{}, @valid_attrs)
+    franchise = Repo.insert! changeset
     conn = put conn, franchise_path(conn, :update, franchise), franchise: @invalid_attrs
     assert json_response(conn, 422)["errors"] != %{}
   end
 
   test "deletes chosen resource", %{conn: conn} do
-    franchise = Repo.insert! %Franchise{}
+    changeset = Franchise.changeset(%Franchise{}, @valid_attrs)
+    franchise = Repo.insert! changeset
     conn = delete conn, franchise_path(conn, :delete, franchise)
     assert response(conn, 204)
     refute Repo.get(Franchise, franchise.id)

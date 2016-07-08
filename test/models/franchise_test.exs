@@ -2,8 +2,7 @@ defmodule Animu.FranchiseTest do
   use Animu.ModelCase
 
   alias Animu.Franchise
-
-  @valid_attrs %{cover_image: %{}, creator: "some content", description: "some content", gallery: %{}, poster_image: %{}, slug: "some content", tags: [], titles: %{}, trailers: []}
+  @valid_attrs %{cover_image: %{}, creator: "some content", description: "some content", gallery: %{}, poster_image: %{}, slug: "some-content", tags: [], titles: %{"english": "some title"}, trailers: []}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

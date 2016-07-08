@@ -10,7 +10,7 @@ config :animu, Animu.Endpoint,
 config :logger, level: :warn
 
 # Configure your database
-config :phoenix_test, Animu.Repo,
+config :animu, Animu.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",

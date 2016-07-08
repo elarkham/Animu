@@ -2,8 +2,11 @@ defmodule Animu.UserControllerTest do
   use Animu.ConnCase
 
   alias Animu.User
-  @valid_attrs %{email: "some content", first_name: "some content", last_name: "some content", password: "some content", username: "some content"}
-  @invalid_attrs %{}
+  @valid_output_attrs %{email: "some@email.com", first_name: "John", last_name: "Smith", username: "jsmith"}
+  @valid_input_attrs %{email: "some@email.com", first_name: "John", last_name: "Smith",
+                       username: "jsmith", password: "password", password_confirmation: "password"}
+
+  @invalid_input_attrs %{password: "password", password_confirmation: "not_password"}
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
