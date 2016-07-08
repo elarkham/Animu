@@ -15,7 +15,7 @@ defmodule Animu.User do
 
     field :username, :string
     field :password, :string, virtual: true
-    field :encryped_password, :string
+    field :encrypted_password, :string
 
     timestamps()
   end
