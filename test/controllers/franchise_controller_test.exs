@@ -6,7 +6,13 @@ defmodule Animu.FranchiseControllerTest do
   @invalid_attrs %{slug: "", titles: %{}}
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    user = %Animu.User{ id: "111", username: "tester" }
+    {:ok, jwt, full_claims} = Guardian.encode_and_sign(user)
+    {:ok, %{user: user, jwt: jwt, claims: full_claims}}
+    conn = conn
+      |> put_req_header("authorization", jwt)
+      |> put_req_header("accept", "application/json")
+    {:ok, conn: conn}
   end
 
   test "lists all entries on index", %{conn: conn} do

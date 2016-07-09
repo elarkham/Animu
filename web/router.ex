@@ -19,8 +19,7 @@ defmodule Animu.Router do
     pipe_through :api
 
     scope "/v1" do
-      resources "/users", UserController, except: [:new, :edit, :create]
-      post "/users", RegistrationController, :create
+      resources "/users", UserController, except: [:new, :edit]
       get "/current_user", CurrentUserController, :show
 
       post   "/session", SessionController, :create

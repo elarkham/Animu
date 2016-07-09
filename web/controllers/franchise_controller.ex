@@ -2,6 +2,7 @@ defmodule Animu.FranchiseController do
   use Animu.Web, :controller
 
   alias Animu.Franchise
+  plug Guardian.Plug.EnsureAuthenticated, handler: Animu.SessionController
 
   def index(conn, _params) do
     franchises = Repo.all(Franchise)

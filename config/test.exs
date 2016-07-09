@@ -9,6 +9,10 @@ config :animu, Animu.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warn
 
+# Configure Authentication
+config :guardian, Guardian,
+  serializer: Animu.TestGuardianSerializer
+
 # Configure your database
 config :animu, Animu.Repo,
   adapter: Ecto.Adapters.Postgres,
