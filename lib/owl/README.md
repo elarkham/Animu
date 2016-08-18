@@ -1,4 +1,4 @@
-# Muninn
+# Owl
 
 Pipline used to auto-download new episodes of shows by periodically scanning rss feeds, sorting downloads to their appropriate folders and then adding them to my Animu stack.
 
@@ -10,15 +10,15 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
     ```elixir
     def deps do
-      [{:muninn, "~> 0.1.0"}]
+      [{:Owl, "~> 0.1.0"}]
     end
     ```
 
-  2. Ensure `muninn` is started before your application:
+  2. Ensure `Owl` is started before your application:
 
     ```elixir
     def application do
-      [applications: [:muninn]]
+      [applications: [:Owl]]
     end
     ```
 
