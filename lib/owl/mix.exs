@@ -7,16 +7,16 @@ defmodule Owl.Mixfile do
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps()]
+     deps: deps()
+   ]
   end
 
   # Configuration for the OTP application
   def application do
-    [applications: [
-      :logger,
-      :feeder_ex,
-      :redix,
-    ]]
+    [
+      applications: [:logger,:feeder_ex,:redix],
+      mod: {Owl.Application, []}
+    ]
   end
 
   defp deps do

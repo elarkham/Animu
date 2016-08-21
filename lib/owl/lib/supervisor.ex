@@ -6,7 +6,9 @@ defmodule Owl.Supervisor do
   end
 
   def init(:ok) do
-    children = []
+    children = [
+      worker(Redix, [[], [name: :redix]])
+    ]
 
     supervise(children, strategy: :one_for_one)
   end

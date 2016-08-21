@@ -1,4 +1,4 @@
-defmodule Owl do
+defmodule Owl.Application do
   use Application
 
   def start(_,_) do
