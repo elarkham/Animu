@@ -12,6 +12,7 @@ Setup
 
  * Install dependencies with `mix deps.get`
  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
+ * Populate the database with `mix run priv/repo/seeds.exs`
  * Install NPM and run `npm install`, this is for brunch+elm
  * Start Phoenix endpoint with `mix phoenix.server`
 
