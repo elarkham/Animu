@@ -7,7 +7,7 @@ defmodule Owl.Reader do
 
   def init(:ok) do
     HTTPoison.start
-    start_timer
+    #    start_timer
     {:ok, %{}}
   end
 
@@ -20,21 +20,23 @@ defmodule Owl.Reader do
   # Scan rss feed for matching patterns
   defp scan_feed do
     # Get and parse feed
-    url = "http://www.nyaa.se/?page=rss&term=horrible"
-    {:ok, %HTTPoison.Response{body: body}} = HTTPoison.get(url)
+    url = "https://www.nyaa.se/?page=rss&term=horriblesubs"
+    headers = ["Accept": "application/rss+xml; charset=utf-8"]
+    options = [follow_redirect: true]
+    {:ok, %HTTPoison.Response{body: body}} = HTTPoison.get(url, headers, options)
     {:ok, feed, _} = FeederEx.parse(body)
 
     # Search feed for pattern
-    matches = Enum.filter(feed.entries, fn(e) -> check(e, ~r/Fate/) end )
+    matches = Enum.filter(feed.entries, fn(e) -> check(e, ~r/Demi/) end )
     match = List.first(matches)
 
     # Download torrent
-    %HTTPoison.Response{body: body} = HTTPoison.get!(match.link)
+    %HTTPoison.Response{body: body} = HTTPoison.get!(match.link, [], options)
     File.write!("/tmp/" <> match.title <> ".torrent", body)
   end
 
   # Check if element matches pattern
-  defp check(element, pattern) do
+  def check(element, pattern) do
     if String.match?(element.title, pattern) do
       element.link
     end
@@ -42,7 +44,7 @@ defmodule Owl.Reader do
 
   # Activate "scan_feed" after 15min pass
   defp start_timer do
-    Process.send_after(self, :scan_feed, ( 30 * 1000 ) )
+    Process.send_after(self, :scan_feed, ( 15 * 60000 ) )
   end
 
 end
