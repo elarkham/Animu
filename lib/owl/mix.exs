@@ -14,7 +14,7 @@ defmodule Owl.Mixfile do
   # Configuration for the OTP application
   def application do
     [
-      applications: [:logger,:feeder_ex,:redix,:httpoison],
+      applications: [:logger,:feeder_ex,:httpoison],
       mod: {Owl.Application, []}
     ]
   end
@@ -22,7 +22,6 @@ defmodule Owl.Mixfile do
   defp deps do
     [ {:feeder_ex, "~> 0.0.3"},
       {:httpoison, "~> 0.9.0"},
-      {:redix, "~> 0.4.0"},
     ]
   end
 end

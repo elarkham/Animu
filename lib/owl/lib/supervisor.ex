@@ -7,7 +7,6 @@ defmodule Owl.Supervisor do
 
   def init(:ok) do
     children = [
-      worker(Redix, [[], [name: :redix]]),
       worker(Owl.Reader, [[], [name: :owl_reader]])
     ]
 
