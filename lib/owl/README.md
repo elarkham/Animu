@@ -6,7 +6,7 @@ Pipline used to auto-download new episodes of shows by periodically scanning rss
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
 
-  1. Add `muninn` to your list of dependencies in `mix.exs`:
+  1. Add `Owl` to your list of dependencies in `mix.exs`:
 
     ```elixir
     def deps do
