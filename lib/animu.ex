@@ -12,8 +12,11 @@ defmodule Animu do
       supervisor(Animu.Repo, []),
       # Start the endpoint when the application starts
       supervisor(Animu.Endpoint, []),
-      # Start your own worker by calling: PhoenixTest.Worker.start_link(arg1, arg2, arg3)
-      # worker(PhoenixTest.Worker, [arg1, arg2, arg3]),
+
+      # RSS feed reader
+      worker(Animu.Reader, [[], [name: :animu_reader]]),
+      # Torrent Registry that tracks transmission downloads
+      worker(Animu.TorrentRegistry, [[], [name: :animu_torrent_registry]]),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

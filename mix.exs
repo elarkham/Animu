@@ -27,7 +27,9 @@ defmodule Animu.Mixfile do
        :gettext,
        :phoenix_ecto,
        :postgrex,
-       :comeonin
+       :comeonin,
+       :feeder_ex,
+       :httpoison,
      ]]
   end
 
@@ -48,7 +50,10 @@ defmodule Animu.Mixfile do
      {:postgrex, ">= 0.0.0"},
      {:gettext, "~> 0.11"},
      {:guardian, "~> 0.12.0"},
-     {:comeonin, "~> 2.0"}]
+     {:comeonin, "~> 2.0"},
+     {:feeder_ex, "~> 0.0.3"},
+     {:httpoison, "~> 0.9.0"},
+   ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
