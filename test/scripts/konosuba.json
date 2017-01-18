@@ -1,0 +1,19 @@
+{
+  "franchise":{
+    "titles":{
+      "en":"KonoSuba: God's Blessing on This Wonderful World!",
+      "en_jp":"Kono Subarashii Sekai ni Shukufuku wo!",
+      "ja_jp":"この素晴らしい世界に祝福を！"
+    },
+    "creator": "Akatsuki Natsume",
+    "description":"test",
+    "slug":"kono-subarashii-sekai-ni-shukufuku-wo",
+    "cover_image":{
+      "large":"https://media.kitsu.io/anime/cover_images/10941/large.jpg?1458182100",
+      "original":"https://media.kitsu.io/anime/cover_images/10941/original.png?1458182100",
+      "small":"https://media.kitsu.io/anime/cover_images/10941/small.jpg?1458182100"
+    },
+    "trailers":["mcgKG7OP1zM"],
+    "date_released":"2016-01-14"
+  }
+}
