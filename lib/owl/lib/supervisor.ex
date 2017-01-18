@@ -7,7 +7,8 @@ defmodule Owl.Supervisor do
 
   def init(:ok) do
     children = [
-      worker(Owl.Reader, [[], [name: :owl_reader]])
+      worker(Owl.Reader, [[], [name: :owl_reader]]),
+      worker(Owl.TorrentRegistry, [[], [name: :owl_torrent_registry]])
     ]
 
     supervise(children, strategy: :one_for_one)

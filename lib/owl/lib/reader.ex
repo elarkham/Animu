@@ -1,5 +1,6 @@
 defmodule Owl.Reader do
   use GenServer
+  alias HTTPoison.Response
 
   def start_link(_,_) do
     GenServer.start_link(__MODULE__, :ok, [])
@@ -23,7 +24,7 @@ defmodule Owl.Reader do
     url = "https://www.nyaa.se/?page=rss&term=horriblesubs"
     headers = ["Accept": "application/rss+xml; charset=utf-8"]
     options = [follow_redirect: true]
-    {:ok, %HTTPoison.Response{body: body}} = HTTPoison.get(url, headers, options)
+    {:ok, %Response{body: body}} = HTTPoison.get(url, headers, options)
     {:ok, feed, _} = FeederEx.parse(body)
 
     # Search feed for pattern
@@ -31,7 +32,7 @@ defmodule Owl.Reader do
     match = List.first(matches)
 
     # Download torrent
-    %HTTPoison.Response{body: body} = HTTPoison.get!(match.link, [], options)
+    %Response{body: body} = HTTPoison.get!(match.link, [], options)
     File.write!("/tmp/" <> match.title <> ".torrent", body)
   end
 
