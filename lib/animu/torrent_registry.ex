@@ -1,13 +1,15 @@
-defmodule Owl.TorrentRegistry do
+defmodule Animu.TorrentRegistry do
   use GenServer
-  alias Owl.{Reader, Transmission}
+
+  alias Animu.Reader
+  alias HTTPoison.Response
 
   def start_link(_,_) do
     GenServer.start_link(__MODULE__, :ok, [])
   end
 
   def init(state) do
-    %HTTPoison.Response{body: body} =
+  #    Response{body: body} =
     {:ok, state}
   end
 
