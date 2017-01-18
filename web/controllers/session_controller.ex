@@ -7,7 +7,6 @@ defmodule Animu.SessionController do
     case Animu.Session.authenticate(session_params) do
       {:ok, user} ->
         {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
-
         conn
         |> put_status(:created)
         |> render("show.json", jwt: jwt, user: user)
@@ -21,7 +20,6 @@ defmodule Animu.SessionController do
 
   def delete(conn, _) do
     {:ok, claims} = Guardian.Plug.claims(conn)
-
     conn
     |> Guardian.Plug.current_token
     |> Guardian.revoke!(claims)
