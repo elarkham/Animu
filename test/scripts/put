@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+TOKEN="$(cat token)"
+
+curl -s -X PUT \
+     -H "Authorization: $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d "$(cat $2)" \
+     http://localhost:4000/api/v1/"$1" \
+| jq '.'
+

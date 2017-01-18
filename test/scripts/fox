@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+#TOKEN="Bearer f6937bf09779216a5feea68a5f8a56e26811eb88c44739af1e347c9bd20e719b"
+#-H "Authorization: $TOKEN" \
+
+curl -s -X GET \
+     -H "Accept: application/vnd.api+json" \
+     https://kitsu.io/api/edge/$1 \
+| jq '.data.attributes'
