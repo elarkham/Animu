@@ -2,7 +2,7 @@ defmodule Animu.Reader do
   use GenServer
 
   alias HTTPoison.Response
-  alias Animu.TorrentRegistry
+  alias Animu.TransmissionClient
 
   def start_link(_,_) do
     GenServer.start_link(__MODULE__, :ok, [])
