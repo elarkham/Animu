@@ -47,7 +47,7 @@ defmodule Animu.Reader do
 
   # Activate "scan_feed" after 15min pass
   defp start_timer do
-    Process.send_after(self, :scan_feed, ( 15 * 60000 ) )
+    Process.send_after(self, :scan_feed, (15 * 60000))
   end
 
 end
