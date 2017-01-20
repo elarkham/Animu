@@ -11,14 +11,16 @@ defmodule Animu.FranchiseView do
 
   def render("franchise.json", %{franchise: franchise}) do
     %{id: franchise.id,
+      canon_title: franchise.canon_title,
       titles: franchise.titles,
       creator: franchise.creator,
-      description: franchise.description,
+      synopsis: franchise.synopsis,
       slug: franchise.slug,
       cover_image: franchise.cover_image,
       poster_image: franchise.poster_image,
       gallery: franchise.gallery,
       trailers: franchise.trailers,
-      tags: franchise.tags}
+      tags: franchise.tags,
+    }
   end
 end

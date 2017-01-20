@@ -2,8 +2,13 @@ defmodule Animu.FranchiseControllerTest do
   use Animu.ConnCase
 
   alias Animu.Franchise
-  @valid_attrs %{cover_image: %{}, creator: "some person", description: "A description of franchise", gallery: %{}, poster_image: %{}, slug: "some-slug", tags: [], titles: %{"english" => "some_title"}, trailers: []}
-  @invalid_attrs %{slug: "", titles: %{}}
+
+  @valid_attrs %{cover_image: %{}, creator: "some content", synopsis: "some content",
+                 gallery: %{}, poster_image: %{}, slug: "some-content", tags: [],
+                 titles: %{"english": "some title"}, trailers: [],
+                 canon_title: "some title"}
+
+  @invalid_attrs %{slug: "", canon_title: "some title"}
 
   setup %{conn: conn} do
     user = %Animu.User{ id: "111", username: "tester" }
@@ -21,19 +26,22 @@ defmodule Animu.FranchiseControllerTest do
   end
 
   test "shows chosen resource", %{conn: conn} do
-    changeset = Franchise.changeset(%Franchise{}, %{titles: %{"english"=>"old_title"}, slug: "old-slug"})
+    changeset = Franchise.changeset(%Franchise{}, %{canon_title: "some title", slug: "old-slug"})
     franchise = Repo.insert! changeset
     conn = get conn, franchise_path(conn, :show, franchise)
-    assert json_response(conn, 200)["data"] == %{"id" => franchise.id,
-      "titles" => franchise.titles,
-      "creator" => franchise.creator,
-      "description" => franchise.description,
-      "slug" => franchise.slug,
-      "cover_image" => franchise.cover_image,
-      "poster_image" => franchise.poster_image,
-      "gallery" => franchise.gallery,
-      "trailers" => franchise.trailers,
-      "tags" => franchise.tags}
+    assert json_response(conn, 200)["data"] ==
+      %{"id" => franchise.id,
+        "canon_title" => franchise.canon_title,
+        "titles" => franchise.titles,
+        "creator" => franchise.creator,
+        "synopsis" => franchise.synopsis,
+        "slug" => franchise.slug,
+        "cover_image" => franchise.cover_image,
+        "poster_image" => franchise.poster_image,
+        "gallery" => franchise.gallery,
+        "trailers" => franchise.trailers,
+        "tags" => franchise.tags,
+      }
   end
 
   test "renders page not found when id is nonexistent", %{conn: conn} do
@@ -54,7 +62,7 @@ defmodule Animu.FranchiseControllerTest do
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn} do
-    changeset = Franchise.changeset(%Franchise{}, %{titles: %{"english"=>"old_title"}, slug: "old-slug"})
+    changeset = Franchise.changeset(%Franchise{}, %{canon_title: "some_title", slug: "old-slug"})
     franchise = Repo.insert! changeset
     conn = put conn, franchise_path(conn, :update, franchise), franchise: @valid_attrs
     assert json_response(conn, 200)["data"]["id"]
