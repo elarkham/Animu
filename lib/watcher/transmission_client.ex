@@ -65,38 +65,10 @@ defmodule Animu.TransmissionClient do
       {:ok, %{"result" => "success", "torrent_added" => torrent_status}, state} ->
         id = torrent_status["id"]
         torrent = %{torrent | id: id}
-        state = %{state | torrents: Map.put(state.torrents, id, torrent}}
+        state = %{state | torrents: Map.put(state.torrents, id, torrent)}
         {:reply, :ok, state}
       :else ->
         {:reply, :error, state}
-    end
-  end
-
-  def handle_info(:check_status, state) do
-    method = "torrent-get"
-    arguments =
-      %{"fields" => ["id", "isFinished", "percentDone"]
-        "ids" => Map.keys(state.torrents)
-      }
-
-    {:ok, response, state} = request(method, arguments, state)
-    torrents =
-      response.arguments.torrents
-      |> Map.new(&({&1["id"], %{progress: &1["percentDone"], finished: &1["isFinished"]}}))
-      |> Map.merge(state.torrents, fn(_k, v1, v2) -> Map.merge(Map.from_struct(v2, v1)) end)
-      |> Enum.map(process)
-      |> Enum.reject(fn({_k, v}) -> v.finished end)
-      |> Map.new(fn({k, v}) -> {k, struct(Torrent, v)} end)
-
-    state = %{state | torrents: torrents}
-
-    start_timer
-    {:noreply, state}
-  end
-
-  defp process({_, torrent}) do
-    if torrent.finished do
-      GenServer.cast(:animu_watcher_cache, {:process, torrent})
     end
   end
 
@@ -104,4 +76,37 @@ defmodule Animu.TransmissionClient do
     Process.send_after(self, :check_status, (2 * 1000))
   end
 
+  def handle_info(:check_status, state) do
+    state =
+      case state.torrents do
+        %{}   -> state
+        :else -> %{state | torrents: poll(state)}
+      end
+
+    start_timer
+    {:noreply, state}
+  end
+
+  defp poll(state) do
+    method = "torrent-get"
+    arguments =
+      %{"fields" => ["id", "isFinished", "percentDone"],
+        "ids" => Map.keys(state.torrents)
+      }
+
+    {:ok, response, state} = request(method, arguments, state)
+    torrents =
+      response.arguments.torrents
+      |> Map.new(&({&1["id"], %{progress: &1["percentDone"], finished: &1["isFinished"]}}))
+      |> Map.merge(state.torrents, fn(_k, v1, v2) -> Map.merge(Map.from_struct(v2), v1) end)
+      |> Enum.map(&(process(&1)))
+      |> Enum.reject(fn({_k, v}) -> v.finished end)
+      |> Map.new(fn({k, v}) -> {k, struct(Torrent, v)} end)
+  end
+
+  defp process({_, torrent}) do
+    if torrent.finished do
+      GenServer.cast(:animu_watcher_cache, {:process, torrent})
+    end
+  end
 end
