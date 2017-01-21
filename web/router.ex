@@ -26,6 +26,8 @@ defmodule Animu.Router do
       delete "/session", SessionController, :delete
 
       resources "/franchises", FranchiseController, except: [:new, :edit]
+      resources "/series", SeriesController, except: [:new, :edit]
+      resources "/episodes", EpisodeController, except: [:new, :edit, :create]
     end
 
   end

@@ -1,6 +1,8 @@
 defmodule Animu.Series do
   use Animu.Web, :model
 
+  alias Animu.Repo
+
   schema "series" do
     field :canon_title,    :string
     field :titles,         {:map, :string}
@@ -22,8 +24,8 @@ defmodule Animu.Series do
     field :episode_count,  :integer
     field :episode_length, :integer
 
-    has_many   :episodes,   Animu.Episode
-    belongs_to :franchise,  Animu.Franchise
+    has_many   :episodes,   Animu.Episode, defaults: []
+    belongs_to :franchise,  Animu.Franchise, defaults: %{}
 
     field :kitsu_rating,   :float
     field :kitsu_id,       :string
@@ -41,6 +43,7 @@ defmodule Animu.Series do
   """
   def changeset(struct, params \\ %{}) do
     struct
+    |> Repo.preload(:episodes)
     |> cast(params, [:canon_title, :titles, :synopsis, :slug,
                      :cover_image, :poster_image, :gallery,
                      :trailers, :tags, :genres,
@@ -50,7 +53,7 @@ defmodule Animu.Series do
                      :started_airing_date, :finished_airing_date,
                      :directory,
                     ])
-    |> cast_assoc(params, [:franchise, :episodes])
+    |> cast_assoc(:episodes)
     |> validate_required([:canon_title, :slug, :directory])
   end
 end

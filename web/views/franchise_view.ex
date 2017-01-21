@@ -16,9 +16,13 @@ defmodule Animu.FranchiseView do
       creator: franchise.creator,
       synopsis: franchise.synopsis,
       slug: franchise.slug,
+
       cover_image: franchise.cover_image,
       poster_image: franchise.poster_image,
       gallery: franchise.gallery,
+
+      series: franchise.series,
+
       trailers: franchise.trailers,
       tags: franchise.tags,
     }
