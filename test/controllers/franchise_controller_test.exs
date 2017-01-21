@@ -3,11 +3,22 @@ defmodule Animu.FranchiseControllerTest do
 
   alias Animu.Franchise
 
-  @valid_attrs %{cover_image: %{}, creator: "some content", synopsis: "some content",
-                 gallery: %{}, poster_image: %{}, slug: "some-content", tags: [],
-                 titles: %{"english": "some title"}, trailers: [],
-                 canon_title: "some title"}
+  @valid_attrs %{
+    canon_title: "some title",
+    titles: %{"english": "some title"},
+    synopsis: "some content",
+    creator: "some content",
+    slug: "some-content",
 
+    cover_image: %{},
+    poster_image: %{},
+    gallery: %{},
+
+    trailers: [],
+    tags: [],
+  }
+
+  # Slug is blank
   @invalid_attrs %{slug: "", canon_title: "some title"}
 
   setup %{conn: conn} do
@@ -39,6 +50,7 @@ defmodule Animu.FranchiseControllerTest do
         "cover_image" => franchise.cover_image,
         "poster_image" => franchise.poster_image,
         "gallery" => franchise.gallery,
+        "series" => franchise.series,
         "trailers" => franchise.trailers,
         "tags" => franchise.tags,
       }
