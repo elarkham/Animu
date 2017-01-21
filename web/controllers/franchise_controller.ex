@@ -5,7 +5,7 @@ defmodule Animu.FranchiseController do
   plug Guardian.Plug.EnsureAuthenticated, handler: Animu.SessionController
 
   def index(conn, _params) do
-    franchises = Repo.all(Franchise)
+    franchises = Franchise |> Repo.all() |> Repo.preload(:series)
     render(conn, "index.json", franchises: franchises)
   end
 
@@ -26,7 +26,7 @@ defmodule Animu.FranchiseController do
   end
 
   def show(conn, %{"id" => id}) do
-    franchise = Repo.get!(Franchise, id)
+    franchise = Franchise |> Repo.get!(id) |> Repo.preload(:series)
     render(conn, "show.json", franchise: franchise)
   end
 

@@ -1,6 +1,8 @@
 defmodule Animu.Franchise do
   use Animu.Web, :model
 
+  alias Animu.Repo
+
   schema "franchises" do
     field :canon_title,   :string
     field :titles,        :map
@@ -27,10 +29,12 @@ defmodule Animu.Franchise do
   """
   def changeset(struct, params \\ %{}) do
     struct
+    |> Repo.preload(:series)
     |> cast(params, [:canon_title, :titles, :creator, :synopsis, :slug,
                      :cover_image, :poster_image,
                      :gallery, :trailers, :tags,
                     ])
+    |> cast_assoc(:series)
     |> validate_required([:canon_title, :slug])
   end
 end

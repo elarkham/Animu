@@ -1,6 +1,8 @@
 defmodule Animu.Episode do
   use Animu.Web, :model
 
+  alias Animu.{Repo, Series}
+
   schema "episodes" do
     field :title,         :string
     field :synopsis,      :string
@@ -11,8 +13,8 @@ defmodule Animu.Episode do
     field :season_number, :integer
     field :airdate,       Ecto.DateTime
 
-    belongs_to :series, Animu.Series
-    #has_many :video, Animu.Video
+    belongs_to :series, Series
+    #has_many :video, Video
 
     field :video,     :string
     field :subtitles, :string
@@ -25,12 +27,22 @@ defmodule Animu.Episode do
   """
   def changeset(struct, params \\ %{}) do
     struct
+    |> Repo.preload(:series)
     |> cast(params, [:title, :synopsis, :thumbnail, :kitsu_id,
                      :number, :season_number, :airdate,
-                     :series,
+                     :video, :subtitles
+                   ])
+    |> validate_required([:title, :number, :video])
+  end
+
+  def changeset_series(struct, series, params \\ %{}) do
+    struct
+    |> Repo.preload(:series)
+    |> cast(params, [:title, :synopsis, :thumbnail, :kitsu_id,
+                     :number, :season_number, :airdate,
                      :video, :subtitles,
                     ])
-    |> cast_assoc(params, [:series])
-    |> validate_required([:canon_title, :number])
+    |> put_assoc(:series, series, required: true)
+    |> validate_required([:title, :number, :video])
   end
 end
