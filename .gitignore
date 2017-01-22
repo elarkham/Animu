@@ -5,6 +5,10 @@
 /*.ez
 /mix.lock
 
+# Testing artifacts
+/test/scripts/*.json
+/test/scripts/token
+
 # Generated on crash by the VM
 erl_crash.dump
 
