@@ -27,7 +27,7 @@ defmodule Animu.Router do
 
       resources "/franchises", FranchiseController, except: [:new, :edit]
       resources "/series", SeriesController, except: [:new, :edit]
-      resources "/episodes", EpisodeController, except: [:new, :edit, :create]
+      resources "/episodes", EpisodeController, except: [:new, :edit]
     end
 
   end

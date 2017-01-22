@@ -31,7 +31,7 @@ defmodule Animu.FranchiseController do
   end
 
   def update(conn, %{"id" => id, "franchise" => franchise_params}) do
-    franchise = Repo.get!(Franchise, id)
+    franchise = Franchise |> Repo.get!(id)
     changeset = Franchise.changeset(franchise, franchise_params)
 
     case Repo.update(changeset) do
