@@ -40,4 +40,12 @@ defmodule Animu.Franchise do
     |> cast(params, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
   end
+
+  def scrub_params(params) do
+    %__MODULE__{}
+    |> cast(params, @required_fields ++ @optional_fields)
+    |> apply_changes
+    |> Map.from_struct
+    |> Map.delete(:__meta__)
+  end
 end

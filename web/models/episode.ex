@@ -37,4 +37,12 @@ defmodule Animu.Episode do
     |> validate_required(@required_fields)
     |> foreign_key_constraint(:series_id)
   end
+
+  def scrub_params(params) do
+    %__MODULE__{}
+    |> cast(params, @required_fields ++ @optional_fields)
+    |> apply_changes
+    |> Map.from_struct
+    |> Map.delete(:__meta__)
+  end
 end
