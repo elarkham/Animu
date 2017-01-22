@@ -20,7 +20,7 @@ defmodule Animu.Franchise do
 
     has_many :series, Animu.Series
 
-    field :date_released, Ecto.DateTime
+    field :date_released, :date
 
     timestamps()
   end
