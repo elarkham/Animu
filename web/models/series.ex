@@ -1,7 +1,7 @@
 defmodule Animu.Series do
   use Animu.Web, :model
 
-  alias Animu.Repo
+  alias Animu.{Repo, Episode, Franchise}
 
   @derive {Poison.Encoder, except: [:__meta__]}
   schema "series" do
@@ -25,8 +25,8 @@ defmodule Animu.Series do
     field :episode_count,  :integer
     field :episode_length, :integer
 
-    has_many   :episodes,   Animu.Episode, defaults: []
-    belongs_to :franchise,  Animu.Franchise, defaults: %{}
+    has_many   :episodes,   Episode, defaults: []
+    belongs_to :franchise,  Franchise, defaults: %Franchise{}
 
     field :kitsu_rating,   :float
     field :kitsu_id,       :string
@@ -35,6 +35,7 @@ defmodule Animu.Series do
     field :subgroup,       :string
     field :quality,        :string
     field :rss_feed,       :string
+    field :watch,          :boolean, default: false
 
     field :directory,      :string
 
@@ -53,7 +54,7 @@ defmodule Animu.Series do
                     season_number episode_count episode_length
                     kitsu_rating kitsu_id
                     started_airing_date finished_airing_date
-                    regex subgroup quality rss_feed)a
+                    regex subgroup quality rss_feed watch)a
 
   @doc """
   Builds a changeset based on the `struct` and `params`.

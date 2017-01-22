@@ -1,6 +1,9 @@
 defmodule Animu.SeriesController do
   use Animu.Web, :controller
 
+  import Animu.ModelHelper
+  import Animu.SeriesPopulator
+
   alias Animu.Series
 
   plug Guardian.Plug.EnsureAuthenticated, handler: Animu.SessionController
@@ -11,7 +14,8 @@ defmodule Animu.SeriesController do
   end
 
   def create(conn, %{"series" => series_params}) do
-    changeset = Series.changeset(%Series{}, series_params)
+    params = series_params |> populate |> to_map
+    changeset = Series.changeset(%Series{}, params)
 
     case Repo.insert(changeset) do
       {:ok, series} ->
@@ -33,7 +37,8 @@ defmodule Animu.SeriesController do
 
   def update(conn, %{"id" => id, "series" => series_params}) do
     series = Series |> Repo.get!(id) |> Repo.preload(:episodes)
-    changeset = Series.changeset(series, series_params)
+    params = series_params |> populate |> to_map
+    changeset = Series.changeset(series, params)
 
     case Repo.update(changeset) do
       {:ok, series} ->
