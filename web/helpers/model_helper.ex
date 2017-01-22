@@ -1,4 +1,4 @@
-defmodule ModelHelper do
+defmodule Animu.ModelHelper do
   @doc """
   Only merges fields that are not currently nil, this is good for when you are
   pulling data from two incomplete sources.
@@ -10,5 +10,14 @@ defmodule ModelHelper do
         _ -> v2
       end
     end))
+  end
+
+  @doc """
+  Typically used for premade models that have not been inserted into a
+  changeset yet.
+  """
+  def to_map(struct) do
+    Map.from_struct(struct)
+    |> Map.delete(:__meta__)
   end
 end
