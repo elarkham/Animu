@@ -9,7 +9,6 @@ defmodule Animu.Reader do
   end
 
   def init(:ok) do
-    HTTPoison.start
     #    start_timer
     {:ok, %{}}
   end
