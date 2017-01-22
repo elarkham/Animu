@@ -58,4 +58,16 @@ defmodule Animu.Series do
     |> cast(params, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
   end
+
+  @doc """
+  Generates a map that only has fields that are within a "Series" struct.
+  Similar to Kernel.struct/2 but without the adom key requirement.
+  """
+  def scrub_params(params) do
+    %__MODULE__{}
+    |> cast(params, @required_fields ++ @optional_fields)
+    |> apply_changes
+    |> Map.from_struct
+    |> Map.delete(:__meta__)
+  end
 end
