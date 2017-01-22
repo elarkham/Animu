@@ -7,7 +7,8 @@ use Mix.Config
 
 # General application configuration
 config :animu,
-  ecto_repos: [Animu.Repo]
+  ecto_repos: [Animu.Repo],
+  file_root: "/home/ethan/var/animu"
 
 # Configures the endpoint
 config :animu, Animu.Endpoint,
