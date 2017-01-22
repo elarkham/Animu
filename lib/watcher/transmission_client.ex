@@ -11,7 +11,6 @@ defmodule Animu.TransmissionClient do
   end
 
   def init(state) do
-    HTTPoison.start
     state = %{session_id: "0", torrents: %{}}
     {:ok, _, state} = request("session-get", %{}, state)
     start_timer
