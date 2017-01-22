@@ -3,6 +3,7 @@ defmodule Animu.Series do
 
   alias Animu.Repo
 
+  @derive {Poison.Encoder, except: [:__meta__]}
   schema "series" do
     field :canon_title,    :string
     field :titles,         {:map, :string}
@@ -38,22 +39,23 @@ defmodule Animu.Series do
     timestamps()
   end
 
+
+@required_fields ~w(canon_title slug directory)a
+
+@optional_fields ~w(titles synopsis
+                    cover_image poster_image gallery
+                    trailers tags genres age_rating nsfw
+                    season_number episode_count episode_length
+                    kitsu_rating kitsu_id
+                    started_airing_date finished_airing_date)a
+
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
   def changeset(struct, params \\ %{}) do
     struct
     |> Repo.preload(:episodes)
-    |> cast(params, [:canon_title, :titles, :synopsis, :slug,
-                     :cover_image, :poster_image, :gallery,
-                     :trailers, :tags, :genres,
-                     :age_rating, :nsfw,
-                     :season_number, :episode_count, :episode_length,
-                     :kitsu_rating, :kitsu_id,
-                     :started_airing_date, :finished_airing_date,
-                     :directory,
-                    ])
-    |> cast_assoc(:episodes)
-    |> validate_required([:canon_title, :slug, :directory])
+    |> cast(params, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
   end
 end
