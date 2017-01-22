@@ -31,10 +31,15 @@ defmodule Animu.Series do
     field :kitsu_rating,   :float
     field :kitsu_id,       :string
 
+    field :regex,          :string
+    field :subgroup,       :string
+    field :quality,        :string
+    field :rss_feed,       :string
+
     field :directory,      :string
 
-    field :started_airing_date,  Ecto.DateTime
-    field :finished_airing_date, Ecto.DateTime
+    field :started_airing_date,  :date
+    field :finished_airing_date, :date
 
     timestamps()
   end
@@ -47,7 +52,8 @@ defmodule Animu.Series do
                     trailers tags genres age_rating nsfw
                     season_number episode_count episode_length
                     kitsu_rating kitsu_id
-                    started_airing_date finished_airing_date)a
+                    started_airing_date finished_airing_date
+                    regex subgroup quality rss_feed)a
 
   @doc """
   Builds a changeset based on the `struct` and `params`.
@@ -67,7 +73,5 @@ defmodule Animu.Series do
     %__MODULE__{}
     |> cast(params, @required_fields ++ @optional_fields)
     |> apply_changes
-    |> Map.from_struct
-    |> Map.delete(:__meta__)
   end
 end

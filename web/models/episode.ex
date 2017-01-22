@@ -12,7 +12,7 @@ defmodule Animu.Episode do
 
     field :number,        :float
     field :season_number, :integer
-    field :airdate,       Ecto.DateTime
+    field :airdate,       :date
 
     belongs_to :series, Series
     #has_many :video, Video
