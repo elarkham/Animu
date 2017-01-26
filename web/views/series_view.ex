@@ -36,6 +36,12 @@ defmodule Animu.SeriesView do
       kitsu_rating: series.kitsu_rating,
       kitsu_id: series.kitsu_id,
 
+      regex: series.regex,
+      subgroup: series.subgroup,
+      quality: series.quality,
+      rss_feed: series.rss_feed,
+      watch: series.watch,
+
       directory: series.directory,
 
       started_airing_date: series.started_airing_date,
