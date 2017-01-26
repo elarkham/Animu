@@ -27,7 +27,6 @@ defmodule Animu.SeriesPopulator do
     |> get_images
   end
 
-
   defp request(type, id) do
     url = @url <> type <> "/" <> id
     headers = ["Accept": "application/vnd.api+json"]
@@ -39,7 +38,6 @@ defmodule Animu.SeriesPopulator do
   end
 
   defp format_to_series(kitsu_series) do
-    series =
     %Series{
       canon_title: kitsu_series["canonicalTitle"],
       titles: kitsu_series["titles"],
