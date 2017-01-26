@@ -39,6 +39,7 @@ defmodule Animu.SeriesPopulator do
   end
 
   defp format_to_series(kitsu_series) do
+    series =
     %Series{
       canon_title: kitsu_series["canonicalTitle"],
       titles: kitsu_series["titles"],
@@ -58,31 +59,39 @@ defmodule Animu.SeriesPopulator do
       kitsu_rating: kitsu_series["averageRating"],
       kitsu_id: kitsu_series["id"],
 
-      started_airing_date: Date.from_iso8601!(kitsu_series["startDate"]),
-      finished_airing_date: Date.from_iso8601!(kitsu_series["endDate"]),
+      started_airing_date: get_date(kitsu_series["startDate"]),
+      finished_airing_date: get_date(kitsu_series["endDate"]),
     }
+  end
+
+  defp get_date(date) do
+    case date do
+      nil -> nil
+      _ -> Date.from_iso8601!(date)
+    end
   end
 
   def get_images(series = %Series{directory: nil}), do: series
   def get_images(series) do
-		path = series.directory <> @cover_path
-		cover_image = get_map_images(series.cover_image, path)
+		cover_image =
+      get_map_images(series.cover_image, series.directory, @cover_path)
 
-    path = series.directory <> @poster_path
-		poster_image = get_map_images(series.poster_image, path)
+		poster_image =
+      get_map_images(series.poster_image, series.directory, @poster_path)
 
-		path = series.directory <> @gallery_path
-		gallery = get_map_images(series.gallery, path)
+		gallery =
+      get_map_images(series.gallery, series.directory, @gallery_path)
 
     changes = %{gallery: gallery, cover_image: cover_image, poster_image: poster_image}
 		Map.merge(series, changes)
   end
 
-  defp get_map_images(nil, _), do: nil
-  defp get_map_images(map, path) do
+  defp get_map_images(nil, _, _), do: nil
+  defp get_map_images(map, series_path, image_path) do
     Map.new(map, fn {k, v} ->
       filename =  "/" <> k <> ".jpg"
-		 	v = get_image(v, path, filename)
+      path = series_path <> image_path
+		 	v = image_path <> get_image(v, path, filename)
 		 	{k, v}
     end)
   end
@@ -93,7 +102,7 @@ defmodule Animu.SeriesPopulator do
   	full_path = Application.get_env(:animu, :file_root) <> path
     if !(File.dir?(path)), do: File.mkdir_p!(full_path)
    	File.write!(full_path <> filename, body)
-		path <> filename
+		filename
 	end
 
 end
