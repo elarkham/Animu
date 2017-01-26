@@ -2,8 +2,9 @@ defmodule Animu.Episode do
   use Animu.Web, :model
 
   alias Animu.{Repo, Series}
+  alias __MODULE__, as: Episode
 
-  @derive {Poison.Encoder, except: [:__meta__]}
+  @derive {Poison.Encoder, except: [:__meta__, :series]}
   schema "episodes" do
     field :title,         :string
     field :synopsis,      :string
@@ -23,7 +24,7 @@ defmodule Animu.Episode do
     timestamps()
   end
 
-  @required_fields ~w(title number video series_id)a
+  @required_fields ~w(title number series_id)a
   @optional_fields ~w(synopsis thumbnail kitsu_id season_number airdate
                       subtitles)a
 
@@ -38,11 +39,29 @@ defmodule Animu.Episode do
     |> foreign_key_constraint(:series_id)
   end
 
+  @doc """
+  Generates a map that only has fields that are within an "Episode" struct.
+  Similar to Kernel.struct/2 but without the adom key requirement.
+  """
   def scrub_params(params) do
-    %__MODULE__{}
+    %Episode{}
     |> cast(params, @required_fields ++ @optional_fields)
     |> apply_changes
     |> Map.from_struct
     |> Map.delete(:__meta__)
   end
+
+  @doc """
+  Creates a list of generic episodes numbering from 1 to $number
+  """
+  def new(nil), do: []
+  def new(episode_count) do
+    for i <- 1..episode_count do
+      %Episode{
+        title: "Episode #{i}",
+        number: (i/1),
+      }
+    end
+  end
+
 end
