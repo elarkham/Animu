@@ -51,7 +51,7 @@ defmodule Animu.Mixfile do
      {:gettext, "~> 0.11"},
      {:guardian, "~> 0.12.0"},
      {:comeonin, "~> 2.0"},
-     {:feeder_ex, "~> 0.0.3"},
+     {:feeder_ex, "~> 1.0"},
      {:httpoison, "~> 0.9.0"},
    ]
   end
