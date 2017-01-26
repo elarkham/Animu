@@ -4,7 +4,7 @@ defmodule Animu.SeriesController do
   import Animu.ModelHelper
   import Animu.SeriesPopulator
 
-  alias Animu.Series
+  alias Animu.{Series, Episode}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: Animu.SessionController
 
@@ -14,11 +14,20 @@ defmodule Animu.SeriesController do
   end
 
   def create(conn, %{"series" => series_params}) do
-    params = series_params |> populate |> to_map
-    changeset = Series.changeset(%Series{}, params)
+    params = populate(series_params)
+    episodes = Episode.new(params.episode_count)
+    changeset =
+      %Series{}
+      |> Series.changeset(to_map(params))
+      |> Ecto.Changeset.put_assoc(:episodes, episodes)
 
     case Repo.insert(changeset) do
       {:ok, series} ->
+        series =
+          series
+          |> Repo.preload(:episodes)
+          |> Repo.preload(:franchise)
+
         conn
         |> put_status(:created)
         |> put_resp_header("location", series_path(conn, :show, series))
@@ -31,17 +40,32 @@ defmodule Animu.SeriesController do
   end
 
   def show(conn, %{"id" => id}) do
-    series = Series |> Repo.get!(id) |> Repo.preload(:episodes)
+    series =
+      Series
+      |> Repo.get!(id)
+      |> Repo.preload(:episodes)
+      |> Repo.preload(:franchise)
     render(conn, "show.json", series: series)
   end
 
   def update(conn, %{"id" => id, "series" => series_params}) do
-    series = Series |> Repo.get!(id) |> Repo.preload(:episodes)
-    params = series_params |> populate |> to_map
+    series = Series |> Repo.get!(id)
+    params =
+      series_params
+      |> populate
+      |> to_map
+      |> Enum.filter(fn {_k, v} -> v != nil end)
+      |> Map.new
+
     changeset = Series.changeset(series, params)
 
     case Repo.update(changeset) do
       {:ok, series} ->
+        series =
+          series
+          |> Repo.preload(:episodes)
+          |> Repo.preload(:franchise)
+
         render(conn, "show.json", series: series)
       {:error, changeset} ->
         conn
