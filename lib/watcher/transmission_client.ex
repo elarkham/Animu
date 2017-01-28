@@ -2,7 +2,7 @@ defmodule Animu.TransmissionClient do
   use GenServer
 
   alias HTTPoison.Response
-  alias Animu.{WatcherCache, Reader, Torrent}
+  alias Animu.Torrent
 
   @url "http://192.168.5.115:9091/transmission/rpc"
 
@@ -13,7 +13,7 @@ defmodule Animu.TransmissionClient do
   @doc """
   Creates initial state map and gets a session_id from transmission
   """
-  def init(state) do
+  def init(:ok) do
     state = %{session_id: "0", torrents: %{}}
     {:ok, _, state} = request("session-get", %{}, state)
     start_timer
@@ -32,18 +32,13 @@ defmodule Animu.TransmissionClient do
         "paused"       => false,
       }
 
-    success =
-      fn torrent_info ->
+    case request(method, arguments, state) do
+      {:ok, %{"arguments" => %{"torrent-added" => torrent_info}}, state} ->
         id = torrent_info["id"]
         torrent = %{torrent | id: id}
-        state = %{state | torrents: Map.put(state.torrents, id, torrent)}
-      end
-
-    case request(method, arguments, state) do
-      {:ok, %{"torrent-added" => torrent_info}, state} ->
-        success.(torrent_info)
+        %{state | torrents: Map.put(state.torrents, id, torrent)}
         {:noreply, state}
-      {:ok, %{"torrent-duplicate" => torrent_info}, state} ->
+      {:ok, %{"arguments" => %{"torrent-duplicate" => _torrent_info}}, state} ->
         {:noreply, state}
       :else ->
         {:noreply, state}
@@ -55,12 +50,7 @@ defmodule Animu.TransmissionClient do
   Loops every 2 seconds.
   """
   def handle_info(:check_status, state) do
-    state =
-      case state.torrents do
-        %{}   -> state
-        :else -> %{state | torrents: poll(state)}
-      end
-
+    state = %{state | torrents: poll(state)}
     start_timer
     {:noreply, state}
   end
@@ -85,7 +75,7 @@ defmodule Animu.TransmissionClient do
 
     case HTTPoison.post(@url, body, headers, options) do
       {:ok, %Response{status_code: 200, body: body}} ->
-        {:ok, Poison.decode!(body)["arguments"], state}
+        {:ok, Poison.decode!(body), state}
 
       {:ok, %Response{status_code: 409, headers: headers}} ->
         state = %{state | session_id: get_header(headers,"X-Transmission-Session-Id")}
@@ -111,24 +101,26 @@ defmodule Animu.TransmissionClient do
   defp poll(state) do
     method = "torrent-get"
     arguments =
-      %{"fields" => ["id", "isFinished", "percentDone"],
+      %{"fields" => ["id", "percentDone"],
         "ids" => Map.keys(state.torrents)
       }
 
     {:ok, response, state} = request(method, arguments, state)
-    response.arguments.torrents
-      |> Map.new(&({&1["id"], %{progress: &1["percentDone"], finished: &1["isFinished"]}}))
+    response["arguments"]["torrents"]
+      |> Map.new(&({&1["id"], %{progress: &1["percentDone"]}}))
       |> Map.merge(state.torrents, fn(_k, v1, v2) -> Map.merge(Map.from_struct(v2), v1) end)
       |> Enum.map(&(process(&1)))
-      |> Enum.reject(fn({_k, v}) -> v.finished end)
+      |> Enum.reject(fn({_k, v}) -> v.progress >= 1.0 end)
       |> Map.new(fn({k, v}) -> {k, struct(Torrent, v)} end)
   end
 
   # Checks if a torrent is finished and sends it off to Reader so it can update its cache
   # and add the new file to the database.
-  defp process({_, torrent}) do
-    if torrent.finished do
+  defp process({id, torrent}) do
+    if torrent.progress >= 1.0 do
       GenServer.cast(Animu.Reader, {:process, torrent})
     end
+    {id, torrent}
   end
+
 end

@@ -26,7 +26,7 @@ defmodule Animu.Episode do
 
   @required_fields ~w(title number series_id)a
   @optional_fields ~w(synopsis thumbnail kitsu_id season_number airdate
-                      subtitles)a
+                      subtitles video)a
 
   @doc """
   Builds a changeset based on the `struct` and `params`.
