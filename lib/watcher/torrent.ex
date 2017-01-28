@@ -1,4 +1,4 @@
-defmodule Torrent do
+defmodule Animu.Torrent do
   defstruct ep_id: nil,
             ep_num: nil,
             url: nil,
@@ -6,6 +6,6 @@ defmodule Torrent do
             name: nil,
             feed_url: nil,
             id: nil,
-            progress: nil,
+            progress: 0.0,
             finished: false
 end
