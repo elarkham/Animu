@@ -1,7 +1,11 @@
 defmodule Animu.Series do
   use Animu.Web, :model
 
+  import File
+  import Animu.SeriesPopulator
+
   alias Animu.{Repo, Episode, Franchise}
+  alias Ecto.Changeset
 
   @derive {Poison.Encoder, except: [:__meta__]}
   schema "series" do
@@ -63,6 +67,7 @@ defmodule Animu.Series do
     struct
     |> Repo.preload(:episodes)
     |> cast(params, @required_fields ++ @optional_fields)
+    |> populate
     |> validate_required(@required_fields)
   end
 

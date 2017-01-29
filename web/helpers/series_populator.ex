@@ -1,8 +1,8 @@
 defmodule Animu.SeriesPopulator do
   import Animu.ModelHelper
 
-  alias Animu.Series
   alias HTTPoison.Response
+  alias Ecto.Changeset
 
   @url "https://kitsu.io/api/edge/"
 
@@ -11,21 +11,18 @@ defmodule Animu.SeriesPopulator do
   @poster_path "/images/poster"
   @gallery_path "/images/gallery"
 
-  def populate(series) do
-    series = Series.scrub_params(series)
-    case series do
-      %{kitsu_id: nil} -> series
-      %{kitsu_id: _} -> _populate(series)
-      :else -> series
-    end
-  end
+  def populate(changeset = %Changeset{changes: %{kitsu_id: id}}) do
+    kitsu_data =
+      request("anime", id)
+      |> format_to_series
+      |> Map.merge(changeset.changes)
 
-  def _populate(series) do
-    request("anime", series.kitsu_id)
-    |> format_to_series
-    |> soft_merge(series)
-    |> get_images
+    changeset
+    |> Changeset.change(kitsu_data)
+    |> get_images(:cover_image,  @cover_path)
+    |> get_images(:poster_image, @poster_path)
   end
+  def populate(changeset), do: changeset
 
   defp request(type, id) do
     url = @url <> type <> "/" <> id
@@ -38,8 +35,7 @@ defmodule Animu.SeriesPopulator do
   end
 
   defp format_to_series(kitsu_series) do
-    %Series{
-      canon_title: kitsu_series["canonicalTitle"],
+    %{canon_title: kitsu_series["canonicalTitle"],
       titles: kitsu_series["titles"],
       synopsis: kitsu_series["synopsis"],
       slug: kitsu_series["slug"],
@@ -69,36 +65,40 @@ defmodule Animu.SeriesPopulator do
     end
   end
 
-  def get_images(series = %Series{directory: nil}), do: series
-  def get_images(series) do
-		cover_image =
-      get_map_images(series.cover_image, series.directory, @cover_path)
-
-		poster_image =
-      get_map_images(series.poster_image, series.directory, @poster_path)
-
-		gallery =
-      get_map_images(series.gallery, series.directory, @gallery_path)
-
-    changes = %{gallery: gallery, cover_image: cover_image, poster_image: poster_image}
-		Map.merge(series, changes)
+  def get_images(changeset, key, image_path) do
+    cond do
+      Map.has_key?(changeset.changes, :directory) ->
+        series_path = changeset.changes.directory
+        get_images(changeset, key, image_path, series_path)
+      !is_nil(changeset.data.directory) ->
+        series_path = changeset.data.directory
+        get_images(changeset, key, image_path, series_path)
+      true ->
+        changeset
+    end
   end
 
-  defp get_map_images(nil, _, _), do: nil
-  defp get_map_images(map, series_path, image_path) do
-    Map.new(map, fn {k, v} ->
-      filename =  "/" <> k <> ".jpg"
-      path = series_path <> image_path
-		 	v = image_path <> get_image(v, path, filename)
-		 	{k, v}
-    end)
+  def get_images(changeset, key, image_path, series_path) do
+    case changeset.changes do
+      %{^key => nil} ->
+        changeset
+      %{^key => map} ->
+        map =
+          Map.new(map, fn {k, v} ->
+            filename =  "/" <> k <> ".jpg"
+            path = series_path <> image_path
+		 	      v = image_path <> get_image(v, path, filename)
+		 	      {k, v}
+          end)
+        Changeset.put_change(changeset, key, map)
+    end
   end
 
   defp get_image(nil, _, _), do: nil
 	defp get_image(url, path, filename) do
    	{:ok, %Response{body: body}} = HTTPoison.get(url)
   	full_path = Application.get_env(:animu, :file_root) <> path
-    if !(File.dir?(path)), do: File.mkdir_p!(full_path)
+    unless File.dir?(path), do: File.mkdir_p!(full_path)
    	File.write!(full_path <> filename, body)
 		filename
 	end
