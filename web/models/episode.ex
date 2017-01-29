@@ -4,7 +4,7 @@ defmodule Animu.Episode do
   alias Animu.{Repo, Series}
   alias __MODULE__, as: Episode
 
-  @derive {Poison.Encoder, except: [:__meta__, :series]}
+  @derive {Poison.Encoder, except: [:__meta__]}
   schema "episodes" do
     field :title,         :string
     field :synopsis,      :string
@@ -24,7 +24,7 @@ defmodule Animu.Episode do
     timestamps()
   end
 
-  @required_fields ~w(title number series_id)a
+  @required_fields ~w(title number)a
   @optional_fields ~w(synopsis thumbnail kitsu_id season_number airdate
                       subtitles video)a
 
@@ -57,11 +57,8 @@ defmodule Animu.Episode do
   def new(nil), do: []
   def new(episode_count) do
     for i <- 1..episode_count do
-      %Episode{
-        title: "Episode #{i}",
-        number: (i/1),
-      }
+      params = %{title: "Episode #{i}", number: (i/1)}
+      changeset(%Episode{}, params)
     end
   end
-
 end
