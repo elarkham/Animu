@@ -14,6 +14,8 @@ defmodule Animu.SeriesController do
     changeset =
       %Series{}
       |> Series.changeset(series_params)
+      |> Series.search_existing_ep
+      |> Series.fill_with_new_ep
 
     IO.inspect changeset
 

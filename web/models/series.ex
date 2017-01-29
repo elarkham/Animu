@@ -80,4 +80,45 @@ defmodule Animu.Series do
     |> cast(params, @required_fields ++ @optional_fields)
     |> apply_changes
   end
+
+  @doc """
+  Search given dir for existing episodes
+  """
+  def search_existing_ep(changeset =
+      %Changeset{changes: %{directory: series_path, regex: regex}}) do
+    full_path = Application.get_env(:animu, :file_root) <> series_path
+    unless dir?(full_path), do: mkdir_p!(full_path)
+    regex = Regex.compile!(regex)
+
+    episodes =
+      ls!(full_path)
+      |> Enum.filter(&(Regex.match?(regex, &1)))
+      |> Enum.map(fn(filename) ->
+        num =
+          Regex.named_captures(regex, filename)["num"]
+          |> String.to_integer
+
+        episode_params =
+        %{title: "Episode #{num}",
+          number: num/1,
+          video: filename}
+        Episode.changeset(%Episode{}, episode_params)
+      end)
+    Changeset.put_assoc(changeset, :episodes, episodes)
+  end
+  def search_existing_ep(changeset), do: changeset
+
+  @doc """
+  Ensure series has atleast as many episodes as specified in episode_count
+  """
+  def fill_with_new_ep(changeset =
+      %Changeset{changes: %{episode_count: count, episodes: episodes}}) do
+
+    existing = Map.new(episodes, fn ep -> {ep.changes.number, ep} end)
+    new = Map.new(Episode.new(count), fn ep -> {ep.changes.number, ep} end)
+
+    episodes = Map.merge(new, existing) |> Map.values
+    Changeset.put_assoc(changeset, :episodes, episodes)
+  end
+  def fill_with_new_ep(changeset), do: changeset
 end
