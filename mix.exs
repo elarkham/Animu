@@ -30,6 +30,7 @@ defmodule Animu.Mixfile do
        :comeonin,
        :feeder_ex,
        :httpoison,
+       :corsica,
      ]]
   end
 
@@ -53,6 +54,7 @@ defmodule Animu.Mixfile do
      {:comeonin, "~> 2.0"},
      {:feeder_ex, "~> 1.0"},
      {:httpoison, "~> 0.9.0"},
+     {:corsica, "~> 0.5"},
    ]
   end
 

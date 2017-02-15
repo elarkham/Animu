@@ -38,5 +38,8 @@ defmodule Animu.Endpoint do
     key: "_animu_key",
     signing_salt: "9G7Ob6al"
 
+  # Adds CORS support for test site
+  plug Corsica, origins: "http://localhost:8000", allow_headers: ["content-type"]
+
   plug Animu.Router
 end
