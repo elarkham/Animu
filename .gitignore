@@ -4,7 +4,6 @@
 /deps
 /*.ez
 /mix.lock
-/web/static/js/main.js
 
 # Testing artifacts
 /test/scripts/*.json
@@ -15,7 +14,7 @@ erl_crash.dump
 
 # Static artifacts
 /node_modules
-/web/elm/elm-stuff
+/elm-stuff
 
 # Since we are building assets from web/static,
 # we ignore priv/static. You may want to comment
