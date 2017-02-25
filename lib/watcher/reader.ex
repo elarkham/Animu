@@ -15,8 +15,8 @@ defmodule Animu.Reader do
   Generates new cache and starts the scan_feed/2 loop
   """
   def init(:ok) do
-    cache = create_cache
-    start_timer
+    cache = create_cache()
+    start_timer()
     {:ok, cache}
   end
 
@@ -38,7 +38,7 @@ defmodule Animu.Reader do
   """
   def handle_info(:scan_feeds, cache) do
     cache = scan_feeds(cache)
-    start_timer
+    start_timer()
     {:noreply, cache}
   end
 
@@ -66,7 +66,7 @@ defmodule Animu.Reader do
 
   # Runs scan_feed/2 once 15min pass
   defp start_timer do
-    Process.send_after(self, :scan_feeds, (15 * 60000))
+    Process.send_after(self(), :scan_feeds, (15 * 60000))
   end
 
   # Scan provided rss feeds for matching patterns
@@ -158,7 +158,10 @@ defmodule Animu.Reader do
 
   # Pull the "num" capture from regex
   defp extract_num(regex, title) do
-    Regex.named_captures(regex, title)["num"]
-    |> String.to_integer
+    {num, _} =
+      Regex.named_captures(regex, title)["num"]
+      |> Float.parse
+
+    num
   end
 end

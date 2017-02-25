@@ -16,7 +16,7 @@ defmodule Animu.TransmissionClient do
   def init(:ok) do
     state = %{session_id: "0", torrents: %{}}
     {:ok, _, state} = request("session-get", %{}, state)
-    start_timer
+    start_timer()
     {:ok, state}
   end
 
@@ -36,11 +36,14 @@ defmodule Animu.TransmissionClient do
       {:ok, %{"arguments" => %{"torrent-added" => torrent_info}}, state} ->
         id = torrent_info["id"]
         torrent = %{torrent | id: id}
-        %{state | torrents: Map.put(state.torrents, id, torrent)}
+        torrents = Map.put(state.torrents, id, torrent)
+        {:noreply, %{state | torrents: torrents}}
+      {:ok, %{"arguments" => %{"torrent-duplicate" => torrent_info}}, state} ->
+        IO.puts "Duplicate Torrent:"
+        IO.inspect torrent_info
         {:noreply, state}
-      {:ok, %{"arguments" => %{"torrent-duplicate" => _torrent_info}}, state} ->
-        {:noreply, state}
-      :else ->
+      reply ->
+        IO.inspect reply
         {:noreply, state}
     end
   end
@@ -51,13 +54,13 @@ defmodule Animu.TransmissionClient do
   """
   def handle_info(:check_status, state) do
     state = %{state | torrents: poll(state)}
-    start_timer
+    start_timer()
     {:noreply, state}
   end
 
   # Runs poll/2 once 15min pass
   defp start_timer do
-    Process.send_after(self, :check_status, (2 * 1000))
+    Process.send_after(self(), :check_status, (2 * 1000))
   end
 
   # Helper function that keeps session_id up to date and sends requests to
