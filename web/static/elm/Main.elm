@@ -1,4 +1,4 @@
-module Main exposing (..)
+module Main exposing (main)
 
 import Types exposing (Msg(..))
 import Model exposing (Model, init_model)
@@ -19,6 +19,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
+main : Program Never Model Msg
 main =
   Navigation.program UrlChange
     { init = init
