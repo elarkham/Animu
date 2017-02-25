@@ -1,4 +1,4 @@
-module Pages.Login.Models exposing (..)
+module Pages.Login.Model exposing (..)
 
 type alias Model =
   { username : String

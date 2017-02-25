@@ -10,7 +10,7 @@ defmodule Animu.Session do
     end
   end
 
-  defp check_password( user, password ) do
+  defp check_password(user, password) do
     case user do
       nil -> false
       _ -> Comeonin.Bcrypt.checkpw(password, user.encrypted_password)
