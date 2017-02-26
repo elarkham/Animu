@@ -11,4 +11,5 @@ type RootMsg
 
 type Msg
   = UrlChange Location
+  | NewUrl String
   | LoginMsg Login.Msg

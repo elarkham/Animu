@@ -2,26 +2,30 @@ module Main exposing (main)
 
 import Types exposing (Msg(..))
 import Model exposing (Model, init_model)
-import Navigation exposing (Location)
-import Routing exposing (Route)
 import Update exposing (update)
+import Routing exposing (getRoute)
 import View exposing (view)
 
-init : Location -> (Model, Cmd Msg)
-init location =
+import Navigation exposing (Location)
+
+type alias Flags =
+  { token : Maybe String }
+
+init : Flags -> Location -> (Model, Cmd Msg)
+init flags location =
   let
-    current_route =
-      Routing.parse_location location
+    route = getRoute flags.token location
+    model = init_model flags.token route
   in
-    (init_model current_route, Cmd.none)
+    (model, Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-  Navigation.program UrlChange
+  Navigation.programWithFlags UrlChange
     { init = init
     , view = view
     , update = update

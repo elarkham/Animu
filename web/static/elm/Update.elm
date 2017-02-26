@@ -2,9 +2,11 @@ module Update exposing (..)
 
 import Types exposing (Msg(..), RootMsg(..))
 import Model exposing (Model)
-import Routing exposing (parse_location)
+import Routing as R exposing (parseLocation, getRoute)
+import Ports exposing (store)
 
 import Pages.Login.Update as Login
+import Navigation exposing (Location, newUrl)
 import OutMessage exposing (..)
 
 -- Handle Page Updates
@@ -13,10 +15,13 @@ update msg model =
   case msg of
     UrlChange location ->
       let
-        new_route =
-          parse_location location
+        _ = Debug.log "Location" location
+        route = getRoute model.token location
       in
-        ({model | route = new_route}, Cmd.none)
+        updateRoute route model
+
+    NewUrl url ->
+        (model, newUrl url)
 
     LoginMsg sub_msg ->
       Login.update sub_msg model.login_page
@@ -27,7 +32,7 @@ update msg model =
 
 
 -- Handle Global Updates
-updateRoot : RootMsg -> Model -> ( Model, Cmd Msg )
+updateRoot : RootMsg -> Model -> (Model, Cmd Msg)
 updateRoot root_msg model =
   case root_msg of
     AcceptLogin session ->
@@ -38,8 +43,21 @@ updateRoot root_msg model =
             , user = session.user
             , logged_in = True
           }
-      in
-        (model_, Cmd.none)
 
+        cmd =
+          Cmd.batch
+            [ store ("token", session.token)
+            , newUrl "/"
+            ]
+      in
+        (model_, cmd)
+
+    _ ->
+      (model, Cmd.none)
+
+-- Handle Route Changes
+updateRoute : R.Route -> Model -> (Model, Cmd Msg)
+updateRoute route model =
+  case route of
     _ ->
       (model, Cmd.none)
