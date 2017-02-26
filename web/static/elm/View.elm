@@ -7,18 +7,14 @@ import Routing exposing (Route(..))
 
 -- import Pages.Home.View exposing (home)
 import Pages.Login.View exposing (login)
--- import Components.Navbar exposing (navbar)
+import Components.Navbar exposing (navbar)
 
 view : Model -> Html Msg
 view model =
   let
-    model_ =
-    if model.token == Nothing then
-      {model | route = Login}
-    else
-      model
+    _ = Debug.log "State" model
   in
-    main_ [] [ page(model_) ]
+    main_ [] [ page(model) ]
 
 page : Model -> Html Msg
 page model =
@@ -36,7 +32,7 @@ content model =
       _ -> text "problem"
   in
     div []
-      [ div [] []
+      [ navbar
       , article
       ]
 

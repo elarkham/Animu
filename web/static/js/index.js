@@ -1,5 +1,13 @@
 'use strict';
 
 // Elm Loader
-var Elm = require('../elm/Main');
-var app = Elm.Main.fullscreen();
+let Elm = require('../elm/Main');
+
+let token = localStorage.getItem('token');
+let app = Elm.Main.fullscreen({token: token});
+
+app.ports.store.subscribe(function(data){
+  let [key, value] = data
+  localStorage.setItem(key, value)
+});
+

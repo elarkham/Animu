@@ -15,11 +15,23 @@ router =
     , map Home top
     ]
 
-parse_location : Location -> Route
-parse_location location =
+parseLocation : Location -> Route
+parseLocation location =
   case (parseHash router location) of
     Just route ->
       route
 
     Nothing ->
       NoRoute
+
+-- Redirect to Login Page if not logged in
+getRoute : Maybe String -> Location -> Route
+getRoute token location =
+  case token of
+    Just _ ->
+      parseLocation location
+
+    Nothing ->
+      Login
+
+

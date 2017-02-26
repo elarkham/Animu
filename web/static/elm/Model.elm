@@ -13,10 +13,10 @@ type alias Model =
   , login_page: Login.Model
   }
 
-init_model : Route -> Model
-init_model route =
+init_model : Maybe String -> Route -> Model
+init_model token route =
   { route = route
-  , token = Nothing
+  , token = token
   , logged_in = False
   , user = User.init_model
   , login_page = Login.init_model
