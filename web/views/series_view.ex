@@ -31,8 +31,6 @@ defmodule Animu.SeriesView do
       episode_count: series.episode_count,
       episode_length: series.episode_length,
 
-      episodes: series.episodes,
-
       kitsu_rating: series.kitsu_rating,
       kitsu_id: series.kitsu_id,
 

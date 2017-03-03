@@ -2,11 +2,15 @@ defmodule Animu.SeriesController do
   use Animu.Web, :controller
 
   alias Animu.Series
+  alias Animu.QueryBuilder
 
   plug Guardian.Plug.EnsureAuthenticated, handler: Animu.SessionController
 
-  def index(conn, _params) do
-    series = Series |> Repo.all |> Repo.preload(:episodes)
+  def index(conn, params) do
+    query = QueryBuilder.build(Series, params)
+    series =
+      Repo.all(query)
+      |> Repo.preload(:episodes)
     render(conn, "index.json", series: series)
   end
 
