@@ -1,24 +1,25 @@
 module Update exposing (..)
 
+import Routing
+import Rest exposing (Error(..))
 import Types exposing (Msg(..), RootMsg(..))
 import Model exposing (Model)
-import Routing as R exposing (parseLocation, getRoute)
-import Ports exposing (store)
+import Ports exposing (store, removeFromStorage)
 
 import Pages.Login.Update as Login
-import Navigation exposing (Location, newUrl)
+import Pages.Home.Update as Home
+import Navigation exposing (Location, newUrl, modifyUrl)
 import OutMessage exposing (..)
 
--- Handle Page Updates
+{-| Handle Page Updates -}
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     UrlChange location ->
       let
         _ = Debug.log "Location" location
-        route = getRoute model.token location
       in
-        updateRoute route model
+        Routing.urlChange model location
 
     NewUrl url ->
         (model, newUrl url)
@@ -30,8 +31,16 @@ update msg model =
         |> mapCmd LoginMsg
         |> evaluate updateRoot
 
+    HomeMsg sub_msg ->
+      Home.update sub_msg model.home_page
+        |> mapComponent
+          (\home_page -> {model | home_page = home_page})
+        |> mapCmd HomeMsg
+        |> evaluate updateRoot
 
--- Handle Global Updates
+
+
+{-| Handle Global Updates -}
 updateRoot : RootMsg -> Model -> (Model, Cmd Msg)
 updateRoot root_msg model =
   case root_msg of
@@ -39,7 +48,7 @@ updateRoot root_msg model =
       let
         model_ =
           { model
-            | token = Just session.token
+            | token = session.token
             , user = session.user
             , logged_in = True
           }
@@ -52,12 +61,26 @@ updateRoot root_msg model =
       in
         (model_, cmd)
 
+    HandleError err ->
+      handleError model err
+
     _ ->
       (model, Cmd.none)
 
--- Handle Route Changes
-updateRoute : R.Route -> Model -> (Model, Cmd Msg)
-updateRoute route model =
-  case route of
+{-| Handle Potential Http Errors -}
+handleError : Model -> Error -> (Model, Cmd Msg)
+handleError model err =
+  case err of
+    Forbidden resp ->
+      let
+        model_ = {model | logged_in = False}
+        cmd =
+          Cmd.batch
+            [ removeFromStorage("token")
+            , modifyUrl("#/login")
+            ]
+      in
+        (model_, cmd)
+
     _ ->
       (model, Cmd.none)

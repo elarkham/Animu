@@ -3,10 +3,11 @@ module Main exposing (main)
 import Types exposing (Msg(..))
 import Model exposing (Model, init_model)
 import Update exposing (update)
-import Routing exposing (getRoute)
+import Routing exposing (parseLocation)
 import View exposing (view)
 
-import Navigation exposing (Location)
+import Navigation exposing (Location, modifyUrl)
+import Window
 
 type alias Flags =
   { token : Maybe String }
@@ -14,14 +15,20 @@ type alias Flags =
 init : Flags -> Location -> (Model, Cmd Msg)
 init flags location =
   let
-    route = getRoute flags.token location
-    model = init_model flags.token route
+    model =
+      case flags.token of
+        Just token ->
+          init_model token True
+        Nothing ->
+          init_model "_" False
   in
-    (model, Cmd.none)
+    Routing.urlChange model location
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  Sub.batch
+    [ Window.resizes Resize
+    ]
 
 main : Program Flags Model Msg
 main =

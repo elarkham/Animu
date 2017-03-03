@@ -18,7 +18,8 @@ type alias Model =
   }
 
 type alias Thumbnail =
-  { title
+  { original : String
+  , small : String
   }
 
 init_model : Model
@@ -47,7 +48,7 @@ decode =
     |> optional "thumbnail" thumbDecoder m.thumbnail
     |> optional "kitsu_id" string m.kitsu_id
     |> required "number" float
-    |> optional "season_number" int
+    |> optional "season_number" int m.season_number
     |> optional "video" string m.video
     |> optional "subtitles" string m.subtitles
 
@@ -57,5 +58,5 @@ thumbDecoder =
     m = init_model.thumbnail
   in
   Pipe.decode Thumbnail
-    |> optional "original" m.original
-    |> optional "small" m.small
+    |> optional "original" string m.original
+    |> optional "small" string m.small

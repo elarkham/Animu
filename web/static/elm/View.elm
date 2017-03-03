@@ -1,11 +1,12 @@
 module View exposing (..)
 
 import Html exposing (Html, text, main_, div)
-import Types exposing (Msg(..))
-import Model exposing (Model)
-import Routing exposing (Route(..))
+import Html.Attributes exposing (..)
 
--- import Pages.Home.View exposing (home)
+import Types exposing (Msg(..), Route(..))
+import Model exposing (Model)
+
+import Pages.Home.View exposing (home)
 import Pages.Login.View exposing (login)
 import Components.Navbar exposing (navbar)
 
@@ -14,12 +15,12 @@ view model =
   let
     _ = Debug.log "State" model
   in
-    main_ [] [ page(model) ]
+    main_ [id "root-container"] [ page(model) ]
 
 page : Model -> Html Msg
 page model =
   case model.route of
-    Login   -> Html.map LoginMsg (login model)
+    Login   -> Html.map LoginMsg (login model.login_page)
     NoRoute -> err404 model
     _       -> content model
 
@@ -28,12 +29,12 @@ content model =
   let
     article =
     case model.route of
-      Home -> text "Welcome Home"
+      Home -> home model.home_page
       _ -> text "problem"
   in
     div []
       [ navbar
-      , article
+      , div [id "page-container"] [article]
       ]
 
 err404 : Model -> Html Msg

@@ -1,6 +1,6 @@
 module Pages.Login.View exposing (..)
 
-import Model exposing (Model)
+import Pages.Login.Model exposing (Model)
 import Pages.Login.Types exposing (Msg(..))
 
 import Html exposing (..)
@@ -10,13 +10,12 @@ import Html.Events exposing (..)
 login : Model -> Html Msg
 login model =
   let
-    login_model = model.login_page
     username_input =
       label []
         [ text "Username: "
         , input [ type_ "text"
                 , onInput UsernameInput
-                , value login_model.username ] []
+                , value model.username ] []
         ]
 
     password_input =
@@ -24,7 +23,7 @@ login model =
         [ text "Password: "
         , input [ type_ "password"
                 , onInput PasswordInput
-                , value login_model.password ] []
+                , value model.password ] []
         ]
 
     submit_button =
@@ -33,7 +32,7 @@ login model =
         ]
 
     login_validation =
-      h6 [] [ text login_model.error ]
+      h6 [] [ text model.error ]
   in
     div []
       [ h2 [] [ text "Login" ]

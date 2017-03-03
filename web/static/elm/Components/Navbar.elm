@@ -5,30 +5,38 @@ import Types exposing (Msg(..))
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+-- import Html.Events exposing (..)
 
 navbar : Html Msg
 navbar =
   let
     trending =
-      li [] [ a [href "#/trending"] [text "Trending"] ]
+      li [class "menu-item"] [ a [href "#/trending"] [text "Trending"] ]
 
     seasonal =
-      li [] [ a [href "#/seasonal"] [text "Seasonal"] ]
+      li [class "menu-item"] [ a [href "#/seasonal"] [text "Seasonal"] ]
 
     archive =
-      li [] [ a [href "#/archive"] [text "Archive"] ]
+      li [class "menu-item"] [ a [href "#/archive"] [text "Archive"] ]
 
     manage =
-      li [] [ a [href "#/manage"] [text "Manage"] ]
+      li [class "menu-item"] [ a [href "#/manage"] [text "Manage"] ]
+
+    history =
+      li [class "menu-item"] [ a [href "#/history"] [text "History"] ]
+
+    queue =
+      li [class "menu-item"] [ a [href "#/queue"] [text "Queue"] ]
   in
-    nav []
-      [ h1 [] [ a [href "#/"] [text "ANIMU"] ]
-      , ul []
+    nav [id "sidebar"]
+      [ h1 [class "logo"] [ a [href "#/"] [text "ANIMU"] ]
+      , ul [class "menu-list"]
           [ trending
           , seasonal
           , archive
           , manage
+          , history
+          , queue
           ]
       ]
 
