@@ -1,0 +1,53 @@
+// - - - - - - - - - - - - - - - - - - -
+// - - info-card module
+// styles for the info-card module
+
+.info-card {
+  display: block;
+  margin: 1rem;
+
+  width:  400px;
+  height: 200px;
+  display: flex;
+
+  box-shadow: 10px 13px 39px -6px rgba(0,0,0,0.33);
+  background-color: white;
+  border-radius: 25px;
+
+  img {
+    border-radius: 25px;
+    height:    100%;
+    border-style: solid;
+    border-color: white;
+  }
+
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  width: 210px;
+  margin: 0 0 0 5px;
+  font-family: "Hind";
+  font-size: 1em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-subtitle {
+  font-family: "Hind";
+  font-size: 0.75em;
+  margin: 0 0 0 5px;
+  color: grey;
+
+}
+
+.card-text {
+  margin: 5px 0 6px 5px;
+  font-size: 0.7em;
+  overflow: hidden;
+}
