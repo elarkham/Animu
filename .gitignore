@@ -4,6 +4,7 @@
 /deps
 /*.ez
 /mix.lock
+/npm-debug.log.*
 
 # Testing artifacts
 /test/scripts/*.json
