@@ -66,7 +66,7 @@ init_model =
   , synopsis = "___"
   , slug = "XXXX"
 
-  , cover_image = {large = "", original = "", medium = ""}
+  , cover_image = {large = "", original = "", small = ""}
   , poster_image = {large = "", medium = "", original = "", small = ""}
 --  , gallery : "_"
 
@@ -90,7 +90,7 @@ init_model =
   , rss_feed = "_"
   , watch = False
 
-  , directory : "XXXX"
+  , directory = "XXXX"
 
 --  , started_airing_date : "_"
 --  , finished_airing_data : "_"
@@ -133,6 +133,7 @@ titleDecoder =
   Pipe.decode Titles
     |> optional "en" string m.en
     |> optional "en_jp" string m.en_jp
+    |> optional "ja_en" string m.ja_en
     |> optional "ja_jp" string m.ja_jp
 
 coverDecoder : Decoder CoverImage
@@ -150,7 +151,7 @@ posterDecoder =
   let
     m = init_model.poster_image
   in
-  Pipe.decode CoverImage
+  Pipe.decode PosterImage
     |> optional "large" string m.large
     |> optional "medium" string m.medium
     |> optional "original" string m.original

@@ -5,6 +5,7 @@ import HttpBuilder exposing (RequestBuilder, withHeader, withTimeout)
 import Json.Decode as Decode exposing (int, string, float, Decoder)
 import Json.Decode.Pipeline as Pipe exposing (required)
 -- import Json.Encode as Encode
+import Navigation exposing (newUrl)
 import Task
 import Time
 
@@ -12,7 +13,11 @@ import Time
 
 url : String
 url =
-  "/api/v1"
+  "/api/v1/"
+
+assets : String
+assets =
+  "/assets/"
 
 -- Http Error Wrapper
 
@@ -35,6 +40,9 @@ type alias Request a = RequestBuilder a
 {-| Send Http request with token -}
 send : String -> ResultHandler msg a -> Request a -> Cmd msg
 send token resultHandler request =
+  let
+    _ = Debug.log "Sending" request
+  in
   request
     |> withHeader "Authorization" token
     |> withTimeout(10 * Time.second)
@@ -51,7 +59,7 @@ sendRaw resultHandler request =
     |> Task.attempt resultHandler
 
 
-{-| Handle Http Errors -}
+{-| Wrap Http Errors Into Custom Type-}
 wrapError : Http.Error -> Error
 wrapError err =
   case err of
@@ -72,4 +80,5 @@ wrapError err =
     Http.Timeout -> Timeout
     Http.NetworkError -> NetworkError
     _ -> HttpError err
+
 
