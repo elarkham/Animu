@@ -11,10 +11,10 @@ config :animu,
   file_root: "/home/ethan/var/animu/"
 
 # Configures the endpoint
-config :animu, Animu.Endpoint,
+config :animu, Animu.Web.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "8RUI1CjD9XzQaHIUL3A6bBkokIUjTAUzMBWUwjn8n9hCwERFljL+DcIT+cQsrfYx",
-  render_errors: [view: Animu.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: Animu.Web.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Animu.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
