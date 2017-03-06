@@ -11,7 +11,7 @@ defmodule Animu do
       # Start the Ecto repository
       supervisor(Animu.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(Animu.Endpoint, []),
+      supervisor(Animu.Web.Endpoint, []),
 
       # RSS feed reader
       worker(Animu.Reader, [Animu.Reader]),
@@ -23,12 +23,5 @@ defmodule Animu do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Animu.Supervisor]
     Supervisor.start_link(children, opts)
-  end
-
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
-  def config_change(changed, _new, removed) do
-    Animu.Endpoint.config_change(changed, removed)
-    :ok
   end
 end

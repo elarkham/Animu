@@ -1,4 +1,4 @@
-defmodule Animu.ConnCase do
+defmodule Animu.Web.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -25,10 +25,10 @@ defmodule Animu.ConnCase do
       import Ecto.Changeset
       import Ecto.Query
 
-      import Animu.Router.Helpers
+      import Animu.Web.Router.Helpers
 
       # The default endpoint for testing
-      @endpoint Animu.Endpoint
+      @endpoint Animu.Web.Endpoint
     end
   end
 
