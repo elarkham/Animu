@@ -21,8 +21,12 @@ update msg model =
       in
         Routing.urlChange model location
 
-    NewUrl url ->
-        (model, newUrl url)
+    Resize size ->
+      let
+        model_ =
+          {model | window = size}
+      in
+        (model_, Cmd.none)
 
     LoginMsg sub_msg ->
       Login.update sub_msg model.login_page

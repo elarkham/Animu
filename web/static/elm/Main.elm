@@ -10,7 +10,9 @@ import Navigation exposing (Location, modifyUrl)
 import Window
 
 type alias Flags =
-  { token : Maybe String }
+  { token : Maybe String
+  , window : Window.Size
+  }
 
 init : Flags -> Location -> (Model, Cmd Msg)
 init flags location =
@@ -18,9 +20,9 @@ init flags location =
     model =
       case flags.token of
         Just token ->
-          init_model token True
+          init_model token True flags.window
         Nothing ->
-          init_model "_" False
+          init_model "_" False flags.window
   in
     Routing.urlChange model location
 
@@ -36,5 +38,5 @@ main =
     { init = init
     , view = view
     , update = update
-    , subscriptions = (always Sub.none)
+    , subscriptions = subscriptions
     }
