@@ -2,19 +2,14 @@ defmodule Animu.Web.SessionController do
   use Animu.Web, :controller
 
   plug :scrub_params, "session" when action in [:create]
+  action_fallback Animu.Web.FallbackController
 
   def create(conn, %{"session" => session_params}) do
-    case Animu.Session.authenticate(session_params) do
-      {:ok, user} ->
-        {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
-        conn
-        |> put_status(:created)
-        |> render("show.json", jwt: jwt, user: user)
-
-      :error ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render("error.json")
+    with {:ok, user} <- Animu.Session.authenticate(session_params) do
+      {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :token)
+      conn
+      |> put_status(:created)
+      |> render("show.json", jwt: jwt, user: user)
     end
   end
 
@@ -23,8 +18,6 @@ defmodule Animu.Web.SessionController do
     conn
     |> Guardian.Plug.current_token
     |> Guardian.revoke!(claims)
-
-    conn
     |> render("delete.json")
   end
 
@@ -33,5 +26,4 @@ defmodule Animu.Web.SessionController do
     |> put_status(:forbidden)
     |> render(SessionView, "forbidden.json", error: "Not Authenticated")
   end
-
 end

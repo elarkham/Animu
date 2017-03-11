@@ -1,5 +1,4 @@
-defmodule Animu.SeriesPopulator do
-  import Animu.ModelHelper
+defmodule Animu.Media.Series.Populate do
 
   alias HTTPoison.Response
   alias Ecto.Changeset
@@ -9,7 +8,7 @@ defmodule Animu.SeriesPopulator do
 	# Image Paths
 	@cover_path "/images/cover"
   @poster_path "/images/poster"
-  @gallery_path "/images/gallery"
+  #@gallery_path "/images/gallery"
 
   def populate(changeset = %Changeset{changes: %{kitsu_id: id}}) do
     kitsu_data =

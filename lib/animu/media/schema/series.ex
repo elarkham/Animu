@@ -1,11 +1,12 @@
-defmodule Animu.Series do
-  use Animu.Web, :model
+defmodule Animu.Media.Series do
+  use Ecto.Schema
 
+  import Ecto.Changeset
+  import Animu.Media.Series.Populate
   import File
-  import Animu.SeriesPopulator
 
-  alias Animu.{Repo, Episode, Franchise}
-  alias Ecto.Changeset
+  alias Animu.Media.{Episode, Franchise}
+  alias __MODULE__, as: Series
 
   @derive {Poison.Encoder, except: [:__meta__]}
   schema "series" do
@@ -61,31 +62,24 @@ defmodule Animu.Series do
                     regex subgroup quality rss_feed watch)a
 
   @doc """
-  Builds a changeset based on the `struct` and `params`.
+  Returns `%Ecto.Changeset{}` for tracking Series changes
   """
-  def changeset(struct, params \\ %{}) do
-    struct
-    |> Repo.preload(:episodes)
-    |> cast(params, @required_fields ++ @optional_fields)
+  def changeset(%Series{} = series, attrs) do
+    series
+    |> cast(attrs, @required_fields ++ @optional_fields)
     |> populate
     |> validate_required(@required_fields)
   end
 
-  @doc """
-  Generates a map that only has fields that are within a "Series" struct.
-  Similar to Kernel.struct/2 but without the adom key requirement.
-  """
-  def scrub_params(params) do
-    %__MODULE__{}
-    |> cast(params, @required_fields ++ @optional_fields)
-    |> apply_changes
+  def change(%Series{} = series) do
+    changeset(series, %{})
   end
 
   @doc """
   Search given dir for existing episodes
   """
   def search_existing_ep(changeset =
-      %Changeset{changes: %{directory: series_path, regex: regex}}) do
+      %Ecto.Changeset{changes: %{directory: series_path, regex: regex}}) do
     full_path = Application.get_env(:animu, :file_root) <> series_path
     unless dir?(full_path), do: mkdir_p!(full_path)
     regex = Regex.compile!(regex)
@@ -104,7 +98,7 @@ defmodule Animu.Series do
           video: filename}
         Episode.changeset(%Episode{}, episode_params)
       end)
-    Changeset.put_assoc(changeset, :episodes, episodes)
+    put_assoc(changeset, :episodes, episodes)
   end
   def search_existing_ep(changeset), do: changeset
 
@@ -112,13 +106,13 @@ defmodule Animu.Series do
   Ensure series has atleast as many episodes as specified in episode_count
   """
   def fill_with_new_ep(changeset =
-      %Changeset{changes: %{episode_count: count, episodes: episodes}}) do
+      %Ecto.Changeset{changes: %{episode_count: count, episodes: episodes}}) do
 
     existing = Map.new(episodes, fn ep -> {ep.changes.number, ep} end)
     new = Map.new(Episode.new(count), fn ep -> {ep.changes.number, ep} end)
 
     episodes = Map.merge(new, existing) |> Map.values
-    Changeset.put_assoc(changeset, :episodes, episodes)
+    put_assoc(changeset, :episodes, episodes)
   end
   def fill_with_new_ep(changeset), do: changeset
 end

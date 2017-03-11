@@ -1,7 +1,10 @@
-defmodule Animu.Franchise do
-  use Animu.Web, :model
+defmodule Animu.Media.Franchise do
+  use Ecto.Schema
 
-  alias Animu.Repo
+  import Ecto.Changeset
+
+  alias Animu.Media.Series
+  alias __MODULE__, as: Franchise
 
   @derive {Poison.Encoder, except: [:__meta__]}
   schema "franchises" do
@@ -18,7 +21,7 @@ defmodule Animu.Franchise do
     field :trailers,      {:array, :string}
     field :tags,          {:array, :string}
 
-    has_many :series, Animu.Series
+    has_many :series, Series
 
     field :date_released, :date
 
@@ -32,20 +35,15 @@ defmodule Animu.Franchise do
 
 
   @doc """
-  Builds a changeset based on the `struct` and `params`.
+  Returns `%Ecto.Changeset{}` for tracking Franchise changes
   """
-  def changeset(struct, params \\ %{}) do
-    struct
-    |> Repo.preload(:series)
-    |> cast(params, @required_fields ++ @optional_fields)
+  def changeset(%Franchise{} = franchise, attrs) do
+    franchise
+    |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
   end
 
-  def scrub_params(params) do
-    %__MODULE__{}
-    |> cast(params, @required_fields ++ @optional_fields)
-    |> apply_changes
-    |> Map.from_struct
-    |> Map.delete(:__meta__)
+  def change(%Franchise{} = franchise) do
+    changeset(franchise, %{})
   end
 end

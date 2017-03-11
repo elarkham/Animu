@@ -1,5 +1,6 @@
 defmodule Animu.Session do
-  alias Animu.{Repo, User}
+  alias Animu.Account.User
+  alias Animu.Repo
 
   def authenticate(%{"username" => username, "password" => password}) do
     user = Repo.get_by(User, username: String.downcase(username))

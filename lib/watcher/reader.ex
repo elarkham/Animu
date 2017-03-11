@@ -4,8 +4,8 @@ defmodule Animu.Reader do
   import Ecto.Query, only: [from: 2]
 
   alias HTTPoison.Response
-  alias Animu.{Repo, Series, Episode}
-  alias Animu.Torrent
+  alias Animu.Media.{Series, Episode}
+  alias Animu.{Repo, Torrent}
 
   def start_link(name \\ nil) do
     GenServer.start_link(__MODULE__, :ok, [name: name])

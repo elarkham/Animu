@@ -1,5 +1,9 @@
-defmodule Animu.User do
-  use Animu.Web, :model
+defmodule Animu.Account.User do
+  use Ecto.Schema
+
+  import Ecto.Changeset
+
+  alias __MODULE__, as: User
 
   @derive {Poison.Encoder, except: [:__meta__]}
   schema "users" do
@@ -14,18 +18,25 @@ defmodule Animu.User do
     timestamps()
   end
 
+  @required_fields ~w(first_name last_name username password)a
+  @optional_fields ~w(email)a
+
   @doc """
-  Builds a changeset based on the `struct` and `params`.
+  Returns `%Ecto.Changeset{}` for tracking Franchise changes
   """
-  def changeset(struct, params \\ %{}) do
-    struct
-    |> cast(params, [:first_name, :last_name, :email, :username, :password])
-    |> validate_required([:first_name, :last_name, :username, :password])
+  def changeset(%User{} = user, attrs) do
+    user
+    |> cast(attrs, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
     |> validate_length(:password, min: 5)
     |> validate_confirmation(:passowrd, message: "Password does not match")
     |> unique_constraint(:username, message: "Username already taken")
     |> generate_encrypted_password
   end
+
+	def change(%User{} = user) do
+		changeset(user, %{})
+	end
 
   defp generate_encrypted_password(current_changeset) do
     case current_changeset do

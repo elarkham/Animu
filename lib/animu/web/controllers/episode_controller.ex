@@ -1,59 +1,42 @@
 defmodule Animu.Web.EpisodeController do
   use Animu.Web, :controller
 
-  alias Animu.Episode
-  alias Animu.QueryBuilder
+  alias Animu.Media
+  alias Animu.Media.Episode
 
   plug Guardian.Plug.EnsureAuthenticated, handler: Animu.Web.SessionController
+  action_fallback Animu.Web.FallbackController
 
   def index(conn, params) do
-    query = QueryBuilder.build(Episode, params)
-    episodes = Repo.all(query)
+    episodes = Media.list_episodes(params)
     render(conn, "index.json", episodes: episodes)
   end
 
   def create(conn, %{"episode" => episode_params}) do
-    changeset = Episode.changeset(%Episode{}, episode_params)
-
-    case Repo.insert(changeset) do
-      {:ok, episode} ->
-        conn
-        |> put_status(:created)
-        |> put_resp_header("location", episode_path(conn, :show, episode))
-        |> render("show.json", episode: episode)
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(ChangesetView, "error.json", changeset: changeset)
+    with {:ok, %Episode{} = episode} <- Media.create_episode(episode_params) do
+      conn
+      |> put_status(:created)
+      |> put_resp_header("location", episode_path(conn, :show, episode))
+      |> render("show.json", episode: episode)
     end
   end
 
   def show(conn, %{"id" => id}) do
-    episode = Repo.get!(Episode, id)
+    episode = Media.get_episode!(id)
     render(conn, "show.json", episode: episode)
   end
 
   def update(conn, %{"id" => id, "episode" => episode_params}) do
-    episode = Episode |> Repo.get!(id) |> Repo.preload(:series)
-    changeset = Episode.changeset(episode, episode_params)
-
-    case Repo.update(changeset) do
-      {:ok, episode} ->
-        render(conn, "show.json", episode: episode)
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(ChangesetView, "error.json", changeset: changeset)
+    episode = Media.get_episode!(id)
+    with {:ok, %Episode{} = episode} <- Media.update_episode(episode, episode_params) do
+      render(conn, "show.json", episode: episode)
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    episode = Repo.get!(Episode, id)
-
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
-    Repo.delete!(episode)
-
-    send_resp(conn, :no_content, "")
+    episode = Media.get_episode!(id)
+    with {:ok, %Episode{}} <- Media.delete_episode(episode) do
+      send_resp(conn, :no_content, "")
+    end
   end
 end
