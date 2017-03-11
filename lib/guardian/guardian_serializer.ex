@@ -1,7 +1,8 @@
 defmodule Animu.GuardianSerializer do
   @behaviour Guardian.Serializer
 
-  alias Animu.{Repo, User}
+  alias Animu.Repo
+  alias Animu.Account.User
 
   def for_token(user = %User{}), do: { :ok, "User:#{user.id}" }
   def for_token(_), do: { :error, "Unknown resource type" }

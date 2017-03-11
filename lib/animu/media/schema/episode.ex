@@ -1,7 +1,9 @@
-defmodule Animu.Episode do
-  use Animu.Web, :model
+defmodule Animu.Media.Episode do
+  use Ecto.Schema
 
-  alias Animu.{Repo, Series}
+  import Ecto.Changeset
+
+  alias Animu.Media.Series
   alias __MODULE__, as: Episode
 
   @derive {Poison.Encoder, except: [:__meta__]}
@@ -29,26 +31,17 @@ defmodule Animu.Episode do
                       subtitles video)a
 
   @doc """
-  Builds a changeset based on the `struct` and `params`.
+  Returns `%Ecto.Changeset{}` for tracking Episode changes
   """
-  def changeset(struct, params \\ %{}) do
-    struct
-    |> Repo.preload(:series)
-    |> cast(params, @required_fields ++ @optional_fields)
+  def changeset(%Episode{} = episode, attrs) do
+    episode
+    |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
     |> foreign_key_constraint(:series_id)
   end
 
-  @doc """
-  Generates a map that only has fields that are within an "Episode" struct.
-  Similar to Kernel.struct/2 but without the adom key requirement.
-  """
-  def scrub_params(params) do
-    %Episode{}
-    |> cast(params, @required_fields ++ @optional_fields)
-    |> apply_changes
-    |> Map.from_struct
-    |> Map.delete(:__meta__)
+  def change(%Episode{} = episode) do
+    changeset(episode, %{})
   end
 
   @doc """

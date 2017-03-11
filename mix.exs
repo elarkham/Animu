@@ -18,20 +18,7 @@ defmodule Animu.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Animu, []},
-     applications: [
-       :phoenix,
-       :phoenix_pubsub,
-       :phoenix_html,
-       :cowboy,
-       :logger,
-       :gettext,
-       :phoenix_ecto,
-       :postgrex,
-       :comeonin,
-       :feeder_ex,
-       :httpoison,
-       :corsica,
-     ]]
+     extra_applications: [:logger]]
   end
 
   # Specifies which paths to compile per environment.
@@ -55,6 +42,7 @@ defmodule Animu.Mixfile do
      {:feeder_ex, "~> 1.0"},
      {:httpoison, "~> 0.9.0"},
      {:corsica, "~> 0.5"},
+     {:inquisitor, "~> 0.3.0"},
    ]
   end
 
