@@ -2,16 +2,30 @@ defmodule Animu.Media do
   @moduledoc """
   The boundary for the Media system
   """
-
   import Ecto.{Query, Changeset}, warn: false
-  import Animu.Media.Query
-  alias Animu.Repo
 
+  import Animu.Media.Series.Populate
+  import Animu.Media.Query
+
+  alias Animu.Repo
   alias Animu.Media.{Franchise, Series, Episode}
 
   ##
   # Franchise Interactions
   ##
+
+  @doc """
+  Returns `%Ecto.Changeset{}` for tracking Franchise changes
+  """
+  def franchise_changeset(%Franchise{} = franchise, attrs) do
+    franchise
+    |> cast(attrs, Franchise.__schema__(:fields))
+    |> validate_required([:canon_title, :slug])
+  end
+
+  def change_franchise(%Franchise{} = franchise) do
+    franchise_changeset(franchise, %{})
+  end
 
   @doc """
   Returns a list of Franchises
@@ -41,7 +55,7 @@ defmodule Animu.Media do
   """
   def create_franchise(attrs \\ %{}) do
     %Franchise{}
-    |> Franchise.changeset(attrs)
+    |> franchise_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -50,7 +64,7 @@ defmodule Animu.Media do
   """
   def update_franchise(%Franchise{} = franchise, attrs) do
     franchise
-    |> Franchise.changeset(attrs)
+    |> franchise_changeset(attrs)
     |> Repo.update()
   end
 
@@ -64,6 +78,20 @@ defmodule Animu.Media do
   ##
   # Series Interactions
   ##
+
+  @doc """
+  Returns `%Ecto.Changeset{}` for tracking Series changes
+  """
+  def series_changeset(%Series{} = series, attrs) do
+    series
+    |> cast(attrs, Series.__schema__(:fields))
+    |> populate
+    |> validate_required([:canon_title, :slug, :directory])
+  end
+
+  def change_series(%Series{} = series) do
+    series_changeset(series, %{})
+  end
 
   @doc """
   Returns a list of Series
@@ -95,7 +123,7 @@ defmodule Animu.Media do
   """
   def create_series(attrs \\ %{}) do
     %Series{}
-    |> Series.changeset(attrs)
+    |> series_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -104,7 +132,7 @@ defmodule Animu.Media do
   """
   def update_series(%Series{} = series, attrs) do
     series
-    |> Series.changeset(attrs)
+    |> series_changeset(attrs)
     |> Repo.update()
   end
 
@@ -118,6 +146,20 @@ defmodule Animu.Media do
   ##
   # Episode Interactions
   ##
+
+  @doc """
+  Returns `%Ecto.Changeset{}` for tracking Episode changes
+  """
+  def episode_changeset(%Episode{} = episode, attrs) do
+    episode
+    |> cast(attrs, List.delete(Episode.__schema__(:fields), :video))
+    |> validate_required([:title, :number])
+    |> foreign_key_constraint(:series_id)
+  end
+
+  def change_episode(%Episode{} = episode) do
+    episode_changeset(episode, %{})
+  end
 
   @doc """
   Returns list of Episodes
@@ -140,16 +182,16 @@ defmodule Animu.Media do
   """
   def create_episode(attrs \\ %{}) do
     %Episode{}
-    |> Episode.changeset(attrs)
+    |> episode_changeset(attrs)
     |> Repo.insert()
   end
 
   @doc """
-  Updates an Epiosde
+  Updates a Epiosde
   """
   def update_episode(%Episode{} = episode, attrs) do
     episode
-    |> Episode.changeset(attrs)
+    |> episode_changeset(attrs)
     |> Repo.update()
   end
 
