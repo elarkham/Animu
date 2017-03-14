@@ -4,6 +4,7 @@ defmodule Animu.Media do
   """
   import Ecto.{Query, Changeset}, warn: false
 
+  import Animu.Media.Video.Generate
   import Animu.Media.Series.Populate
   import Animu.Media.Query
 
@@ -155,6 +156,7 @@ defmodule Animu.Media do
     |> cast(attrs, List.delete(Episode.__schema__(:fields), :video))
     |> validate_required([:title, :number])
     |> foreign_key_constraint(:series_id)
+    |> generate_video
   end
 
   def change_episode(%Episode{} = episode) do
