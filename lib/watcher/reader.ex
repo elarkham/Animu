@@ -5,6 +5,7 @@ defmodule Animu.Reader do
 
   alias HTTPoison.Response
   alias Animu.Media.{Series, Episode}
+  alias Animu.Media
   alias Animu.{Repo, Torrent}
 
   def start_link(name \\ nil) do
@@ -25,11 +26,8 @@ defmodule Animu.Reader do
   """
   def handle_cast({:process, torrent}, cache) do
     episode_params = %{"video" => torrent.name}
-    episode = Repo.get(Episode, torrent.ep_id)
-
-    changeset = Episode.changeset(episode, episode_params)
-
-    Repo.update!(changeset)
+    episode = Media.get_episode!(torrent.ep_id)
+    Media.update_episode(episode, episode_params)
     {:noreply, cache}
   end
 
