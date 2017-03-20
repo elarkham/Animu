@@ -86,13 +86,17 @@ defmodule Animu.Media do
   """
   def series_changeset(%Series{} = series, attrs) do
     virtual_fields =
-      [:populate, :generate_ep_from_kitsu, :generate_ep_from_existing]
+      [ :populate,
+        :generate_ep_from_kitsu,
+        :generate_ep_from_existing,
+      ]
 
     series
     |> Repo.preload(:episodes)
     |> Repo.preload(:franchise)
     |> cast(attrs, all_fields(Series) ++ virtual_fields)
     |> populate_series
+    |> unique_constraint(:slug)
     |> validate_required([:canon_title, :slug, :directory])
   end
 
