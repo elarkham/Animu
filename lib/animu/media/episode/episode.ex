@@ -2,6 +2,7 @@ defmodule Animu.Media.Episode do
   use Ecto.Schema
 
   alias Animu.Media.Series
+  alias Animu.Media.Video
 
   @derive {Poison.Encoder, except: [:__meta__]}
   schema "episodes" do

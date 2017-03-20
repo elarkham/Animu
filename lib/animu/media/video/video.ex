@@ -2,6 +2,7 @@ defmodule Animu.Media.Video do
   use Ecto.Schema
 
   import Ecto.Changeset
+  import Animu.Schema
   alias __MODULE__, as: Video
 
   embedded_schema do
@@ -20,6 +21,7 @@ defmodule Animu.Media.Video do
     field :probe_score, :integer
 
     field :thumbnail,   {:map, :string}
+    field :original,    :string
 
     embeds_one :video_track, VideoTrack do
       field :index,           :integer
@@ -81,7 +83,7 @@ defmodule Animu.Media.Video do
   """
   def changeset(%Video{} = video, attrs) do
     video
-    |> cast(attrs, all_fields_except([:video_track, :audio_track, :subtitles]))
+    |> cast(attrs, all_fields(Video, except: [:video_track, :audio_track, :subtitles]))
     |> validate_required([:filename])
     |> cast_embed(:video_track, with: &video_track_changeset/2)
     |> cast_embed(:audio_track, with: &audio_track_changeset/2)
@@ -92,24 +94,18 @@ defmodule Animu.Media.Video do
     changeset(video, %{})
   end
 
-  defp all_fields_except(list) do
-    Enum.reduce(list, Video.__schema__(:fields), fn i, acc ->
-      List.delete(acc, i)
-    end)
-  end
-
   defp video_track_changeset(%Video.VideoTrack{} = video_codec, attrs) do
     video_codec
-    |> cast(attrs, Video.VideoTrack.__schema__(:fields))
+    |> cast(attrs, all_fields(Video.VideoTrack))
   end
 
   defp audio_track_changeset(%Video.AudioTrack{} = audio_codec, attrs) do
     audio_codec
-    |> cast(attrs, Video.AudioTrack.__schema__(:fields))
+    |> cast(attrs, all_fields(Video.AudioTrack))
   end
 
   defp subtitles_changeset(%Video.Subtitles{} = subtitles, attrs) do
     subtitles
-    |> cast(attrs, Video.Subtitles.__schema__(:fields))
+    |> cast(attrs, all_fields(Video.Subtitles))
   end
 end
