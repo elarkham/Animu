@@ -1,4 +1,5 @@
-# This file is responsible for configuring your application
+#
+#This file is responsible for configuring your application
 # and its dependencies with the aid of the Mix.Config module.
 #
 # This configuration file is loaded before any dependency and
@@ -8,7 +9,8 @@ use Mix.Config
 # General application configuration
 config :animu,
   ecto_repos: [Animu.Repo],
-  file_root: "/home/ethan/var/animu/"
+  input_root:  "/home/ethan/net/charon/videos/anime/animu",
+  output_root: "/home/ethan/net/hydra/animu"
 
 # Configures the endpoint
 config :animu, Animu.Web.Endpoint,

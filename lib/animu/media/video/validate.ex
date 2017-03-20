@@ -26,25 +26,7 @@ defmodule Animu.Media.Video.Validate do
   end
 
   def check_valid_extension(video) do
-    dir = Path.dirname(video.input.path)
-    filename = Path.basename(video.input.path)
-    extension = Path.extname(video.input.path)
-    name = Path.rootname(filename)
-
-    input =
-      %{ video.input |
-         dir: dir,
-         filename: filename,
-         extension: extension,
-       }
-
-    video =
-      %{ video |
-         input: input,
-         name: name,
-       }
-
-    case Enum.any?(@valid_extensions, &(&1 == extension)) do
+    case Enum.any?(@valid_extensions, &(&1 == video.input.extension)) do
       true ->
         {:ok, video}
 
@@ -161,13 +143,14 @@ defmodule Animu.Media.Video.Validate do
     search = Enum.filter(streams,
       &(&1["codec_name"] == "ttf" || &1["codec_name"] == "otf"))
 
-    search_count = Enum.count(search)
-    cond do
-      search_count == 0 ->
-        {:ok, %{video | font: nil}}
-      true ->
-        {:ok, %{video | font: %{video.font | data: search}}}
-    end
+    #search_count = Enum.count(search)
+    #cond do
+    #  search_count == 0 ->
+    #    {:ok, %{video | font: nil}}
+    #  true ->
+    #    {:ok, %{video | font: %{video.font | data: search}}}
+    #end
+    {:ok, %{video | font: %{video.font | data: search}}}
   end
 
 end

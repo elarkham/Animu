@@ -16,6 +16,7 @@ defmodule Animu.Media.Video.Assembler do
          "dir" => video.output.dir,
          "extension" => video.output.extension,
          "format" => video.output.format,
+         "original" => Path.join(video.input.dir, video.input.filename),
        }
 
     Map.merge(format_data, output)

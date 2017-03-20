@@ -6,13 +6,15 @@ defmodule Animu.Media.Video.Remux do
   @font_dir "fonts"
 
   def remux(video = %{input: %{format: "WebM"}}) do
-    with {:ok, video} <- keep_original(video),
+    with {:ok, video} <- generate_directories(video),
+         {:ok, video} <- copy_original(video),
          {:ok, video} <- probe_output_file(video),
          do: {:ok, video}
   end
 
   def remux(video = %{input: %{format: "MPEG-4"}}) do
-    with {:ok, video} <- keep_original(video),
+    with {:ok, video} <- generate_directories(video),
+         {:ok, video} <- copy_original(video),
          {:ok, video} <- probe_output_file(video),
          do: {:ok, video}
   end
@@ -62,8 +64,21 @@ defmodule Animu.Media.Video.Remux do
     end
   end
 
-  def keep_original(video) do
-    {:ok, %{video | output: video.input}}
+  def copy_original(video) do
+    output =
+      %{ video.output |
+         filename: video.input.filename,
+         extension: video.input.extension,
+         dir: video.input.dir,
+         path: Path.join(video.input.dir, video.input.filename)
+       }
+
+    case File.cp(video.input.path, output.path, true) do
+    	:ok ->
+				{:ok, %{video | output: video.input}}
+			{:error, _} ->
+				{:error, "Failed To Copy Video File"}
+		end
   end
 
   def probe_output_file(video) do
