@@ -25,7 +25,7 @@ defmodule Animu.TransmissionClient do
   """
   def handle_cast({:add_torrent, torrent}, state) do
     method = "torrent-add"
-    path = Application.get_env(:animu, :file_root)
+    path = Application.get_env(:animu, :input_root)
     arguments =
       %{"filename"     => torrent.url,
         "download-dir" => path <> torrent.dir,
