@@ -7,6 +7,7 @@ defmodule Animu.Media do
   import Animu.Media.Video.Generate
   import Animu.Media.Series.Populate
   import Animu.Media.Query
+  import Animu.Schema
 
   alias Animu.Repo
   alias Animu.Media.{Franchise, Series, Episode}
@@ -20,7 +21,7 @@ defmodule Animu.Media do
   """
   def franchise_changeset(%Franchise{} = franchise, attrs) do
     franchise
-    |> cast(attrs, Franchise.__schema__(:fields))
+    |> cast(attrs, all_fields(Franchise))
     |> validate_required([:canon_title, :slug])
   end
 
@@ -84,9 +85,14 @@ defmodule Animu.Media do
   Returns `%Ecto.Changeset{}` for tracking Series changes
   """
   def series_changeset(%Series{} = series, attrs) do
+    virtual_fields =
+      [:populate, :generate_ep_from_kitsu, :generate_ep_from_existing]
+
     series
-    |> cast(attrs, Series.__schema__(:fields))
-    |> populate
+    |> Repo.preload(:episodes)
+    |> Repo.preload(:franchise)
+    |> cast(attrs, all_fields(Series) ++ virtual_fields)
+    |> populate_series
     |> validate_required([:canon_title, :slug, :directory])
   end
 
@@ -153,7 +159,7 @@ defmodule Animu.Media do
   """
   def episode_changeset(%Episode{} = episode, attrs) do
     episode
-    |> cast(attrs, List.delete(Episode.__schema__(:fields), :video))
+    |> cast(attrs, all_fields(Episode, except: [:video]) ++ [:video_path])
     |> validate_required([:title, :number])
     |> foreign_key_constraint(:series_id)
     |> generate_video
