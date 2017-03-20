@@ -18,9 +18,11 @@ defmodule Animu.Media.Series.Assembler do
   end
 
   def assemble_episodes(episodes, series_dir) do
-    Enum.map(episodes, fn ep ->
+    Task.async_stream(episodes, fn ep ->
       episode_changeset(ep, series_dir)
-    end)
+    end, timeout: 1000 * 60 * 60)
+    |> Enum.to_list()
+    |> Enum.map(fn {:ok, ep} -> ep end)
   end
 
   defp episode_changeset(attrs, series_dir) do
