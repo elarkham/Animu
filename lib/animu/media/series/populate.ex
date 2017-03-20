@@ -1,105 +1,92 @@
 defmodule Animu.Media.Series.Populate do
+  import Ecto.Changeset
 
-  alias HTTPoison.Response
+  import Animu.Media.Series.Validate
+  import Animu.Media.Series.KitsuFetcher
+  import Animu.Media.Series.Generate
+  import Animu.Media.Series.Assembler
+
   alias Ecto.Changeset
 
-  @url "https://kitsu.io/api/edge/"
+  alias Animu.Media.Series
+  alias Animu.Schema
 
-	# Image Paths
-	@cover_path "/images/cover"
-  @poster_path "/images/poster"
-  #@gallery_path "/images/gallery"
+  def populate_series(changeset = %Changeset{valid?: false}), do: changeset
+  def populate_series(changeset = %Changeset{changes: %{populate: true}}) do
+    kitsu_id   = get_field(changeset, :kitsu_id, nil)
+    dir        = get_field(changeset, :directory, nil)
+    regex      = get_field(changeset, :regex, nil)
 
-  def populate(changeset = %Changeset{changes: %{kitsu_id: id}}) do
-    kitsu_data =
-      request("anime", id)
-      |> format_to_series
-      |> Map.merge(changeset.changes)
+    gen_k = get_field(changeset, :generate_ep_from_kitsu, false)    |> convert_bool
+    gen_e = get_field(changeset, :generate_ep_from_existing, false) |> convert_bool
 
-    changeset
-    |> Changeset.change(kitsu_data)
-    |> get_images(:cover_image,  @cover_path)
-    |> get_images(:poster_image, @poster_path)
-  end
-  def populate(changeset), do: changeset
+    case populate(kitsu_id, dir, regex, [gen_kitsu_ep: gen_k, gen_exist_ep: gen_e]) do
+      {:ok, series_params} ->
+				params = Map.merge(series_params, changeset.params)
+        cast(changeset, params, Schema.all_fields(Series))
+        |> put_assoc(:episodes, assemble_episodes(series_params["episodes"], dir))
 
-  defp request(type, id) do
-    url = @url <> type <> "/" <> id
-    headers = ["Accept": "application/vnd.api+json"]
-    options = [follow_redirect: true]
-
-    {:ok, %Response{body: body}} = HTTPoison.get(url, headers, options)
-    body = Poison.decode!(body)
-    Map.put(body["data"]["attributes"], "id", id)
-  end
-
-  defp format_to_series(kitsu_series) do
-    %{canon_title: kitsu_series["canonicalTitle"],
-      titles: kitsu_series["titles"],
-      synopsis: kitsu_series["synopsis"],
-      slug: kitsu_series["slug"],
-
-      cover_image: kitsu_series["coverImage"],
-      poster_image: kitsu_series["posterImage"],
-      gallery: kitsu_series["gallery"],
-
-      age_rating: kitsu_series["ageRating"],
-      nsfw: kitsu_series["nsfw"],
-
-      episode_count: kitsu_series["episodeCount"],
-      episode_length: kitsu_series["episodeLength"],
-
-      kitsu_rating: kitsu_series["averageRating"],
-      kitsu_id: kitsu_series["id"],
-
-      started_airing_date: get_date(kitsu_series["startDate"]),
-      finished_airing_date: get_date(kitsu_series["endDate"]),
-    }
-  end
-
-  defp get_date(date) do
-    case date do
-      nil -> nil
-      _ -> Date.from_iso8601!(date)
+      {:error, reason} ->
+        add_error(changeset, :populate, reason)
     end
   end
+  def populate_series(changeset), do: changeset
 
-  def get_images(changeset, key, image_path) do
-    cond do
-      Map.has_key?(changeset.changes, :directory) ->
-        series_path = changeset.changes.directory
-        get_images(changeset, key, image_path, series_path)
-      !is_nil(changeset.data.directory) ->
-        series_path = changeset.data.directory
-        get_images(changeset, key, image_path, series_path)
-      true ->
-        changeset
+  def populate(kitsu_id, dir, regex, options \\ []) do
+    with       series     <- build_map(kitsu_id, dir, regex, options),
+         {:ok, series}    <- validate_input(series),
+         {:ok, series}    <- compile_regex(series),
+         {:ok, series}    <- get_kitsu_data(series),
+         {:ok, series}    <- generate_files(series),
+         {:ok, series}    <- generate_episodes(series),
+               series     <- assemble(series) do
+      {:ok, series}
+    else
+      {:error, reason} -> {:error, reason}
+      _ -> {:error, "Unexpected Error"}
     end
-  end
-
-  def get_images(changeset, key, image_path, series_path) do
-    case changeset.changes do
-      %{^key => nil} ->
-        changeset
-      %{^key => map} ->
-        map =
-          Map.new(map, fn {k, v} ->
-            filename =  "/" <> k <> ".jpg"
-            path = series_path <> image_path
-		 	      v = image_path <> get_image(v, path, filename)
-		 	      {k, v}
-          end)
-        Changeset.put_change(changeset, key, map)
-    end
-  end
-
-  defp get_image(nil, _, _), do: nil
-	defp get_image(url, path, filename) do
-   	{:ok, %Response{body: body}} = HTTPoison.get(url)
-  	full_path = Application.get_env(:animu, :file_root) <> path
-    unless File.dir?(path), do: File.mkdir_p!(full_path)
-   	File.write!(full_path <> filename, body)
-		filename
 	end
+
+  def convert_bool(value) do
+    case value do
+      true -> true
+      _ -> false
+    end
+  end
+
+  def build_map(kitsu_id, dir, regex, options) do
+    options = Map.new(options)
+    output_root = Application.get_env(:animu, :output_root)
+    input_root  = Application.get_env(:animu, :input_root)
+
+    %{ kitsu_id: kitsu_id,
+       kitsu_data: nil,
+
+       output_dir: Path.join(output_root, dir),
+       input_dir: Path.join(input_root, dir),
+
+       dir: dir,
+       regex: regex,
+
+       poster_image: nil,
+       poster_dir: "images/poster",
+
+       cover_image: nil,
+       cover_dir: "images/cover",
+
+       episodes: nil,
+       gen_kitsu_ep: Map.get(options, :gen_kitsu_ep, false),
+       gen_exist_ep: Map.get(options, :gen_exist_ep, false),
+     }
+  end
+
+  def compile_regex(series = %{gen_exist_ep: true}) do
+    case Regex.compile(series.regex) do
+      {:ok, regex} -> {:ok, %{series | regex: regex}}
+			{:error, {reason, _}} ->
+				{:error, "Series Regex Error: #{reason}"}
+    end
+  end
+  def compile_regex(series), do: {:ok, series}
 
 end
