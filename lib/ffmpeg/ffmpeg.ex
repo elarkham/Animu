@@ -56,10 +56,7 @@ defmodule Animu.FFmpeg do
   end
 
   def extract_fonts(input, output) do
-    # Use full path since cd screws things up
-    cwd = System.cwd!()
-    input = Path.join(cwd, input)
-
+    input = Path.absname(input)
     args =
       [ "-dump_attachment:t",
         "",
