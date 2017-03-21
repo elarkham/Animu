@@ -97,26 +97,27 @@ defmodule Animu.Media.Series.Generate do
     end
   end
 
-	def generate_episodes_from_kitsu(%{gen_kitsu_ep: false}), do: {:ok, []}
-  def generate_episodes_from_kitsu(series) do
+	defp generate_episodes_from_kitsu(%{gen_kitsu_ep: false}), do: {:ok, []}
+  defp generate_episodes_from_kitsu(series) do
     KitsuFetcher.get_kitsu_episode_data(series)
   end
 
-	def generate_episodes_from_existing(%{gen_exist_ep: false}), do: {:ok, []}
-  def generate_episodes_from_existing(series) do
+	defp generate_episodes_from_existing(%{gen_exist_ep: false}), do: {:ok, []}
+  defp generate_episodes_from_existing(series) do
 		with {:ok, files}    <- list_series_output_files(series),
 				 {:ok, episodes} <- search_files_with_regex(files, series.regex),
+               episodes  <- gen_from_episode_count(episodes, series),
 				 do: {:ok, episodes}
 	end
 
-  def list_series_output_files(series) do
+  defp list_series_output_files(series) do
 		case File.ls(series.input_dir) do
 			{:error, _} -> {:error, "Failed to ls files in series output dir"}
 			{:ok, files} -> {:ok, files}
 		end
   end
 
-	def search_files_with_regex(files, regex) do
+	defp search_files_with_regex(files, regex) do
 		try do
 			episodes =
 				files
@@ -129,7 +130,7 @@ defmodule Animu.Media.Series.Generate do
 		end
 	end
 
-	def format_match_to_episode(regex, filename) do
+	defp format_match_to_episode(regex, filename) do
 		{num, _} =
 			Regex.named_captures(regex, filename)["num"]
 			|> Float.parse
@@ -139,4 +140,25 @@ defmodule Animu.Media.Series.Generate do
 		  video_path: filename,
 		 }
 	end
+
+  def gen_from_episode_count(episodes, series) do
+    kitsu_count = series.kitsu_data.episode_count
+    generated =
+      case kitsu_count do
+        nil -> gen_num_episodes(series.ep_count)
+        _   -> gen_num_episodes(kitsu_count)
+      end
+
+    generated = Map.new(generated, fn ep -> {ep.number, ep} end)
+    episodes  = Map.new(episodes,  fn ep -> {ep.number, ep} end)
+    Map.merge(generated, episodes) |> Map.values()
+  end
+
+  defp gen_num_episodes(count) do
+    Enum.map(1..count, fn num ->
+      %{title: "Episode #{num/1}",
+        number: num/1,
+       }
+    end)
+  end
 end
