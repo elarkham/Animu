@@ -50,4 +50,4 @@ config :animu, Animu.Repo,
 config :guardian, Guardian,
   issuer: "Animu-Dev",
   ttl: {3, :days},
-  secret_key: "dev_key",
+  secret_key: "dev_key"
