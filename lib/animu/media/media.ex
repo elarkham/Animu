@@ -187,7 +187,10 @@ defmodule Animu.Media do
 
   Raises `Ecto.NoResultsError` if the Episode does not exist.
   """
-  def get_episode!(id), do: Repo.get!(Episode, id)
+  def get_episode!(id) do
+    Repo.get!(Episode, id)
+    |> Repo.preload(:series)
+  end
 
   @doc """
   Creates new Episode
