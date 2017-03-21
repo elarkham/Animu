@@ -1,4 +1,4 @@
-defmodule Animu.Reader do
+defmodule Augur.Reader do
   use GenServer
 
   import Ecto.Query, only: [from: 2]
@@ -6,7 +6,9 @@ defmodule Animu.Reader do
   alias HTTPoison.Response
   alias Animu.Media.{Series, Episode}
   alias Animu.Media
-  alias Animu.{Repo, Torrent}
+  alias Animu.Repo
+
+  alias Augur.Torrent
 
   def start_link(name \\ nil) do
     GenServer.start_link(__MODULE__, :ok, [name: name])
@@ -151,7 +153,7 @@ defmodule Animu.Reader do
         dir: dir,
         feed_url: feed_url,
       }
-    GenServer.cast(Animu.TransmissionClient, {:add_torrent, torrent})
+    GenServer.cast(Augur.TransmissionClient, {:add_torrent, torrent})
   end
 
   # Pull the "num" capture from regex

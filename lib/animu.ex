@@ -14,9 +14,9 @@ defmodule Animu do
       supervisor(Animu.Web.Endpoint, []),
 
       # RSS feed reader
-      worker(Animu.Reader, [Animu.Reader]),
+      worker(Augur.Reader, [Augur.Reader]),
       # Torrent Registry that tracks transmission downloads
-      worker(Animu.TransmissionClient, [Animu.TransmissionClient]),
+      worker(Augur.TransmissionClient, [Augur.TransmissionClient]),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

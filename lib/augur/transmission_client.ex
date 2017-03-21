@@ -1,4 +1,4 @@
-defmodule Animu.TransmissionClient do
+defmodule Augur.TransmissionClient do
   use GenServer
 
   alias HTTPoison.Response
@@ -121,7 +121,7 @@ defmodule Animu.TransmissionClient do
   # and add the new file to the database.
   defp process({id, torrent}) do
     if torrent.progress >= 1.0 do
-      GenServer.cast(Animu.Reader, {:process, torrent})
+      GenServer.cast(Augur.Reader, {:process, torrent})
     end
     {id, torrent}
   end
