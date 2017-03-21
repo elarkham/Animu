@@ -1,7 +1,7 @@
 defmodule Animu.Media.Video.Assembler do
+  alias Animu.Media.Video
 
   def assemble(video = %{subtitles: nil}), do: {:ok, aggregate(video)}
-
   def assemble(video) do
     with {:ok, video} <- collect_font_names(video),
          subtitles    <- assemble_subtitles(video),
@@ -19,10 +19,13 @@ defmodule Animu.Media.Video.Assembler do
          "original" => Path.join(video.input.dir, video.input.filename),
        }
 
-    Map.merge(format_data, output)
+    params =
+      Map.merge(format_data, output)
       |> Map.put("video_track", video.video_track)
       |> Map.put("audio_track", video.audio_track)
       |> Map.put("subtitles", subtitles)
+
+    Video.changeset(%Video{}, params)
   end
 
   def collect_font_names(video) do

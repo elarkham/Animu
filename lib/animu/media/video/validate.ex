@@ -1,5 +1,5 @@
 defmodule Animu.Media.Video.Validate do
-  import Animu.FFmpeg, only: [probe: 1]
+  import Animu.Media.FFmpeg, only: [probe: 1]
 
   @valid_extensions ~w(.mkv .webm .mp4)
 

@@ -1,5 +1,5 @@
 defmodule Animu.Media.Video.Remux do
-  alias Animu.FFmpeg
+  alias Animu.Media.FFmpeg
 
   @output_dir "videos"
   @subtitles_dir "subtitles"
