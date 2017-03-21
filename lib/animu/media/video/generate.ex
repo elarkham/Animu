@@ -16,12 +16,13 @@ defmodule Animu.Media.Video.Generate do
       },
     }) do
 
-    series_id = changeset.changes.series_id
-    series = Media.get_series!(series_id)
+    series_id = Changeset.get_field(changeset, :series_id)
+    series    = Media.get_series!(series_id)
 
     case generate(input_path, series.directory) do
       {:ok, video} ->
-        Changeset.put_embed(changeset, :video, video, with: &Video.changeset/2)
+        changeset
+        |> Changeset.put_embed(:video, video, with: &Video.changeset/2)
       {:error, reason} ->
         Changeset.add_error(changeset, :video, reason)
     end

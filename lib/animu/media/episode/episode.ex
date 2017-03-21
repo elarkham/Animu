@@ -16,7 +16,7 @@ defmodule Animu.Media.Episode do
     field :airdate,       :date
 
     belongs_to :series, Series
-    embeds_one :video, Video
+    embeds_one :video, Video, on_replace: :delete
 
     field :video_path, :string, virtual: true
 

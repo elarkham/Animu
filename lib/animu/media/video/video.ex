@@ -23,7 +23,7 @@ defmodule Animu.Media.Video do
     field :thumbnail,   {:map, :string}
     field :original,    :string
 
-    embeds_one :video_track, VideoTrack do
+    embeds_one :video_track, VideoTrack, on_replace: :delete do
       field :index,           :integer
       field :codec_name,      :string
 
@@ -46,7 +46,7 @@ defmodule Animu.Media.Video do
       field :display_aspect_ratio, :string
     end
 
-    embeds_one :audio_track, AudioTrack do
+    embeds_one :audio_track, AudioTrack, on_replace: :delete do
       field :index,           :integer
       field :codec_name,      :string
       field :language,        :string
@@ -67,7 +67,7 @@ defmodule Animu.Media.Video do
       field :duration,        :decimal
     end
 
-    embeds_one :subtitles, Subtitles do
+    embeds_one :subtitles, Subtitles, on_replace: :delete do
       field :type,        :string, default: "ass"
 
       field :filename,    :string

@@ -1,4 +1,4 @@
-defmodule Animu.FFmpeg do
+defmodule Animu.Media.FFmpeg do
 
   @exec  "ffmpeg"
   @probe "ffprobe"
