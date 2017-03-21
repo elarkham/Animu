@@ -29,7 +29,7 @@ defmodule Augur.Reader do
   def handle_cast({:process, torrent}, cache) do
     episode_params = %{"video_path" => torrent.name}
     episode = Media.get_episode!(torrent.ep_id)
-    Media.update_episode(episode, episode_params)
+    Task.start(Media, :update_episode, [episode, episode_params])
     {:noreply, cache}
   end
 
