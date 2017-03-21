@@ -1,4 +1,4 @@
-defmodule Animu.Torrent do
+defmodule Augur.Torrent do
   defstruct ep_id: nil,
             ep_num: nil,
             url: nil,
