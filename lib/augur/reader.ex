@@ -27,7 +27,7 @@ defmodule Augur.Reader do
   Process finished torrent by adding it to the database and updating the cache
   """
   def handle_cast({:process, torrent}, cache) do
-    episode_params = %{"video" => torrent.name}
+    episode_params = %{"video_path" => torrent.name}
     episode = Media.get_episode!(torrent.ep_id)
     Media.update_episode(episode, episode_params)
     {:noreply, cache}

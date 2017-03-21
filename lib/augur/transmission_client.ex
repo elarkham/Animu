@@ -2,7 +2,7 @@ defmodule Augur.TransmissionClient do
   use GenServer
 
   alias HTTPoison.Response
-  alias Animu.Torrent
+  alias Augur.Torrent
 
   @url "http://192.168.5.115:9091/transmission/rpc"
 
@@ -28,7 +28,7 @@ defmodule Augur.TransmissionClient do
     path = Application.get_env(:animu, :input_root)
     arguments =
       %{"filename"     => torrent.url,
-        "download-dir" => path <> torrent.dir,
+        "download-dir" => Path.join(path, torrent.dir),
         "paused"       => false,
       }
 
@@ -58,7 +58,6 @@ defmodule Augur.TransmissionClient do
     {:noreply, state}
   end
 
-  # Runs poll/2 once 15min pass
   defp start_timer do
     Process.send_after(self(), :check_status, (2 * 1000))
   end
@@ -66,7 +65,7 @@ defmodule Augur.TransmissionClient do
   # Helper function that keeps session_id up to date and sends requests to
   # Transmission's RPC API.
   defp request(method, arguments, state) do
-    options = [recv_timeout: 5000]
+    options = [recv_timeout: 20 * 1000]
 
     headers = [{"X-Transmission-Session-Id", state.session_id},
                {"Accept", "application/json; charset=utf-8"}]
