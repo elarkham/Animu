@@ -37,7 +37,7 @@ config :phoenix, :generators,
 # Configure Authentication
 config :guardian, Guardian,
   issuer: "Animu",
-  ttl: {3, :days},
+  ttl: {30, :days},
   verify_issuer: true,
-  secret_key: "temp_key",
+  secret_key: "default_key",
   serializer: Animu.GuardianSerializer

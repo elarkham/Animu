@@ -1,5 +1,10 @@
 use Mix.Config
 
+# Configure file paths for dev
+config :animu,
+  input_root:  "/home/ethan/net/charon/videos/anime/animu",
+  output_root: "/home/ethan/net/hydra/animu"
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
@@ -40,3 +45,9 @@ config :animu, Animu.Repo,
   database: "animu_dev",
   hostname: "localhost",
   pool_size: 10
+
+# Configure Gaurdian For Dev
+config :guardian, Guardian,
+  issuer: "Animu-Dev",
+  ttl: {3, :days},
+  secret_key: "dev_key",
