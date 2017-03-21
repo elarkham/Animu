@@ -16,11 +16,13 @@ defmodule Animu.Media.Series.Populate do
     kitsu_id   = get_field(changeset, :kitsu_id, nil)
     dir        = get_field(changeset, :directory, nil)
     regex      = get_field(changeset, :regex, nil)
+    ep_count   = get_field(changeset, :episode_count, 0)
 
-    gen_k = get_field(changeset, :generate_ep_from_kitsu, false)    |> convert_bool
+    gen_k = get_field(changeset, :generate_ep_from_kitsu,    false) |> convert_bool
     gen_e = get_field(changeset, :generate_ep_from_existing, false) |> convert_bool
+    options = [gen_kitsu_ep: gen_k, gen_exist_ep: gen_e]
 
-    case populate(kitsu_id, dir, regex, [gen_kitsu_ep: gen_k, gen_exist_ep: gen_e]) do
+    case populate(kitsu_id, dir, regex, ep_count, options) do
       {:ok, series_params} ->
 				params = Map.merge(series_params, changeset.params)
         cast(changeset, params, Schema.all_fields(Series))
@@ -32,8 +34,8 @@ defmodule Animu.Media.Series.Populate do
   end
   def populate_series(changeset), do: changeset
 
-  def populate(kitsu_id, dir, regex, options \\ []) do
-    with       series     <- build_map(kitsu_id, dir, regex, options),
+  def populate(kitsu_id, dir, regex, ep_count, options \\ []) do
+    with       series     <- build_map(kitsu_id, dir, regex, ep_count, options),
          {:ok, series}    <- validate_input(series),
          {:ok, series}    <- compile_regex(series),
          {:ok, series}    <- get_kitsu_data(series),
@@ -54,7 +56,7 @@ defmodule Animu.Media.Series.Populate do
     end
   end
 
-  def build_map(kitsu_id, dir, regex, options) do
+  def build_map(kitsu_id, dir, regex, ep_count, options) do
     options = Map.new(options)
     output_root = Application.get_env(:animu, :output_root)
     input_root  = Application.get_env(:animu, :input_root)
@@ -75,6 +77,7 @@ defmodule Animu.Media.Series.Populate do
        cover_dir: "images/cover",
 
        episodes: nil,
+       ep_count: ep_count,
        gen_kitsu_ep: Map.get(options, :gen_kitsu_ep, false),
        gen_exist_ep: Map.get(options, :gen_exist_ep, false),
      }
