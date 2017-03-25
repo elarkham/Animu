@@ -5,8 +5,10 @@
 /*.ez
 /mix.lock
 /assets/npm-debug.log*
+/rel/animu
 
 # Testing artifacts
+/test/scripts/json
 /test/scripts/*.json
 /test/scripts/token
 

@@ -1,13 +1,13 @@
 defmodule Animu.Web.Router do
   use Animu.Web, :router
 
-  pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_flash
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
-  end
+  #pipeline :browser do
+  #  plug :accepts, ["html"]
+  #  plug :fetch_session
+  #  plug :fetch_flash
+  #  plug :protect_from_forgery
+  #  plug :put_secure_browser_headers
+  #end
 
   pipeline :api do
     plug :accepts, ["json"]
@@ -29,12 +29,11 @@ defmodule Animu.Web.Router do
       resources "/series", SeriesController, except: [:new, :edit]
       resources "/episodes", EpisodeController, except: [:new, :edit]
     end
-
   end
 
-  scope "/", Animu.Web do
-    pipe_through :browser # Use the default browser stack
+  #scope "/", Animu.Web do
+  #  pipe_through :browser # Use the default browser stack
 
-    get "/*path", PageController, :index
-  end
+  #  get "/*path", PageController, :index
+  #end
 end
