@@ -43,11 +43,12 @@ defmodule Animu.Media.Series do
     field :finished_airing_date, :date
 
     # Virtual Fields
-    field :populate,                  :boolean, virtual: true
-    field :generate_ep_from_kitsu,    :boolean, virtual: true
-    field :generate_ep_from_existing, :boolean, virtual: true
+    field :populate,       :boolean, virtual: true
+    field :audit,          :boolean, virtual: true
+    field :spawn_episodes, :boolean, virtual: true
 
     timestamps()
   end
+
 
 end

@@ -94,17 +94,17 @@ defmodule Animu.Media.Video do
     changeset(video, %{})
   end
 
-  defp video_track_changeset(%Video.VideoTrack{} = video_codec, attrs) do
+  def video_track_changeset(%Video.VideoTrack{} = video_codec, attrs) do
     video_codec
     |> cast(attrs, all_fields(Video.VideoTrack))
   end
 
-  defp audio_track_changeset(%Video.AudioTrack{} = audio_codec, attrs) do
+  def audio_track_changeset(%Video.AudioTrack{} = audio_codec, attrs) do
     audio_codec
     |> cast(attrs, all_fields(Video.AudioTrack))
   end
 
-  defp subtitles_changeset(%Video.Subtitles{} = subtitles, attrs) do
+  def subtitles_changeset(%Video.Subtitles{} = subtitles, attrs) do
     subtitles
     |> cast(attrs, all_fields(Video.Subtitles))
   end

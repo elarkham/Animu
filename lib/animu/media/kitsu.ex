@@ -125,14 +125,14 @@ defmodule Animu.Media.Kitsu do
   end
 
   def format_to_episode(kitsu_episode) do
-    %{ title: kitsu_episode["canonicalTitle"],
-       synopsis: kitsu_episode["synopsis"],
+    %{title: kitsu_episode["canonicalTitle"],
+      synopsis: kitsu_episode["synopsis"],
 
-       number: convert_float(kitsu_episode["number"]),
-       season_number: kitsu_episode["seasonNumber"],
-       airdate: kitsu_episode["airdate"],
+      number: convert_float(kitsu_episode["number"]),
+      season_number: kitsu_episode["seasonNumber"],
+      airdate: kitsu_episode["airdate"],
 
-       kitsu_id: kitsu_episode["id"],
+      kitsu_id: kitsu_episode["id"],
      }
   end
 
