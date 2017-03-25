@@ -18,4 +18,4 @@ Setup
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-###### Version 3.0.2
+###### Version 3.1.0

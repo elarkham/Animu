@@ -3,7 +3,7 @@ defmodule Animu.Mixfile do
 
   def project do
     [app: :animu,
-     version: "3.0.2",
+     version: "3.1.0",
      elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -43,6 +43,7 @@ defmodule Animu.Mixfile do
      {:httpoison, "~> 0.9.0"},
      {:corsica, "~> 0.5"},
      {:inquisitor, "~> 0.3.0"},
+     {:distillery, "~> 0.9"},
    ]
   end
 
