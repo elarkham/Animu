@@ -4,8 +4,6 @@ defmodule Animu.Media do
   """
   import Ecto.{Query, Changeset}, warn: false
 
-  import Animu.Media.Video.Generate
-  import Animu.Media.Series.Populate
   import Animu.Media.Query
   import Animu.Schema
 
@@ -87,15 +85,17 @@ defmodule Animu.Media do
   def series_changeset(%Series{} = series, attrs) do
     virtual_fields =
       [ :populate,
-        :generate_ep_from_kitsu,
-        :generate_ep_from_existing,
+        :audit,
+        :spawn_episodes,
       ]
 
     series
     |> Repo.preload(:episodes)
     |> Repo.preload(:franchise)
     |> cast(attrs, all_fields(Series) ++ virtual_fields)
-    |> populate_series
+    |> Series.Invoke.populate
+    |> Series.Invoke.audit
+    |> Series.Invoke.spawn_episodes
     |> unique_constraint(:slug)
     |> validate_required([:canon_title, :slug, :directory])
   end
@@ -166,7 +166,7 @@ defmodule Animu.Media do
     |> cast(attrs, all_fields(Episode, except: [:video]) ++ [:video_path])
     |> validate_required([:title, :number])
     |> foreign_key_constraint(:series_id)
-    |> generate_video
+    |> Episode.Invoke.conjure_video
   end
 
   def change_episode(%Episode{} = episode) do

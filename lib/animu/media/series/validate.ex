@@ -1,37 +1,47 @@
 defmodule Animu.Media.Series.Validate do
 
-  def validate_input(series) do
-    with {:ok, series} <- check_kitsu_id(series),
-         {:ok, series} <- check_series_dir(series),
-         {:ok, series} <- check_regex(series),
-         do: {:ok, series}
-  end
+  alias Animu.Media.Series.Bag
 
-  defp check_kitsu_id(series) do
-    case series do
+  def validate_kitsu_id(%Bag{} = bag) do
+    case bag do
       %{kitsu_id: nil} ->
         {:error, "Kitsu Id Is Required For Population"}
       %{kitsu_id: _} ->
-        {:ok, series}
+        {:ok, bag}
     end
   end
 
-  defp check_series_dir(series) do
-    case series do
+  def validate_series_dir(%Bag{} = bag) do
+    case bag do
       %{dir: nil} ->
         {:error, "Series Directory Is Required For Population"}
       %{dir: _} ->
-        {:ok, series}
+        {:ok, bag}
     end
   end
 
-  defp check_regex(series = %{gen_exist_ep: true}) do
-    case series do
+  def validate_regex(bag) do
+    with {:ok, bag} <- validate_regex_not_nil(bag),
+         {:ok, bag} <- validate_regex_compiles(bag),
+         do: {:ok, bag}
+  end
+
+  defp validate_regex_not_nil(bag) do
+    case bag do
       %{regex: nil} ->
-        {:error, "Regex Is Required To Add Existing Episodes"}
+        {:error, "Regex Is Required For Audit"}
       %{regex: _} ->
-        {:ok, series}
+        {:ok, bag}
     end
   end
-  defp check_regex(series), do: {:ok, series}
+
+  def validate_regex_compiles(bag = %Bag{regex: nil}), do: {:ok, bag}
+  def validate_regex_compiles(bag) do
+    case Regex.compile(bag.regex) do
+      {:error, {error, num}} when is_integer(num) ->
+        {:error, "Provided Regex Failed: #{error}"}
+      {:ok, regex} ->
+        {:ok, Map.put(bag, :regex, regex)}
+    end
+  end
 end
