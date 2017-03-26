@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 TOKEN="$(cat token)"
+URL=${URL:-http://localhost:4000}
 
 curl -s -X POST \
      -H "Authorization: $TOKEN" \
      -H "Content-Type: application/json" \
      -d "$(cat $2)" \
-     http://localhost:4000/api/v1/"$1" \
+     "$URL/api/v1/$1" \
 | jq '.'
 
