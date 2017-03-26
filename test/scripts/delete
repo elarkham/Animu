@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 TOKEN="$(cat token)"
+URL=${URL:-http://localhost:4000}
 
 curl -s -X DELETE \
      -H "Authorization: $TOKEN" \
-     http://localhost:4000/api/v1/"$1" \
+     "$URL/api/v1/$1" \
 | jq '.'
 
