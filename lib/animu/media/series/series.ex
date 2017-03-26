@@ -25,7 +25,7 @@ defmodule Animu.Media.Series do
     field :episode_count,  :integer
     field :episode_length, :integer
 
-    has_many   :episodes,   Episode, defaults: []
+    has_many   :episodes,   Episode, defaults: [], on_replace: :delete
     belongs_to :franchise,  Franchise, defaults: %Franchise{}
 
     field :kitsu_rating,   :float

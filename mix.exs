@@ -18,7 +18,7 @@ defmodule Animu.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Animu.Application, []},
-     extra_applications: [:logger]]
+     extra_applications: [:logger, :runtime_tools, :observer, :xmerl]]
   end
 
   # Specifies which paths to compile per environment.
@@ -31,7 +31,7 @@ defmodule Animu.Mixfile do
   defp deps do
     [{:phoenix, "~> 1.3.0-rc"},
      {:phoenix_pubsub, "~> 1.0"},
-     {:phoenix_ecto, "~> 3.0"},
+     {:phoenix_ecto, "~> 3.2.2"},
      {:phoenix_html, "~> 2.6"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:cowboy, "~> 1.0"},
@@ -40,10 +40,11 @@ defmodule Animu.Mixfile do
      {:guardian, "~> 0.12.0"},
      {:comeonin, "~> 2.0"},
      {:feeder_ex, "~> 1.0"},
+     {:feeder, "~> 2.1"},
      {:httpoison, "~> 0.9.0"},
      {:corsica, "~> 0.5"},
      {:inquisitor, "~> 0.3.0"},
-     {:distillery, "~> 0.9"},
+     {:distillery, "~> 0.9", runtime: false},
    ]
   end
 

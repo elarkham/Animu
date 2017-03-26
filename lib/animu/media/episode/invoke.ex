@@ -1,6 +1,5 @@
 defmodule Animu.Media.Episode.Invoke do
   import Ecto.Changeset
-  import Animu.Media.Episode.Transmute
 
   alias Ecto.Changeset
   alias Animu.Media.Video

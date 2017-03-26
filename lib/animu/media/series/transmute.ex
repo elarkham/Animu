@@ -5,7 +5,7 @@ defmodule Animu.Media.Series.Transmute do
 
   alias Ecto.Changeset
   alias Animu.Media.Series.Bag
-  alias Animu.Media.{Series, Episode, Video}
+  alias Animu.Media.{Series, Episode}
   alias Animu.Schema
 
   def transmute(%Changeset{} = changeset, :series) do
@@ -32,7 +32,7 @@ defmodule Animu.Media.Series.Transmute do
       transmute_episodes(series.episodes, series.directory)
 
     changeset.data
-      |> cast(Map.from_struct(series), Schema.all_fields(Series))
+      |> cast(Schema.to_params(series), Schema.all_fields(Series))
       |> merge(changeset)
       |> put_assoc(:episodes, episodes)
   end
