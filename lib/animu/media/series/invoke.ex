@@ -43,7 +43,6 @@ defmodule Animu.Media.Series.Invoke do
          {:ok, bag} <- validate_regex(bag),
          {:ok, bag} <- spawn_episodes(:audit, bag),
             series  <- transmute(bag, :series) do
-
       {:ok, series}
     else
       {:error, reason} -> {:error, reason}
@@ -67,7 +66,6 @@ defmodule Animu.Media.Series.Invoke do
     with       bag  <- transmute(series, :bag),
          {:ok, bag} <- spawn_episodes(:spawn, bag),
             series  <- transmute(bag, :series) do
-
       {:ok, series}
     else
       {:error, reason} -> {:error, reason}
@@ -82,7 +80,7 @@ defmodule Animu.Media.Series.Invoke do
       changeset
     else
       {:error, reason} ->
-        add_error(changeset, :audit, reason)
+        add_error(changeset, :spawn_episodes, reason)
     end
   end
   def spawn_episodes(%Changeset{} = changeset), do: changeset

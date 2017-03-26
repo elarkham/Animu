@@ -16,7 +16,7 @@ defmodule Animu.Media.Episode.Transmute do
 
   def transmute(%Episode{} = episode, %Changeset{} = changeset) do
     new_changeset =
-      cast(changeset.data, Map.from_struct(episode),
+      cast(changeset.data, Schema.to_params(episode),
         Schema.all_fields(Episode, except: [:video]) ++ [:video_path])
 
     merge(changeset, new_changeset)
