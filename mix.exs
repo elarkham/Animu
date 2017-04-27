@@ -3,7 +3,7 @@ defmodule Animu.Mixfile do
 
   def project do
     [app: :animu,
-     version: "3.1.0",
+     version: System.get_env("VERSION") || "3.1.0",
      elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
