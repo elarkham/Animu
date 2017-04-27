@@ -14,7 +14,6 @@ use Mix.Config
 config :animu, Animu.Web.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [host: {:system, "HOST"}, port: {:system, "PORT"}],
-  cache_static_manifest: "priv/static/manifest.json",
   server: true,
   root: ".",
   version: Mix.Project.config[:version]
