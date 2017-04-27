@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+nightly() {
+  export VERSION="$(date +%Y.%m.%d%H%M%S)"
+  export MIX_ENV="nightly"
+  export RELEASE_ENV="nightly"
+
+  mix release --env="$RELEASE_ENV"
+  if [[ "$?" != 0 ]]; then
+    echo "Nightly Failed To Build"
+    exit 1
+  fi
+
+  TAR="rel/animu/releases/$VERSION/animu.tar.gz"
+
+  scp "$TAR" cthulhu:"/opt/animu/tmp/nightly.tar.gz"
+  ssh cthulhu "/opt/animu/scripts/deploy" "nightly" "$VERSION"
+}
+
+release() {
+  if [[ -z "$2" ]]; then
+    echo "Release Requires Version Number"
+    exit 1
+  fi
+
+  export VERSION="$2"
+  export MIX_ENV="prod"
+  export RELEASE_ENV="prod"
+
+  mix release --env="$RELEASE_ENV"
+  if [[ "$?" != 0 ]]; then
+    echo "Release Failed To Build"
+    exit 1
+  fi
+
+  TAR="rel/animu/releases/$VERSION/animu.tar.gz"
+
+  scp "$TAR" cthulhu:"/opt/animu/tmp/release.tar.gz"
+  ssh cthulhu "/opt/animu/scripts/deploy" "release" "$VERSION"
+}
+
+# Options
+case $1 in
+  nightly)
+    nightly
+    ;;
+  release)
+    release
+    ;;
+  *)
+    echo "Usage: deploy {nightly | release [version]}"
+    ;;
+esac
+
+
