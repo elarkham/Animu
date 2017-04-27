@@ -88,6 +88,7 @@ defmodule Animu.Media.Video.Collect do
     {:ok, Bag.put_font(bag, :data, search)}
   end
 
+  #TODO Fix improper nil font detection
   def collect_font_names(bag = %Bag{font: nil}), do: {:ok, bag}
   def collect_font_names(%Bag{} = bag) do
     fonts =
