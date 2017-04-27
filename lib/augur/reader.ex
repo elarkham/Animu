@@ -36,9 +36,17 @@ defmodule Augur.Reader do
   @doc """
   Continually scans all feeds every 15 minutes for matching values
   """
+  def handle_info(:scan_feeds_loop, cache) do
+    Process.send(self(), :scan_feeds, [])
+    start_timer()
+    {:noreply, cache}
+  end
+
+  @doc """
+  Continually scans all feeds for matching values
+  """
   def handle_info(:scan_feeds, cache) do
     cache = scan_feeds(cache)
-    start_timer()
     {:noreply, cache}
   end
 
@@ -66,7 +74,7 @@ defmodule Augur.Reader do
 
   # Runs scan_feed/2 once 15min pass
   defp start_timer do
-    Process.send_after(self(), :scan_feeds, (15 * 60000))
+    Process.send_after(self(), :scan_feeds_loop, (15 * 60000))
   end
 
   # Scan provided rss feeds for matching patterns
