@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+curl -s -G -X GET \
+  -H "Content-Type: application/vnd.api+json" \
+  "https://kitsu.io/api/edge/anime" \
+  --data-urlencode "fields[anime]=slug,canonicalTitle,titles,posterImage,episodeCount"\
+  --data-urlencode "filter[text]=$1"\
+  --data-urlencode "page[limit]=2" \
+| jq '.data[0].attributes.canonicalTitle, .data[0].id, .data[0].attributes.episodeCount'
