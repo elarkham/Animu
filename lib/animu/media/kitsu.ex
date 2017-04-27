@@ -1,6 +1,7 @@
 defmodule Animu.Media.Kitsu do
 
   alias HTTPoison.Response
+  alias Animu.Media.Episode
 
   @url "https://kitsu.io/api/edge/"
 
@@ -96,6 +97,13 @@ defmodule Animu.Media.Kitsu do
     end
   end
 
+  defp handle_title(title, num) do
+    case title do
+      nil -> "Episode #{num}"
+      _ -> title
+    end
+  end
+
   def format_to_franchise(kitsu_franchise) do
     #TODO Create Franchise Formater
     kitsu_franchise
@@ -125,7 +133,8 @@ defmodule Animu.Media.Kitsu do
   end
 
   def format_to_episode(kitsu_episode) do
-    %{title: kitsu_episode["canonicalTitle"],
+    %Episode{
+      title: handle_title(kitsu_episode["canonicalTitle"], kitsu_episode["number"]),
       synopsis: kitsu_episode["synopsis"],
 
       number: convert_float(kitsu_episode["number"]),
