@@ -31,6 +31,19 @@ defmodule Augur.Transmission do
   end
 
   @doc """
+  Creates torrents using given paramaters and then adds it
+  """
+  def add_torrent(ep_id, downloadDir, url) do
+    torrent =
+      %Torrent{
+        ep_id: ep_id,
+        downloadDir: downloadDir,
+        url: url
+      }
+
+    GenServer.cast(Augur.Transmission, {:add_torrent, torrent})
+  end
+  @doc """
   Polls status of torrents from list of ids
   """
   def poll(ids) do
