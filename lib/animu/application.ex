@@ -12,10 +12,8 @@ defmodule Animu.Application do
     ]
 
     augur = [
-      # RSS feed reader
-      worker(Augur.Reader, [Augur.Reader]),
-      # Torrent Registry that tracks transmission downloads
-      worker(Augur.TransmissionClient, [Augur.TransmissionClient]),
+      # Auto downlaod new episodes by scanning RSS Feeds
+      supervisor(Augur.Supervisor, [])
     ]
 
     children =
