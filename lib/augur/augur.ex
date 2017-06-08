@@ -110,7 +110,11 @@ defmodule Augur do
   defp proccess_finished_torrent({_id, torrent}) do
     episode_params = %{"video_path" => torrent.name}
     episode = Animu.Media.get_episode!(torrent.ep_id)
-    Task.start(Animu.Media, :update_episode, [episode, episode_params])
+    #Task.start(Animu.Media, :update_episode, [episode, episode_params])
+    Task.start(fn ->
+      Animu.Media.update_episode(episode, episode_params)
+      rebuild_cache()
+    end)
     torrent
   end
 
