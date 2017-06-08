@@ -105,6 +105,23 @@ defmodule Animu.Media do
   end
 
   @doc """
+  Returns all watched Series with Episodes that have nil Videos
+  """
+  def all_watched_series do
+    episode_query =
+      from e in Episode,
+       where: is_nil(e.video),
+      select: {e.id, e.number}
+    series_query =
+      from s in Series,
+      preload: [episodes: ^episode_query],
+        where: s.watch == true,
+       select: struct(s, [:id, :rss_feed, :regex, :directory])
+
+    Repo.all(series_query)
+  end
+
+  @doc """
   Returns a list of Series
   """
   def list_series(params) do

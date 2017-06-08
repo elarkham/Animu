@@ -1,11 +1,25 @@
 defmodule Augur.Torrent do
-  defstruct ep_id: nil,
-            ep_num: nil,
+
+  defstruct id: nil,
+            ep_id: nil,
             url: nil,
-            dir: nil,
+            downloadDir: nil,
             name: nil,
-            feed_url: nil,
-            id: nil,
-            progress: 0.0,
-            finished: false
+            percentDone: 0.0
+
+  def new(%{"id" => id, "downloadDir" => dir, "percentDone" => pd}) do
+    %__MODULE__{
+      id: id,
+      downloadDir: dir,
+      percentDone: pd,
+    }
+  end
+
+  def merge(t1 = %__MODULE__{}, t2 = %__MODULE__{}) do
+    changes =
+      Map.from_struct(t2)
+      |> Enum.reject(fn {_k, v} -> v == nil end)
+
+    struct(t1, changes)
+  end
 end
