@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Author: Ethan Larkham
+# Date: June 5, 2017
+# - Clones production database from cthulhu into local dev environment
+
+pg_dump \
+  --host="cthulhu" \
+  --username="postgres" \
+  --format="custom" \
+  --compress=5 \
+  --no-acl \
+  --no-owner \
+  --oids \
+  "animu_prod" | \
+\
+pg_restore  \
+  --host="localhost" \
+  --username="postgres" \
+  --verbose \
+  --clean \
+  --no-acl \
+  --no-owner \
+  -d "animu_dev" \
