@@ -107,14 +107,24 @@ defmodule Augur do
 
   ## Helper Functions
 
+  defp proccess_finished_torrent({_id, torrent = %Torrent{ep_id: nil}}) do
+    Logger.warn "Augur attempted to add a torrent with nil ep_id!"
+    torrent
+  end
   defp proccess_finished_torrent({_id, torrent}) do
     episode_params = %{"video_path" => torrent.name}
     episode = Animu.Media.get_episode!(torrent.ep_id)
     #Task.start(Animu.Media, :update_episode, [episode, episode_params])
-    Task.start(fn ->
-      Animu.Media.update_episode(episode, episode_params)
-      rebuild_cache()
-    end)
+    #Task.start(fn -> end)
+    Logger.info "Adding new episode: #{}"
+    case Animu.Media.update_episode(episode, episode_params) do
+      {:ok, _} ->
+        rebuild_cache()
+      {:error, changeset} ->
+        Logger.error "Failed to process video: #{inspect changeset.errors}"
+      _ ->
+        Logger.error "Failed to process video for unkown reasons!"
+    end
     torrent
   end
 
