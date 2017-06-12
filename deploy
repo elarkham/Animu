@@ -18,12 +18,12 @@ nightly() {
 }
 
 release() {
-  if [[ -z "$2" ]]; then
+  if [[ -z "$1" ]]; then
     echo "Release Requires Version Number"
     exit 1
   fi
 
-  export VERSION="$2"
+  export VERSION="$1"
   export MIX_ENV="prod"
   export RELEASE_ENV="prod"
 
@@ -45,7 +45,7 @@ case $1 in
     nightly
     ;;
   release)
-    release
+    release "$2"
     ;;
   *)
     echo "Usage: deploy {nightly | release [version]}"
