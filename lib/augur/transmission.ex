@@ -77,13 +77,13 @@ defmodule Augur.Transmission do
         id = torrent_info["id"]
         torrent = %Torrent{torrent | id: id}
         Augur.cache_torrents(%{id => torrent})
-        Logger.info("Added torrent: #{inspect torrent}")
+        Logger.info("Added torrent: #{inspect torrent.name}")
         {:noreply, s_id}
       {:ok, %{"arguments" => %{"torrent-duplicate" => torrent_info}}, s_id} ->
         id = torrent_info["id"]
         torrent = %Torrent{torrent | id: id}
         Augur.cache_torrents(%{id => torrent})
-        Logger.info("Added duplicate torrent: #{inspect torrent}")
+        Logger.info("Added duplicate torrent: #{inspect torrent.name}")
         {:noreply, s_id}
       reply ->
         Logger.error("Failed to add torrent due to: #{reply}")
