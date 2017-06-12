@@ -58,7 +58,8 @@ defmodule Animu.Media.Video.Collect do
       search_count == 0 ->
         {:error, "Video Does Not Contain An Audio Track"}
       search_count > 1 ->
-        {:error, "Video's With Multiple Audio Tracks Are Not Supported"}
+        #{:error, "Video's With Multiple Audio Tracks Are Not Supported"}
+        {:ok, Map.put(bag, :audio_track, List.first(search))}
       true ->
         {:ok, Map.put(bag, :audio_track, List.first(search))}
     end
