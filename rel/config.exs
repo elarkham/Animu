@@ -38,6 +38,7 @@ end
 
 release :animu do
   set version: System.get_env("VERSION") || current_version(:animu)
+  set vm_args: "rel/vm.args.eex"
   set commands: [
     "migrate": "rel/commands/migrate.sh"
   ]
