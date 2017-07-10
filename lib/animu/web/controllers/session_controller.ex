@@ -5,12 +5,22 @@ defmodule Animu.Web.SessionController do
   action_fallback Animu.Web.FallbackController
 
   def create(conn, %{"session" => session_params}) do
-    with {:ok, user} <- Animu.Session.authenticate(session_params) do
-      {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :token)
-      conn
-      |> put_status(:created)
-      |> render("show.json", jwt: jwt, user: user)
+    case Animu.Session.authenticate(session_params) do
+      {:ok, user} ->
+        {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :token)
+        conn
+        |> put_status(:created)
+        |> render("show.json", jwt: jwt, user: user)
+
+      _ ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json")
     end
+  end
+
+  def create(conn, %{"username" => username, "password" => password}) do
+    create(conn, %{"session" => %{"username" => username, "password" => password}})
   end
 
   def delete(conn, _) do
