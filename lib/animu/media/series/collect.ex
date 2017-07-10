@@ -26,7 +26,7 @@ defmodule Animu.Media.Series.Collect do
     case request_relationship("anime", "episodes", bag.kitsu_id) do
       {:ok, episodes} ->
         episodes = Enum.map(episodes, &format_to_episode/1)
-        {:ok, Map.put(bag, :episodes, episodes)}
+        {:ok, Map.put(bag, :kitsu_eps, episodes)}
       {:error, reason} ->
         {:error, reason}
     end
