@@ -6,6 +6,7 @@
 pg_dump \
   --host="cthulhu" \
   --username="postgres" \
+  --password \
   --format="custom" \
   --compress=5 \
   --no-acl \
