@@ -22,13 +22,14 @@ end
 environment :prod do
   set include_erts: true
   set include_src: false
-  set cookie: :prod
+  set vm_args: "rel/prod.vm.args.eex"
 end
 
 environment :nightly do
   set include_erts: true
   set include_src: false
   set cookie: :nightly
+  set vm_args: "rel/nightly.vm.args.eex"
 end
 
 # You may define one or more releases in this file.
@@ -38,7 +39,6 @@ end
 
 release :animu do
   set version: System.get_env("VERSION") || current_version(:animu)
-  set vm_args: "rel/vm.args.eex"
   set commands: [
     "migrate": "rel/commands/migrate.sh"
   ]
