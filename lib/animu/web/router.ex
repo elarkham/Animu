@@ -25,11 +25,15 @@ defmodule Animu.Web.Router do
       post   "/session", SessionController, :create
       delete "/session", SessionController, :delete
 
+      post   "/rpc", RpcController, :rpc
+
       resources "/franchises", FranchiseController, except: [:new, :edit]
       resources "/series", SeriesController, except: [:new, :edit]
       resources "/episodes", EpisodeController, except: [:new, :edit]
     end
+
   end
+
 
   #scope "/", Animu.Web do
   #  pipe_through :browser # Use the default browser stack
