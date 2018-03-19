@@ -86,6 +86,14 @@ defmodule Animu.Media.Series.Bag do
         _   -> kitsu_data.episode_count
       end
 
+    poster_urls = Map.drop(kitsu_data.poster_urls, ["meta"])
+    cover_urls  = Map.drop(kitsu_data.cover_urls,  ["meta"])
+
+    kitsu_data =
+      kitsu_data
+      |> Map.put(:poster_urls, poster_urls)
+      |> Map.put(:cover_urls,  cover_urls)
+
     bag
     |> Map.put(:episode_count, episode_count)
     |> Map.put(:kitsu_data, kitsu_data)
