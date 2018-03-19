@@ -96,8 +96,8 @@ defmodule Animu.Media do
     |> Series.Invoke.populate
     |> Series.Invoke.audit
     |> Series.Invoke.spawn_episodes
-    |> unique_constraint(:slug)
     |> validate_required([:canon_title, :slug, :directory])
+    |> unique_constraint(:slug)
   end
 
   def change_series(%Series{} = series) do
