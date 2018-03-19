@@ -47,6 +47,9 @@ defmodule Animu.Web.SeriesView do
 
       started_airing_date: series.started_airing_date,
       finished_airing_date: series.finished_airing_date,
+
+      inserted_at: series.inserted_at,
+      updated_at:  series.updated_at,
     }
   end
 
@@ -87,6 +90,9 @@ defmodule Animu.Web.SeriesView do
 
       started_airing_date: series.started_airing_date,
       finished_airing_date: series.finished_airing_date,
+
+      inserted_at: series.inserted_at,
+      updated_at:  series.updated_at,
     }
   end
 
