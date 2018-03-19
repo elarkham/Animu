@@ -79,7 +79,7 @@ defmodule Animu.Media.Kitsu do
     end
   end
 
-  defp convert_map(map) do
+  defp convert_image_urls(map) do
     case map do
       nil -> %{}
       _ -> map
@@ -115,8 +115,8 @@ defmodule Animu.Media.Kitsu do
       synopsis: kitsu_series["synopsis"],
       slug: kitsu_series["slug"],
 
-      cover_urls: convert_map(kitsu_series["coverImage"]),
-      poster_urls: convert_map(kitsu_series["posterImage"]),
+      cover_urls: convert_image_urls(kitsu_series["coverImage"]),
+      poster_urls: convert_image_urls(kitsu_series["posterImage"]),
 
       age_rating: kitsu_series["ageRating"],
       nsfw: kitsu_series["nsfw"],
