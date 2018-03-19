@@ -93,8 +93,41 @@ defmodule Animu.Media.Video.Bag do
     Map.put(bag, :subtitles, subtitles)
   end
 
+  #pipe :put_font, [:input,:format], "MKV" do
+  #def put_font(match [:input,:format], "MKV") do
+  #def put_font(bag = get Bag, [:input,:format], "MKV") do
+  #def put_font(bag = %Bag{input: %Bag.IO{format: "MKV"}}) do
   def put_font(%Bag{} = bag, key, value) when is_atom(key) do
     font = Map.put(bag.font, key, value)
     Map.put(bag, :font, font)
   end
+
+  defmacro match(keys, value) do
+    build = build_get(Bag, keys, value)
+    quote do
+      var!(bag) = unquote(build)
+    end
+  end
+
+  defmacro get(module, keys, value) do
+    build_get(module, keys, value)
+  end
+
+  defp build_get(nil, [], value) do
+    value
+  end
+  defp build_get(module, [k | keys], value) do
+    type =
+      %{input: Bag.IO,
+        output: Bag.IO,
+        subtitles: Bag.Subtitles,
+        font: Bag.Font,
+       }
+
+    next = build_get(type[k], keys, value)
+    {:%, [],
+     [{:__aliases__, [alias: false], [module]},
+      {:%{}, [], [{k, next}]}]}
+  end
+
 end

@@ -1,6 +1,7 @@
 defmodule Animu.Media.Video.Conjure do
   alias Animu.Media.FFmpeg
   alias Animu.Media.Video.Bag
+  require Bag
 
   @output_dir "videos"
   @subtitles_dir "subtitles"
