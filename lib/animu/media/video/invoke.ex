@@ -1,8 +1,6 @@
 defmodule Animu.Media.Video.Invoke do
 
-  import Animu.Media.Video.Collect
-  import Animu.Media.Video.Conjure
-  import Animu.Media.Video.Transmute
+  import Animu.Media.Video.{Collect, Conjure, Transmute}
 
   alias Animu.Media.Video.Bag
 

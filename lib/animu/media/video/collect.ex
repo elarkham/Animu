@@ -73,8 +73,8 @@ defmodule Animu.Media.Video.Collect do
     cond do
       search_count == 0 ->
         {:ok, %{bag | subtitles: nil}}
-      search_count > 1 ->
-        {:error, "Video's With Multiple Subtitle Tracks Are Not Supported"}
+      #search_count > 1 ->
+      #  {:error, "Video's With Multiple Subtitle Tracks Are Not Supported"}
       true ->
         {:ok, Bag.put_subtitles(bag, :data, List.first(search))}
     end

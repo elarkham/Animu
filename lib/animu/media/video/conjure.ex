@@ -104,7 +104,7 @@ defmodule Animu.Media.Video.Conjure do
 
     case File.cp(bag.input.file, output.file, true) do
     	:ok ->
-				{:ok, %{bag | output: output}}
+				{:ok, %Bag{bag | output: output}}
 			{:error, _} ->
 				{:error, "Failed To Copy Video File"}
 		end
@@ -138,7 +138,7 @@ defmodule Animu.Media.Video.Conjure do
 
     case FFmpeg.mkv_to_mp4(bag.input.file, output.file) do
       {_, 0} ->
-        {:ok, Map.put(bag, :output, output)}
+        {:ok, %Bag{bag | output: output}}
       {_, _} ->
         {:error, "Failed To Convert MKV->MP4"}
     end
