@@ -1,9 +1,41 @@
 defmodule Animu.Media.Kitsu do
 
   alias HTTPoison.Response
-  alias Animu.Media.Episode
+  alias Animu.Media.{Series, Episode}
 
   @url "https://kitsu.io/api/edge/"
+
+  def request_collection(type, ids, offset \\ 0) when is_list(ids) do
+    fields = Enum.join(ids, ",")
+    querystring = URI.encode_query(
+      %{"filter[id]" => fields,
+        "page[limit]" => 20,
+        "page[offset]" => offset})
+    url = @url <> type <> "?" <> querystring
+    headers = ["Accept": "application/vnd.api+json"]
+    options = [follow_redirect: true]
+
+    with {:ok, %Response{body: body}} <- HTTPoison.get(url, headers, options),
+         {:ok, body} <- Poison.Parser.parse(body) do
+
+      data = Map.new(body["data"], fn data ->
+        {data["id"], Map.put(data["attributes"], "id", data["id"])}
+      end)
+
+      cond do
+        offset >= Enum.count(ids) ->
+          {:ok, data}
+        true ->
+          IO.puts(offset)
+          {:ok, next} = request_collection(type, ids, offset + 20)
+          {:ok, Map.merge(data, next)}
+      end
+    else
+      reason ->
+        IO.inspect(reason)
+        {:error, "HTTP Request For Kitsu Data Failed, Type: #{type}, Ids: #{fields}"}
+    end
+  end
 
   def request(type, id) do
     url = @url <> type <> "/" <> to_string(id)
@@ -12,6 +44,7 @@ defmodule Animu.Media.Kitsu do
 
     with {:ok, %Response{body: body}} <- HTTPoison.get(url, headers, options),
          {:ok, body} <- Poison.Parser.parse(body) do
+
       {:ok, Map.put(body["data"]["attributes"], "id", id)}
     else
       reason ->
@@ -107,6 +140,17 @@ defmodule Animu.Media.Kitsu do
   def format_to_franchise(kitsu_franchise) do
     #TODO Create Franchise Formater
     kitsu_franchise
+  end
+
+  #def format_to_series(kitsu_series, %Series{config:
+  #                       %{"populate" => %{"blacklist" => fields}}}) do
+  #  kitsu_series
+  #    |> format_to_series()
+  #    |> Map.drop(Enum.map(fields, &(String.to_atom(&1))))
+  #end
+
+  def format_to_series(kitsu_series, %Series{}) do
+    format_to_series(kitsu_series)
   end
 
   def format_to_series(kitsu_series) do
