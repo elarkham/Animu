@@ -33,7 +33,6 @@ defmodule Animu.Media.Series.Transmute do
 
     changeset.data
       |> cast(Schema.to_params(series), Schema.all_fields(Series))
-      |> merge(changeset)
       |> put_assoc(:episodes, episodes)
   end
 
