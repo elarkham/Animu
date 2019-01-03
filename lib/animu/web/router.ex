@@ -18,6 +18,33 @@ defmodule Animu.Web.Router do
   scope "/api", Animu.Web do
     pipe_through :api
 
+    # Latest API
+    resources "/users", UserController, except: [:new, :edit]
+    get "/current_user", CurrentUserController, :show
+
+    post   "/session", SessionController, :create
+    delete "/session", SessionController, :delete
+
+    post   "/rpc", RpcController, :rpc
+
+    # Union of franchise and series
+    get "/media", MediaController, :index
+
+    # /franchises/:id/series/:id/episode/:id
+    resources "/franchises", FranchiseController, except: [:new, :edit] do
+      resources "/series", SeriesController, except: [:new, :edit] do
+        resources "/episodes", EpisodeController, except: [:new, :edit]
+      end
+    end
+
+    # /series/:id/episodes/:id
+    resources "/series", SeriesController, except: [:new, :edit] do
+      resources "/episodes", EpisodeController, except: [:new, :edit]
+    end
+
+    resources "/episodes", EpisodeController, except: [:new, :edit]
+
+    # Versioned API
     scope "/v1" do
       resources "/users", UserController, except: [:new, :edit]
       get "/current_user", CurrentUserController, :show
