@@ -9,6 +9,30 @@ defmodule Animu.Media.Series.Invoke do
   alias Ecto.Changeset
   alias Animu.Media.Series
 
+  def summon_images(%Series{} = series) do
+    with       bag  <- transmute(series, :bag),
+         {:ok, bag} <- conjure_images(bag),
+            series  <- transmute(bag, :series) do
+      {:ok, series}
+    else
+      {:error, reason} -> {:error, reason}
+      _ -> {:error, "Unexpected Error Summoning Images"}
+    end
+	end
+  def summon_images(changeset = %Changeset{valid?: false}), do: changeset
+  def summon_images(changeset = %Changeset{changes: %{poster_image: nil, cover_image: nil}}), do: changeset
+  def summon_images(changeset = %Changeset{}) do
+    with       series  <- transmute(changeset, :series),
+         {:ok, series} <- summon_images(series),
+            changeset  <- transmute(series, changeset) do
+      changeset
+    else
+      {:error, reason} ->
+        add_error(changeset, :summon_images, reason)
+    end
+  end
+
+
   def populate(%Series{} = series) do
     with       bag  <- transmute(series, :bag),
          {:ok, bag} <- validate_kitsu_id(bag),
@@ -28,8 +52,8 @@ defmodule Animu.Media.Series.Invoke do
   def populate(changeset = %Changeset{changes: %{populate: true}}) do
     with       series  <- transmute(changeset, :series),
          {:ok, series} <- populate(series),
-            changeset  <- transmute(series, changeset) do
-      changeset
+        new_changeset  <- transmute(series, changeset) do
+      merge(new_changeset, changeset)
     else
       {:error, reason} ->
         add_error(changeset, :populate, reason)

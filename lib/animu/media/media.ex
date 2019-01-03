@@ -96,6 +96,7 @@ defmodule Animu.Media do
     |> Series.Invoke.populate
     |> Series.Invoke.audit
     |> Series.Invoke.spawn_episodes
+    |> Series.Invoke.summon_images
     |> validate_required([:canon_title, :slug, :directory])
     |> unique_constraint(:slug)
   end
@@ -116,7 +117,7 @@ defmodule Animu.Media do
       from s in Series,
       preload: [episodes: ^episode_query],
         where: s.watch == true,
-       select: struct(s, [:id, :rss_feed, :regex, :directory])
+       select: [:id, :rss_feed, :regex, :directory]
 
     Repo.all(series_query)
   end

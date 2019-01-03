@@ -1,7 +1,7 @@
 defmodule Animu.Media.Series do
   use Ecto.Schema
 
-  alias Animu.Media.{Episode, Franchise}
+  alias Animu.Media.{Episode, Franchise, Upload}
 
   @derive {Poison.Encoder, except: [:__meta__]}
   schema "series" do
@@ -10,8 +10,8 @@ defmodule Animu.Media.Series do
     field :synopsis,       :string
     field :slug,           :string
 
-    field :cover_image,    {:map, :string}
-    field :poster_image,   {:map, :string}
+    field :cover_image,    Upload.Image
+    field :poster_image,   Upload.Image
     field :gallery,        {:map, :string}
 
     field :trailers,       {:array, :string}
@@ -26,7 +26,7 @@ defmodule Animu.Media.Series do
     field :episode_length, :integer
 
     has_many   :episodes,   Episode, defaults: [], on_replace: :delete
-    belongs_to :franchise,  Franchise, defaults: %Franchise{}
+    belongs_to :franchise,  Franchise
 
     field :kitsu_rating,   :float
     field :kitsu_id,       :string
@@ -35,7 +35,7 @@ defmodule Animu.Media.Series do
     field :subgroup,       :string
     field :quality,        :string
     field :rss_feed,       :string
-    field :watch,          :boolean, default: false
+    field :watch,          :boolean #, default: false
 
     field :directory,      :string
 

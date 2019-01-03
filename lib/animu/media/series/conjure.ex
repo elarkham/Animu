@@ -1,6 +1,9 @@
 defmodule Animu.Media.Series.Conjure do
   import Animu.Media.Episode.Conjure, only: [spawn_episode: 1, spawn_episode: 2]
   alias Animu.Media.Series.Bag
+  alias Animu.Media.ImageMagick
+
+  ## Episode Handling
 
   def spawn_episodes(:kitsu, bag) do
     episodes =
@@ -69,7 +72,8 @@ defmodule Animu.Media.Series.Conjure do
     end)
   end
 
-  def conjure_images(bag) do
+  ## Image Handling
+  def conjure_images(bag = %Bag{}) do
     with :ok <- File.mkdir_p(bag.output_dir),
          :ok <- File.mkdir_p(bag.input_dir),
          :ok <- File.cd(bag.output_dir),
@@ -77,7 +81,8 @@ defmodule Animu.Media.Series.Conjure do
          :ok <- File.mkdir_p(bag.cover_dir),
          {:ok, bag} <- conjure_poster_images(bag),
          {:ok, bag} <- conjure_cover_images(bag),
-         :ok <- File.cd(Application.app_dir(:animu)) do
+         #:ok <- File.cd(Application.app_dir(:animu)) do
+         :ok <- File.cd("/home/ethan/src/proj/animu") do
       {:ok, bag}
     else
       {:error, reason} -> {:error, reason}
@@ -85,38 +90,59 @@ defmodule Animu.Media.Series.Conjure do
     end
   end
 
-  defp conjure_poster_images(bag) do
-    poster_image =
-      Enum.reduce_while(bag.poster_image, %{}, fn kv, acc ->
-        write_image(kv, acc, bag.poster_dir)
-      end)
+  defp conjure_poster_images(bag = %Bag{poster_image: nil}), do: {:ok, bag}
+  defp conjure_poster_images(bag = %Bag{poster_image: %{}}), do: {:ok, bag}
+  defp conjure_poster_images(bag = %Bag{}) do
+    IO.puts "Conjuring Poster Images"
+    orig_path = Path.join(bag.poster_dir, "original.jpg")
+    sizes =
+      %{ "large"  => {550, 780},
+         "medium" => {390, 554},
+         "small"  => {284, 402},
+         "tiny"   => {110, 156},
+      }
 
-    case poster_image do
-      {:error, reason} -> {:error, reason}
-      poster_image -> {:ok, Map.put(bag, :poster_image, poster_image)}
+    with :ok <- File.cd(bag.output_dir),
+         :ok <- write_image(orig_path, bag.poster_image),
+         {:ok, images} <- conjure_thumbs(sizes, orig_path, bag.poster_dir) do
+      images = Map.put(images, "original", orig_path)
+      {_, 0} = ImageMagick.convert(orig_path, orig_path) # Ensures orig is jpg
+      bag = Map.put(bag, :poster_image, images)
+      {:ok, bag}
     end
   end
 
-  defp conjure_cover_images(bag) do
-    cover_image =
-      Enum.reduce_while(bag.cover_image, %{}, fn kv, acc ->
-        write_image(kv, acc, bag.cover_dir)
-      end)
+  defp conjure_cover_images(bag = %Bag{cover_image: nil}), do: {:ok, bag}
+  defp conjure_cover_images(bag = %Bag{cover_image: %{}}), do: {:ok, bag}
+  defp conjure_cover_images(bag = %Bag{}) do
+    orig_path = Path.join(bag.cover_dir, "original.jpg")
 
-    case cover_image do
-      {:error, reason} -> {:error, reason}
-      cover_image -> {:ok, Map.put(bag, :cover_image, cover_image)}
+    with :ok <- File.cd(bag.output_dir),
+         :ok <- write_image(bag.cover_image, orig_path) do
+      images = %{"original" => orig_path}
+      {_, 0} = ImageMagick.convert(orig_path, orig_path) # Ensures orig is jpg
+      bag = Map.put(bag, :cover_image, images)
+      {:ok, bag}
     end
   end
 
-  defp write_image({key, data}, acc, dir) do
-    filename = key <> ".jpg"
-    path = Path.join(dir, filename)
+  defp conjure_thumbs(sizes, orig, dir) do
+    Enum.reduce_while(sizes, {:ok, %{}}, fn {name, size}, {:ok, acc} ->
+      output = Path.join(dir, name <> ".jpg")
+      case ImageMagick.resize(orig, output, size) do
+        {_, 0} ->
+          {:cont, {:ok, Map.put(acc, name, output)}}
+        _ ->
+          {:halt, {:error, "Resize of '#{orig}' to '#{output}' Failed"}}
+      end
+    end)
+  end
+
+  defp write_image(path, data) do
     case File.write(path, data) do
-      :ok ->
-        {:cont, Map.put(acc, key, path)}
+      :ok -> :ok
       {:error, _} ->
-        {:halt, {:error, "Failed To Write Image: #{filename}"}}
+       {:error, "Failed To Write Image: '#{path}'"}
     end
   end
 

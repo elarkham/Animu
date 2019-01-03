@@ -1,5 +1,6 @@
 defmodule Animu.Media.Series.Bag do
   alias Animu.Media.Series
+  alias Animu.Media.Upload.Image
   alias Animu.Repo
 
   alias __MODULE__, as: Bag
@@ -64,10 +65,10 @@ defmodule Animu.Media.Series.Bag do
       dir: series.directory,
       regex: series.regex,
 
-      poster_image: nil,
+      poster_image: series.poster_image,
       poster_dir: "images/poster",
 
-      cover_image: nil,
+      cover_image: series.cover_image,
       cover_dir: "images/cover",
 
       episodes: series.episodes,
@@ -86,16 +87,13 @@ defmodule Animu.Media.Series.Bag do
         _   -> kitsu_data.episode_count
       end
 
-    poster_urls = Map.drop(kitsu_data.poster_urls, ["meta"])
-    cover_urls  = Map.drop(kitsu_data.cover_urls,  ["meta"])
-
-    kitsu_data =
-      kitsu_data
-      |> Map.put(:poster_urls, poster_urls)
-      |> Map.put(:cover_urls,  cover_urls)
+    poster_image = kitsu_data.poster_urls["original"]
+    cover_image  = kitsu_data.cover_urls["original"]
 
     bag
     |> Map.put(:episode_count, episode_count)
     |> Map.put(:kitsu_data, kitsu_data)
+    |> Map.put(:poster_image, poster_image)
+    |> Map.put(:cover_image, cover_image)
   end
 end
