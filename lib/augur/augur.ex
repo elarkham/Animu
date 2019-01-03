@@ -151,6 +151,7 @@ defmodule Augur do
     {watched.regex, watched.directory, watched.id}
   end
 
+  # TODO Use non-media-internal structure
   # Build the series entry of the cache
   defp build_series(watched) do
     Map.new(watched, fn %Animu.Media.Series{id: id, episodes: episodes} ->

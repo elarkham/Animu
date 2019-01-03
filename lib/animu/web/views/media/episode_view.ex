@@ -28,7 +28,6 @@ defmodule Animu.Web.EpisodeView do
   end
 
   def render("episode.json", %{episode: episode}) do
-    IO.inspect episode.video
     %{id: episode.id,
       title: episode.title,
       synopsis: episode.synopsis,
