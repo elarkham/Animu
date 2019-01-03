@@ -41,6 +41,35 @@ defmodule Animu.Media.FFmpeg do
     System.cmd @exec, args
   end
 
+  def vc_10bit_to_8bit(input, output) do
+    args =
+      [ "-i", input,
+        "-hide_banner",
+        "-loglevel", "panic",
+        "-nostats",
+        "-y",
+        "-pix_fmt", "yuv420p",
+        output
+      ]
+
+    System.cmd @exec, args
+  end
+
+  def ac_eac3_to_aac(input, output) do
+    args =
+      [ "-i", input,
+        "-hide_banner",
+        "-loglevel", "panic",
+        "-nostats",
+        "-y",
+        "-c:a", "aac",
+        "-b:a", "160k",
+        output
+      ]
+
+    System.cmd @exec, args
+  end
+
   def extract_subtitles(input, output) do
     args =
       [ "-i", input,
