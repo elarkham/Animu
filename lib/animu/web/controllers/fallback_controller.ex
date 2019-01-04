@@ -7,13 +7,15 @@ defmodule Animu.Web.FallbackController do
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
     |> put_status(:unprocessable_entity)
-    |> render(Animu.Web.ChangesetView, "error.json", changeset: changeset)
+    |> put_view(Animu.Web.ChangesetView)
+    |> render("error.json", changeset: changeset)
   end
 
   def call(conn, {:error, :not_found}) do
     conn
     |> put_status(:not_found)
-    |> render(Animu.Web.ErrorView, :"404")
+    |> put_view(Animu.Web.Error.View)
+    |> render(:"404")
   end
 end
 

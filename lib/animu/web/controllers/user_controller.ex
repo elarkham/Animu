@@ -18,7 +18,8 @@ defmodule Animu.Web.UserController do
       conn
       |> put_status(:created)
       |> put_resp_header("location", user_path(conn, :show, user))
-      |> render(SessionView, "show.json", jwt: jwt, user: user)
+      |> put_view(SessionView)
+      |> render("show.json", jwt: jwt, user: user)
     end
   end
 

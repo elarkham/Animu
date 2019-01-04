@@ -1,7 +1,8 @@
 defmodule Animu.Web.Endpoint do
   use Phoenix.Endpoint, otp_app: :animu
 
-  socket "/socket", Animu.Web.UserSocket
+  socket "/socket", Animu.Web.UserSocket,
+    websocket: true # or list of options
 
   # Serve at "/" the static files from "priv/static" directory.
   #

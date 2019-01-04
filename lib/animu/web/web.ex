@@ -53,7 +53,7 @@ defmodule Animu.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import Animu.Web.Router.Helpers
+      alias Animu.Web.Router.Helpers, as: Routes
       import Animu.Web.ErrorHelpers
       import Animu.Web.Gettext
     end

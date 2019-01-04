@@ -30,6 +30,9 @@ config :phoenix, :generators,
   migration: true,
   binary_id: false
 
+# Configure Ecto
+#config :ecto, json_library: Jason
+
 # Configure Authentication
 config :guardian, Guardian,
   issuer: "Animu",
