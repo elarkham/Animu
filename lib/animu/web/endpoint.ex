@@ -3,6 +3,7 @@ defmodule Animu.Web.Endpoint do
 
   socket "/socket", Animu.Web.UserSocket,
     websocket: true # or list of options
+    #longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -40,7 +41,9 @@ defmodule Animu.Web.Endpoint do
     signing_salt: "9G7Ob6al"
 
   # Adds CORS support for test site
-  plug Corsica, origins: "*", allow_headers: ["content-type", "authorization"]
+  plug Corsica,
+    origins: "*",
+    allow_headers: ["content-type", "authorization"]
 
   plug Animu.Web.Router
 end
