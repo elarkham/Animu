@@ -32,6 +32,7 @@ defmodule Animu.Media.Video.Transmute do
       |> Map.put(:video_track, video_track)
       |> Map.put(:audio_track, audio_track)
       |> Map.put(:subtitles, subtitles)
+      |> Map.put(:thumbnail, bag.thumb.data)
   end
 
   def transmute(%Bag{subtitles: nil}, :subtitles), do: nil

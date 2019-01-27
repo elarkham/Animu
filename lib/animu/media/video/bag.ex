@@ -12,6 +12,7 @@ defmodule Animu.Media.Video.Bag do
     :output,
     :subtitles,
     :font,
+    :thumb,
   ]
 
   defmodule IO do
@@ -38,6 +39,13 @@ defmodule Animu.Media.Video.Bag do
       :data,
       :dir,
       :filenames,
+    ]
+  end
+
+  defmodule Thumb do
+    defstruct [
+      :data,
+      :dir,
     ]
   end
 
@@ -75,6 +83,7 @@ defmodule Animu.Media.Video.Bag do
 
       subtitles: %Subtitles{},
       font: %Font{},
+      thumb: %Thumb{},
     }
   end
 
@@ -91,6 +100,11 @@ defmodule Animu.Media.Video.Bag do
   def put_subtitles(%Bag{} = bag, key, value) when is_atom(key) do
     subtitles = Map.put(bag.subtitles, key, value)
     Map.put(bag, :subtitles, subtitles)
+  end
+
+  def put_thumb(%Bag{} = bag, key, value) when is_atom(key) do
+    thumb = Map.put(bag.thumb, key, value)
+    Map.put(bag, :thumb, thumb)
   end
 
   #pipe :put_font, [:input,:format], "MKV" do

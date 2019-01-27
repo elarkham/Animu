@@ -70,6 +70,40 @@ defmodule Animu.Media.FFmpeg do
     System.cmd @exec, args
   end
 
+  def get_thumbnail(input, time, output) when is_binary(time) do
+    args =
+      [ "-hide_banner",
+        "-loglevel", "panic",
+        "-nostats",
+        "-ss", time,
+        "-i", input,
+        "-y",
+        "-frames:v", "1",
+        output,
+        "-noaccurate_seek"
+      ]
+
+    System.cmd @exec, args
+  end
+  def get_thumbnail(input, time, output) do
+    time = Integer.to_string(time)
+    get_thumbnail(input, time, output)
+  end
+
+  def random_thumbnail(input, duration, output) do
+      time = :rand.uniform(duration)
+      get_thumbnail(input, time, output)
+  end
+  def random_thumbnail(input, output) do
+    with   {:ok, data} <- probe(input),
+              duration <- data["format"]["duration"],
+         {duration, _} <- Integer.parse(duration) do
+      random_thumbnail(input, duration, output)
+    else
+      _ -> {:error, "Failed to generate random thumbnail"}
+    end
+  end
+
   def extract_subtitles(input, output) do
     args =
       [ "-i", input,

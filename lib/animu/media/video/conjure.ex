@@ -1,11 +1,13 @@
 defmodule Animu.Media.Video.Conjure do
   alias Animu.Media.FFmpeg
+  alias Animu.Media.ImageMagick, as: Image
   alias Animu.Media.Video.Bag
   require Bag
 
   @output_dir "videos"
   @subtitles_dir "subtitles"
   @font_dir "fonts"
+  @thumb_dir "thumbs"
 
   def conjure_output(bag = %Bag{input: %Bag.IO{format: "WebM"}}) do
     with {:ok, bag} <- conjure_directories(bag),
@@ -71,14 +73,17 @@ defmodule Animu.Media.Video.Conjure do
       |> Bag.put_output(:dir, @output_dir)
       |> Bag.put_subtitles(:dir, @subtitles_dir)
       |> Bag.put_font(:dir, @font_dir)
+      |> Bag.put_thumb(:dir, Path.join(@thumb_dir, bag.name))
 
     output_dir    = Path.join(bag.output_root, bag.output.dir)
     subtitles_dir = Path.join(bag.output_root, bag.subtitles.dir)
     font_dir      = Path.join(bag.output_root, bag.font.dir)
+    thumb_dir     = Path.join(bag.output_root, bag.thumb.dir)
 
     with :ok <- File.mkdir_p(output_dir),
          :ok <- File.mkdir_p(subtitles_dir),
-         :ok <- File.mkdir_p(font_dir) do
+         :ok <- File.mkdir_p(font_dir),
+         :ok <- File.mkdir_p(thumb_dir) do
       {:ok, bag}
     else
       _ -> {:error, "Failed To Create Output Directories"}
@@ -166,4 +171,38 @@ defmodule Animu.Media.Video.Conjure do
        {:ok, bag}
     end
   end
-end
+
+  def conjure_thumbnails(bag) do
+    {duration, _} =
+      bag.output.probe_data["format"]["duration"]
+      |> Integer.parse()
+
+    dir = bag.thumb.dir
+    dir_path = Path.join(bag.output_root, dir)
+
+    image = Path.join(bag.thumb.dir, "original.jpg")
+    image_path = Path.join(bag.output_root, image)
+
+    video = bag.output.file
+
+    sizes =
+      %{ "medium" => {400, 225} }
+
+    with        {_, 0} <- FFmpeg.random_thumbnail(video, duration, image_path),
+         {:ok, thumbs} <- Image.gen_thumbnails(image_path, dir_path, sizes),
+                thumbs <- prefix_thumbs(thumbs, dir),
+                thumbs <- Map.put(thumbs, "original", image) do
+
+      {:ok, Bag.put_thumb(bag, :data, thumbs)}
+    else
+      _ -> {:error, "Failed to conjure thumbnails"}
+    end
+  end
+
+  defp prefix_thumbs(thumbs, dir) do
+    Map.new(thumbs, fn {name, file} ->
+      {name, Path.join(dir, file)}
+    end)
+  end
+
+ end

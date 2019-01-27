@@ -8,6 +8,7 @@ defmodule Animu.Media.Video.Invoke do
     with       bag  <- Bag.new(input_path, series_dir),
          {:ok, bag} <- collect_input_data(bag),
          {:ok, bag} <- conjure_output(bag),
+         #        {:ok, bag} <- conjure_thumbnails(bag),
          {:ok, bag} <- collect_output_data(bag),
              video  <- transmute(bag, :video) do
       {:ok, video}
