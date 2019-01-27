@@ -28,11 +28,17 @@ defmodule Animu.Media.Series.Transmute do
   end
 
   def transmute(%Series{} = series, %Changeset{} = changeset) do
+    changeset.data
+      |> cast(Schema.to_params(series), Schema.all_fields(Series))
+  end
+  def transmute(%Series{} = series, %Changeset{} = changeset, :merge) do
     episodes =
       transmute_episodes(series.episodes, series.directory)
 
+    IO.puts "Episodes Transmuted"
     changeset.data
       |> cast(Schema.to_params(series), Schema.all_fields(Series))
+      |> merge(changeset)
       |> put_assoc(:episodes, episodes)
   end
 
@@ -46,6 +52,7 @@ defmodule Animu.Media.Series.Transmute do
 
   def transmute_episodes(episodes, series_dir) do
     Task.async_stream(episodes, fn episode ->
+      IO.puts "Conjuring Video"
       episode
       |> Map.from_struct()
       |> episode_changeset(series_dir)
@@ -63,16 +70,17 @@ defmodule Animu.Media.Series.Transmute do
   end
 
   defp conjure_video_if_nil(changeset, series_dir) do
-    case changeset do
-      %Changeset{params: %{"video" => nil}} ->
-        conjure_video(changeset, series_dir)
+    #case changeset do
+    #  %Changeset{params: %{"video" => nil}} ->
+    #    conjure_video(changeset, series_dir)
 
-      %Changeset{params: %{"video" => video}} ->
-        put_embed(changeset, :video, video)
+    #  %Changeset{params: %{"video" => video}} ->
+    #    put_embed(changeset, :video, video)
 
-       _ ->
-        changeset
-    end
+    #   _ ->
+    #    changeset
+    #end
+    conjure_video(changeset, series_dir)
   end
 
   defp nil_to_map(value) do

@@ -9,6 +9,7 @@ defmodule Animu.Media.Series.Invoke do
   alias Ecto.Changeset
   alias Animu.Media.Series
 
+  # Summon Images
   def summon_images(%Series{} = series) do
     with       bag  <- transmute(series, :bag),
          {:ok, bag} <- conjure_images(bag),
@@ -24,15 +25,16 @@ defmodule Animu.Media.Series.Invoke do
   def summon_images(changeset = %Changeset{}) do
     with       series  <- transmute(changeset, :series),
          {:ok, series} <- summon_images(series),
-            changeset  <- transmute(series, changeset) do
-      changeset
+        new_changeset  <- transmute(series, changeset) do
+
+      merge(new_changeset, changeset)
     else
       {:error, reason} ->
         add_error(changeset, :summon_images, reason)
     end
   end
 
-
+  ## Populate
   def populate(%Series{} = series) do
     with       bag  <- transmute(series, :bag),
          {:ok, bag} <- validate_kitsu_id(bag),
@@ -52,8 +54,8 @@ defmodule Animu.Media.Series.Invoke do
   def populate(changeset = %Changeset{changes: %{populate: true}}) do
     with       series  <- transmute(changeset, :series),
          {:ok, series} <- populate(series),
-        new_changeset  <- transmute(series, changeset) do
-      merge(new_changeset, changeset)
+            changeset  <- transmute(series, changeset, :merge) do
+      changeset
     else
       {:error, reason} ->
         add_error(changeset, :populate, reason)
@@ -61,6 +63,7 @@ defmodule Animu.Media.Series.Invoke do
   end
   def populate(%Changeset{} = changeset), do: changeset
 
+  ## Audit
   def audit(%Series{} = series) do
     with       bag  <- transmute(series, :bag),
          {:ok, bag} <- validate_series_dir(bag),
@@ -77,7 +80,7 @@ defmodule Animu.Media.Series.Invoke do
   def audit(changeset = %Changeset{changes: %{audit: true}}) do
     with       series  <- transmute(changeset, :series),
          {:ok, series} <- audit(series),
-            changeset  <- transmute(series, changeset) do
+            changeset  <- transmute(series, changeset, :merge) do
       changeset
     else
       {:error, reason} ->
@@ -86,6 +89,7 @@ defmodule Animu.Media.Series.Invoke do
   end
   def audit(%Changeset{} = changeset), do: changeset
 
+  ## Spawn
   def spawn_episodes(%Series{} = series) do
     with       bag  <- transmute(series, :bag),
          {:ok, bag} <- spawn_episodes(:spawn, bag),
@@ -100,7 +104,7 @@ defmodule Animu.Media.Series.Invoke do
   def spawn_episodes(changeset = %Changeset{changes: %{spawn_episodes: true}}) do
     with       series  <- transmute(changeset, :series),
          {:ok, series} <- spawn_episodes(series),
-            changeset  <- transmute(series, changeset) do
+            changeset  <- transmute(series, changeset, :merge) do
       changeset
     else
       {:error, reason} ->

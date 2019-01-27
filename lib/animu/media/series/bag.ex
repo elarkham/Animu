@@ -87,13 +87,20 @@ defmodule Animu.Media.Series.Bag do
         _   -> kitsu_data.episode_count
       end
 
-    poster_image = kitsu_data.poster_urls["original"]
-    cover_image  = kitsu_data.cover_urls["original"]
+    types = %{poster_image: Image, cover_image: Image}
+    images = %{
+      poster_image: kitsu_data.poster_urls["original"],
+      cover_image:  kitsu_data.cover_urls["original"]
+    }
+    images =
+      {%{poster_image: nil, cover_image: nil}, types}
+      |> Ecto.Changeset.cast(images, Map.keys(types))
+      |> Ecto.Changeset.apply_changes
 
     bag
     |> Map.put(:episode_count, episode_count)
     |> Map.put(:kitsu_data, kitsu_data)
-    |> Map.put(:poster_image, poster_image)
-    |> Map.put(:cover_image, cover_image)
+    |> Map.put(:poster_image, images.poster_image)
+    |> Map.put(:cover_image, images.cover_image)
   end
 end
