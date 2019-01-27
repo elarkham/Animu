@@ -8,7 +8,18 @@ defmodule Animu.Media do
   import Animu.Schema
 
   alias Animu.Repo
-  alias Animu.Media.{Franchise, Series, Episode}
+  alias Animu.Media.{Franchise, Series, Episode, Union}
+
+  ##
+  # Series + Franchise Interactions
+  ##
+  def union_franchise_series do
+    franchise_query = Franchise |> Union.build_select("franchise")
+    series_query = Series |> Union.build_select("series")
+
+    union(franchise_query, ^series_query)
+    |> Repo.all()
+  end
 
   ##
   # Franchise Interactions
@@ -18,9 +29,17 @@ defmodule Animu.Media do
   Returns `%Ecto.Changeset{}` for tracking Franchise changes
   """
   def franchise_changeset(%Franchise{} = franchise, attrs) do
+    virtual_fields =
+      [ :poster_url,
+        :cover_url,
+      ]
+
     franchise
-    |> cast(attrs, all_fields(Franchise))
+    |> Repo.preload(:series)
+    |> cast(attrs, all_fields(Franchise) ++ virtual_fields)
+    |> Franchise.Invoke.summon_images
     |> validate_required([:canon_title, :slug])
+    |> unique_constraint(:slug)
   end
 
   def change_franchise(%Franchise{} = franchise) do
@@ -161,8 +180,8 @@ defmodule Animu.Media do
   """
   def update_series(%Series{} = series, attrs) do
     series
-    |> series_changeset(attrs)
-    |> Repo.update()
+      |> series_changeset(attrs)
+      |> Repo.update()
   end
 
   @doc """
@@ -198,6 +217,7 @@ defmodule Animu.Media do
     Episode
       |> build_query(params)
       |> Repo.all()
+      |> Repo.preload(:series)
   end
 
   @doc """
