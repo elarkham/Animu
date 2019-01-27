@@ -1,9 +1,9 @@
 defmodule Animu.Web.Endpoint do
   use Phoenix.Endpoint, otp_app: :animu
 
-  socket "/socket", Animu.Web.UserSocket,
-    websocket: true # or list of options
-    #longpoll: false
+  socket "/socket", Animu.Web.Socket,
+    websocket: true,
+    longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -27,7 +27,7 @@ defmodule Animu.Web.Endpoint do
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
-    json_decoder: Poison
+    json_decoder: Jason
 
   plug Plug.MethodOverride
   plug Plug.Head
@@ -35,6 +35,7 @@ defmodule Animu.Web.Endpoint do
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
+  # TODO: Sync with file server
   plug Plug.Session,
     store: :cookie,
     key: "_animu_key",

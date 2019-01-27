@@ -20,6 +20,13 @@ config :animu, Animu.Web.Endpoint,
   pubsub: [name: Animu.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+# Configure Authentication
+config :animu, Animu.Auth.Guardian,
+  issuer: "Animu",
+  ttl: {30, :days},
+  verify_issuer: true,
+  secret_key: "default_key"
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
@@ -33,17 +40,13 @@ config :phoenix, :generators,
 # Configure Ecto
 #config :ecto, json_library: Jason
 
+# Configure Json encoder
+config :phoenix, :format_encoders,
+  json: Jason
+
 # Configure Mnesia
 config :mnesia,
   dir: '_mnesia/#{Mix.env}/#{node()}'
-
-# Configure Authentication
-config :guardian, Guardian,
-  issuer: "Animu",
-  ttl: {30, :days},
-  verify_issuer: true,
-  secret_key: "default_key",
-  serializer: Animu.GuardianSerializer
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

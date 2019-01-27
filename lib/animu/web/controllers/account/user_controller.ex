@@ -4,7 +4,6 @@ defmodule Animu.Web.UserController do
   alias Animu.Account
   alias Animu.Account.User
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: Animu.Web.SessionController
   action_fallback Animu.Web.FallbackController
 
   def index(conn, _params) do
@@ -14,7 +13,7 @@ defmodule Animu.Web.UserController do
 
   def create(conn, %{"user" => user_params}) do
     with {:ok, %User{} = user} <- Account.create_user(user_params) do
-      {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :token)
+      {:ok, jwt} = Animu.Auth.encode_and_sign(user)
       conn
       |> put_status(:created)
       |> put_resp_header("location", user_path(conn, :show, user))

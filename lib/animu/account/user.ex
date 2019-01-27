@@ -5,7 +5,7 @@ defmodule Animu.Account.User do
 
   alias __MODULE__, as: User
 
-  @derive {Poison.Encoder, except: [:__meta__]}
+  #@derive {Poison.Encoder, except: [:__meta__]}
   schema "users" do
     field :first_name, :string
     field :last_name, :string
@@ -21,9 +21,6 @@ defmodule Animu.Account.User do
   @required_fields ~w(first_name last_name username password)a
   @optional_fields ~w(email)a
 
-  @doc """
-  Returns `%Ecto.Changeset{}` for tracking Franchise changes
-  """
   def changeset(%User{} = user, attrs) do
     user
     |> cast(attrs, @required_fields ++ @optional_fields)
@@ -31,20 +28,21 @@ defmodule Animu.Account.User do
     |> validate_length(:password, min: 5)
     |> validate_confirmation(:passowrd, message: "Password does not match")
     |> unique_constraint(:username, message: "Username already taken")
-    |> generate_encrypted_password
+    |> gen_password_hash
   end
 
 	def change(%User{} = user) do
 		changeset(user, %{})
 	end
 
-  defp generate_encrypted_password(current_changeset) do
-    case current_changeset do
+  defp gen_password_hash(changeset) do
+    case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        put_change(current_changeset, :encrypted_password,
-                   Comeonin.Bcrypt.hashpwsalt(password))
+        encrypted_pw = Comeonin.Bcrypt.hashpwsalt(password)
+        put_change(changeset, :encrypted_password, encrypted_pw)
+
       _->
-        current_changeset
+        changeset
     end
   end
 

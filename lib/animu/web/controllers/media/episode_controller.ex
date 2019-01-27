@@ -4,7 +4,6 @@ defmodule Animu.Web.EpisodeController do
   alias Animu.Media
   alias Animu.Media.Episode
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: Animu.Web.SessionController
   action_fallback Animu.Web.FallbackController
 
   def index(conn, params) do

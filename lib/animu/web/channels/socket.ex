@@ -1,4 +1,4 @@
-defmodule Animu.Web.UserSocket do
+defmodule Animu.Web.Socket do
   use Phoenix.Socket
 
   ## Channels

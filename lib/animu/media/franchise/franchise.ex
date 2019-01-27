@@ -2,7 +2,7 @@ defmodule Animu.Media.Franchise do
   use Ecto.Schema
   alias Animu.Media.Series
 
-  @derive {Poison.Encoder, except: [:__meta__]}
+  #@derive {Poison.Encoder, except: [:__meta__]}
   schema "franchises" do
     field :canon_title,   :string
     field :titles,        :map

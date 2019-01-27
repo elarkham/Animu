@@ -1,7 +1,6 @@
 defmodule Animu.Web.RpcController do
   use Animu.Web, :controller
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: Animu.Web.SessionController
   action_fallback Animu.Web.FallbackController
 
   def rpc(conn, %{"augur" => %{"exec" => "rebuild_cache"}}) do

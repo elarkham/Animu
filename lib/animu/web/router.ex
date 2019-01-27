@@ -1,29 +1,28 @@
 defmodule Animu.Web.Router do
   use Animu.Web, :router
 
-  #pipeline :browser do
-  #  plug :accepts, ["html"]
-  #  plug :fetch_session
-  #  plug :fetch_flash
-  #  plug :protect_from_forgery
-  #  plug :put_secure_browser_headers
-  #end
-
   pipeline :api do
     plug :accepts, ["json"]
-    plug Guardian.Plug.VerifyHeader
-    plug Guardian.Plug.LoadResource
   end
 
+  pipeline :auth do
+    plug Animu.Auth.Pipeline
+  end
+
+  ## Latest API
+
+  # No Auth
   scope "/api", Animu.Web do
     pipe_through :api
 
-    # Latest API
+    post   "/session", SessionController, :create
+  end
+
+  scope "/api", Animu.Web do
+    pipe_through [:api, :auth]
+
     resources "/users", UserController, except: [:new, :edit]
     get "/current_user", CurrentUserController, :show
-
-    post   "/session", SessionController, :create
-    delete "/session", SessionController, :delete
 
     post   "/rpc", RpcController, :rpc
 
@@ -43,28 +42,27 @@ defmodule Animu.Web.Router do
     end
 
     resources "/episodes", EpisodeController, except: [:new, :edit]
-
-    # Versioned API
-    scope "/v1" do
-      resources "/users", UserController, except: [:new, :edit]
-      get "/current_user", CurrentUserController, :show
-
-      post   "/session", SessionController, :create
-      delete "/session", SessionController, :delete
-
-      post   "/rpc", RpcController, :rpc
-
-      resources "/franchises", FranchiseController, except: [:new, :edit]
-      resources "/series", SeriesController, except: [:new, :edit]
-      resources "/episodes", EpisodeController, except: [:new, :edit]
-    end
-
   end
 
+  ## Versioned API
 
-  #scope "/", Animu.Web do
-  #  pipe_through :browser # Use the default browser stack
+  # No Auth
+  scope "/api/v1", Animu.Web do
+    pipe_through :api
 
-  #  get "/*path", PageController, :index
-  #end
+    post   "/session", SessionController, :create
+  end
+
+  scope "/api/v1", Animu.Web do
+    pipe_through [:api, :auth]
+
+    resources "/users", UserController, except: [:new, :edit]
+    get "/current_user", CurrentUserController, :show
+
+    post   "/rpc", RpcController, :rpc
+
+    resources "/franchises", FranchiseController, except: [:new, :edit]
+    resources "/series", SeriesController, except: [:new, :edit]
+    resources "/episodes", EpisodeController, except: [:new, :edit]
+  end
 end

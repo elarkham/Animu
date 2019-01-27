@@ -3,7 +3,7 @@ defmodule Animu.Media.Episode do
 
   alias Animu.Media.{Series, Video}
 
-  @derive {Poison.Encoder, except: [:__meta__]}
+  #@derive {Poison.Encoder, except: [:__meta__]}
   schema "episodes" do
     field :title,         :string
     field :synopsis,      :string
@@ -13,6 +13,9 @@ defmodule Animu.Media.Episode do
     field :number,        :float
     field :season_number, :integer
     field :airdate,       :date
+
+    #field :video_updated, :date
+    #field :augur_updated, :date
 
     belongs_to :series, Series
     embeds_one :video, Video, on_replace: :delete

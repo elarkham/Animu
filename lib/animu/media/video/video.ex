@@ -5,6 +5,7 @@ defmodule Animu.Media.Video do
   import Animu.Schema
   alias __MODULE__, as: Video
 
+  @derive Jason.Encoder
   embedded_schema do
     field :filename,    :string
     field :dir,         :string, default: "videos"
@@ -77,6 +78,11 @@ defmodule Animu.Media.Video do
       field :font_dir,    :string
     end
   end
+
+  require Protocol
+  Protocol.derive(Jason.Encoder, Video.VideoTrack)
+  Protocol.derive(Jason.Encoder, Video.AudioTrack)
+  Protocol.derive(Jason.Encoder, Video.Subtitles)
 
   @doc """
   Returns `%Ecto.Changeset{}` for tracking Video changes

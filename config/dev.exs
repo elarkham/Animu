@@ -45,8 +45,8 @@ config :animu, Animu.Repo,
   hostname: "localhost",
   pool_size: 10
 
-# Configure Gaurdian For Dev
-config :guardian, Guardian,
+# Configure Authentication
+config :animu, Animu.Auth.Guardian,
   issuer: "Animu-Dev",
   ttl: {3, :days},
   secret_key: "dev_key"

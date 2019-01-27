@@ -3,7 +3,7 @@ defmodule Animu.Media.Series do
 
   alias Animu.Media.{Episode, Franchise, Upload}
 
-  @derive {Poison.Encoder, except: [:__meta__]}
+  #@derive {Poison.Encoder, except: [:__meta__]}
   schema "series" do
     field :canon_title,    :string
     field :titles,         {:map, :string}

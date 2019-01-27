@@ -31,24 +31,34 @@ defmodule Animu.Mixfile do
   defp deps do
     [{:phoenix, "~> 1.4.0"},
      {:phoenix_pubsub, "~> 1.0"},
-     {:ecto_sql, "~> 3.0"},
-     {:phoenix_ecto, "~> 4.0"},
      {:phoenix_html, "~> 2.6"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
+     {:gettext, "~> 0.11"},
+
      {:plug_cowboy, "~> 2.0"},
      {:plug, "~> 1.7"},
+
+     {:phoenix_ecto, "~> 4.0"},
+     {:ecto_sql, "~> 3.0"},
      {:postgrex, ">= 0.0.0"},
+
      {:jason, "~> 1.1"},
-     {:gettext, "~> 0.11"},
-     {:guardian, "~> 0.12.0"},
-     {:comeonin, "~> 2.0"},
+
+     {:guardian, "~> 1.0"},
+     {:comeonin, "~> 4.0"},
+     {:bcrypt_elixir, "~> 1.0"},
+
      {:feeder_ex, "~> 1.0"},
      {:feeder, "~> 2.1"},
+
      {:httpoison, "~> 0.9.0"},
+     {:poison, "~> 3.1"},
      {:corsica, "~> 0.5"},
-     {:inquisitor, "~> 0.3.0"},
+
      {:que, "~> 0.8.0"},
+
      {:expat, "~> 1.0"},
+     {:inquisitor, "~> 0.3.0"},
      {:distillery, "~> 0.9", runtime: false},
    ]
   end
@@ -62,6 +72,6 @@ defmodule Animu.Mixfile do
   defp aliases do
     ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
      "ecto.reset": ["ecto.drop", "ecto.setup"],
-     "test": ["ecto.create --quiet", "ecto.migrate", "test"]]
+     test: ["ecto.create --quiet", "ecto.migrate", "test"]]
   end
 end
