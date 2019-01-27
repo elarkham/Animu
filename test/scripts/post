@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TOKEN="$(cat token)"
+TOKEN="$(cat ~/var/auth/animu-token)"
 URL=${URL:-http://localhost:4000}
 
 curl -s -X POST \
@@ -8,5 +8,5 @@ curl -s -X POST \
      -H "Content-Type: application/json" \
      -d "$(cat $2)" \
      "$URL/api/v1/$1" \
-| jq '.'
+#| jq '.'
 

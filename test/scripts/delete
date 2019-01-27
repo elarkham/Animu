@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TOKEN="$(cat token)"
+TOKEN="$(cat ~/var/auth/animu-token)"
 URL=${URL:-http://localhost:4000}
 
 curl -s -X DELETE \
