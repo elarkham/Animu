@@ -33,6 +33,10 @@ config :phoenix, :generators,
 # Configure Ecto
 #config :ecto, json_library: Jason
 
+# Configure Mnesia
+config :mnesia,
+  dir: '_mnesia/#{Mix.env}/#{node()}'
+
 # Configure Authentication
 config :guardian, Guardian,
   issuer: "Animu",

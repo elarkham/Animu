@@ -47,6 +47,8 @@ defmodule Animu.Mixfile do
      {:httpoison, "~> 0.9.0"},
      {:corsica, "~> 0.5"},
      {:inquisitor, "~> 0.3.0"},
+     {:que, "~> 0.8.0"},
+     {:expat, "~> 1.0"},
      {:distillery, "~> 0.9", runtime: false},
    ]
   end
