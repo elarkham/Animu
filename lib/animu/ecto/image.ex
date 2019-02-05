@@ -1,4 +1,4 @@
-defmodule Animu.Media.Upload.Image do
+defmodule Animu.Ecto.Image do
   @behaviour Ecto.Type
 
   alias HTTPoison.Response
