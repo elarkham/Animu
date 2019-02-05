@@ -1,7 +1,7 @@
-defmodule Animu.Media.Episode.Transmute do
+defmodule Animu.Media.Series.Episode.Transmute do
   import Ecto.Changeset
 
-  alias Animu.Media.Episode
+  alias Animu.Media.Series.Episode
   alias Animu.Media.Video
   alias Animu.Schema
   alias Ecto.Changeset

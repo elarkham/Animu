@@ -1,21 +1,21 @@
-defmodule Animu.Media.Episode do
+defmodule Animu.Media.Series.Episode do
   use Ecto.Schema
 
   alias Animu.Media.{Series, Video}
 
-  #@derive {Poison.Encoder, except: [:__meta__]}
+  @derive {Poison.Encoder, except: [:__meta__]}
   schema "episodes" do
     field :title,         :string
     field :synopsis,      :string
-    field :thumbnail,     {:map, :string}
+    field :number,        :float
+
+    field :airdate,       :date
+    field :augured_at,    :date #TODO new
+
     field :kitsu_id,      :string
 
-    field :number,        :float
-    field :season_number, :integer
-    field :airdate,       :date
-
-    #field :video_updated, :date
-    #field :augur_updated, :date
+    field :season_number, :integer #TODO Remove
+    field :thumbnail,     {:map, :string} #TODO Remove
 
     belongs_to :series, Series
     embeds_one :video, Video, on_replace: :delete

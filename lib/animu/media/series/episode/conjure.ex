@@ -1,5 +1,5 @@
-defmodule Animu.Media.Episode.Conjure do
-  alias Animu.Media.Episode
+defmodule Animu.Media.Series.Episode.Conjure do
+  alias Animu.Media.Series.Episode
 
   def spawn_episode(number, video_path \\ nil) do
     title_num = format_number(number)

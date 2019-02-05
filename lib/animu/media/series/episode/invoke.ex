@@ -1,4 +1,4 @@
-defmodule Animu.Media.Episode.Invoke do
+defmodule Animu.Media.Series.Episode.Invoke do
   import Ecto.Changeset
 
   alias Ecto.Changeset
