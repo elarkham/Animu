@@ -5,7 +5,7 @@ defmodule Animu.Account.User do
 
   alias __MODULE__, as: User
 
-  #@derive {Poison.Encoder, except: [:__meta__]}
+  @derive {Poison.Encoder, except: [:__meta__]}
   schema "users" do
     field :first_name, :string
     field :last_name, :string
