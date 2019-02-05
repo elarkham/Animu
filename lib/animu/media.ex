@@ -5,7 +5,7 @@ defmodule Animu.Media do
   import Ecto.{Query, Changeset}, warn: false
 
   import Animu.Media.Query
-  import Animu.Schema
+  import Animu.Util.Schema
 
   alias Animu.Repo
   alias Animu.Media.{Franchise, Series, Episode, Union}
