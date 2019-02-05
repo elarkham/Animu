@@ -1,4 +1,4 @@
-defmodule Animu.Schema do
+defmodule Animu.Util.Schema do
 
   def all_fields(module, except: fields) do
     Enum.reduce(fields, module.__schema__(:fields), fn field, acc ->

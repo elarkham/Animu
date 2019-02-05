@@ -1,4 +1,4 @@
-defmodule Animu.Media.ImageMagick do
+defmodule Animu.Util.ImageMagick do
 
   @exec  "convert"
 

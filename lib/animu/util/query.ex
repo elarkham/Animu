@@ -1,4 +1,4 @@
-defmodule Animu.Query do
+defmodule Animu.Util.Query do
   @moduledoc """
   Defines query handlers that could be used in any context.
   Allows for context specific queries to be handled in their own domains when needed.
