@@ -1,7 +1,7 @@
 defmodule Animu.Web.Endpoint do
   use Phoenix.Endpoint, otp_app: :animu
 
-  socket "/socket", Animu.Web.Socket,
+  socket "/api/socket", Animu.Web.Socket,
     websocket: true,
     longpoll: false
 
