@@ -9,107 +9,62 @@ defmodule Animu.Media.Series.Invoke do
   alias Ecto.Changeset
   alias Animu.Media.Series
 
-  # Summon Images
-  def summon_images(%Series{} = series) do
-    with       bag  <- transmute(series, :bag),
-         {:ok, bag} <- conjure_images(bag),
-            series  <- transmute(bag, :series) do
-      {:ok, series}
-    else
-      {:error, reason} -> {:error, reason}
-      _ -> {:error, "Unexpected Error Summoning Images"}
-    end
-	end
-  def summon_images(changeset = %Changeset{valid?: false}), do: changeset
-  def summon_images(changeset = %Changeset{changes: %{poster_image: nil, cover_image: nil}}), do: changeset
-  def summon_images(changeset = %Changeset{}) do
-    with       series  <- transmute(changeset, :series),
-         {:ok, series} <- summon_images(series),
-        new_changeset  <- transmute(series, changeset) do
+  # Invoke Options
+  def invoke(%Bag{} = bag) do
+    Enum.reduce_while(bag.options, bag, fn opt, bag ->
+      case invoke(bag, [opt]) do
+           {:ok, bag} -> {:cont, bag}
+        {:error, msg} -> {:halt, Bag.error(bag, msg)}
 
-      merge(new_changeset, changeset)
-    else
-      {:error, reason} ->
-        add_error(changeset, :summon_images, reason)
+        error ->
+          msg = "Unexpected Error During Invoke: #{error}"
+          {:halt, Bag.error(bag, msg)}
+      end
+    end)
+  end
+
+  def invoke(%Bag{} = bag, summon: params) do
+    summons =
+      Enum.reduce_while(params, [], fn source, acc ->
+        name = source.name
+        {:ok, acc} = acc
+        case Summon.summon(source, bag) do
+            {:ok, data} -> {:cont, acc ++ [data]}
+          {:error, msg} -> {:halt, {:error, %{^name => msg}}}
+        end
+      end)
+
+    case summons do
+      {:ok, summons} -> {:ok, Map.put(bag, :summons, summons)}
+       {:error, msg} -> {:error, {"summon" => msg}}
+
+      error ->
+        {:error, "Unexpected Error During Summoning: #{error}"}
     end
   end
 
-  ## Populate
-  def populate(%Series{} = series) do
-    with       bag  <- transmute(series, :bag),
-         {:ok, bag} <- validate_kitsu_id(bag),
-         {:ok, bag} <- validate_series_dir(bag),
-         {:ok, bag} <- collect_kitsu_data(bag),
-         {:ok, bag} <- conjure_images(bag),
-         {:ok, bag} <- spawn_episodes(:kitsu, bag),
-            series  <- transmute(bag, :series) do
+  def invoke(%Bag{} = bag, audit: params) do
+    with {:ok, bag} <- Audit.scan(params, bag),
+         {:ok, bag} <- Audit.calc(params, bag) do
 
-      {:ok, series}
+      {:ok, bag}
     else
-      {:error, reason} -> {:error, reason}
-      error -> {:error, "Unexpected Error: #{error}"}
-    end
-	end
-  def populate(changeset = %Changeset{valid?: false}), do: changeset
-  def populate(changeset = %Changeset{changes: %{populate: true}}) do
-    with       series  <- transmute(changeset, :series),
-         {:ok, series} <- populate(series),
-            changeset  <- transmute(series, changeset, :merge) do
-      changeset
-    else
-      {:error, reason} ->
-        add_error(changeset, :populate, reason)
+      {:error, msg} -> {:error, %{"audit" => msg}}
+
+      error ->
+        {:error, "Unexected Error During Audit: #{error}"}
     end
   end
-  def populate(%Changeset{} = changeset), do: changeset
 
-  ## Audit
-  def audit(%Series{} = series) do
-    with       bag  <- transmute(series, :bag),
-         {:ok, bag} <- validate_series_dir(bag),
-         {:ok, bag} <- validate_regex(bag),
-         {:ok, bag} <- spawn_episodes(:audit, bag),
-            series  <- transmute(bag, :series) do
-      {:ok, series}
+  def invoke(%Bag{} = bag, conjure: params) do
+    with {:ok, bag} <- Conjure.episodes(bag, params),
+         {:ok, bag} <- Conjure.image(bag, params) do
     else
-      {:error, reason} -> {:error, reason}
-      error -> {:error, "Unexpected Error: #{error}"}
-    end
-	end
-  def audit(changeset = %Changeset{valid?: false}), do: changeset
-  def audit(changeset = %Changeset{changes: %{audit: true}}) do
-    with       series  <- transmute(changeset, :series),
-         {:ok, series} <- audit(series),
-            changeset  <- transmute(series, changeset, :merge) do
-      changeset
-    else
-      {:error, reason} ->
-        add_error(changeset, :audit, reason)
+      {:error, msg} -> {:error, msg},
+
+      error ->
+        {:error, "Unexpected Error During Conjuring: #{error}"}
     end
   end
-  def audit(%Changeset{} = changeset), do: changeset
 
-  ## Spawn
-  def spawn_episodes(%Series{} = series) do
-    with       bag  <- transmute(series, :bag),
-         {:ok, bag} <- spawn_episodes(:spawn, bag),
-            series  <- transmute(bag, :series) do
-      {:ok, series}
-    else
-      {:error, reason} -> {:error, reason}
-      error -> {:error, "Unexpected Error: #{error}"}
-    end
-	end
-  def spawn_episodes(changeset = %Changeset{valid?: false}), do: changeset
-  def spawn_episodes(changeset = %Changeset{changes: %{spawn_episodes: true}}) do
-    with       series  <- transmute(changeset, :series),
-         {:ok, series} <- spawn_episodes(series),
-            changeset  <- transmute(series, changeset, :merge) do
-      changeset
-    else
-      {:error, reason} ->
-        add_error(changeset, :spawn_episodes, reason)
-    end
-  end
-  def spawn_episodes(%Changeset{} = changeset), do: changeset
 end

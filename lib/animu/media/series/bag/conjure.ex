@@ -1,4 +1,4 @@
-defmodule Animu.Media.Series.Conjure do
+defmodule Animu.Media.Series.Bag.Conjure do
   import Animu.Media.Episode.Conjure, only: [spawn_episode: 1, spawn_episode: 2]
   alias Animu.Media.Series.Bag
   alias Animu.Media.ImageMagick, as: Image
