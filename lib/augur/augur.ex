@@ -1,13 +1,17 @@
 defmodule Augur do
-  require Logger
+  @moduledoc """
+  Scans RSS feeds and auto-downloads anime episodes at fixed interval
+  """
   use GenServer
 
   alias Augur.Transmission
   alias Augur.Torrent
   alias Augur.Scanner
 
+  require Logger
+
   defstruct feeds: %{},
-            series: %{},
+            anime: %{},
             torrents: %{}
 
   ## Client
@@ -67,7 +71,6 @@ defmodule Augur do
     {:noreply, cache}
   end
 
-
   @doc """
   Cached torrent states from transmission
   """
@@ -92,7 +95,7 @@ defmodule Augur do
   def handle_info(:poll, cache) do
     ids = Map.keys(cache.torrents)
     Transmission.poll(ids)
-    Process.send_after(self(), :poll, (2 * 1000))
+    Process.send_after(self(), :poll, (2 * 1_000))
     {:noreply, cache}
   end
 
@@ -101,7 +104,7 @@ defmodule Augur do
   """
   def handle_info(:scan, cache) do
     Scanner.scan(cache)
-    Process.send_after(self(), :scan, (15 * 60000))
+    Process.send_after(self(), :scan, (15 * 60_000))
     {:noreply, cache}
   end
 
@@ -129,32 +132,32 @@ defmodule Augur do
   end
 
   # Build new cache
-  defp rebuild(), do: rebuild(%__MODULE__{})
+  defp rebuild, do: rebuild(%__MODULE__{})
   defp rebuild(cache) do
     watched =
-      Animu.Media.all_watched_series()
+      Animu.Media.all_watched_anime()
 
     %__MODULE__{
       cache |
       feeds: build_feeds(watched),
-      series: build_series(watched)
+      anime: build_anime(watched)
     }
   end
 
   # Build feed entry of the cache
   defp build_feeds(watched) do
-    Enum.group_by(watched, &(&1.rss_feed), &series_format/1)
+    Enum.group_by(watched, &(&1.rss_feed), &anime_format/1)
   end
 
-  # Format internal series data stored within a feed
-  defp series_format(watched) do
+  # Format internal anime data stored within a feed
+  defp anime_format(watched) do
     {watched.regex, watched.directory, watched.id}
   end
 
   # TODO Use non-media-internal structure
-  # Build the series entry of the cache
-  defp build_series(watched) do
-    Map.new(watched, fn %Animu.Media.Series{id: id, episodes: episodes} ->
+  # Build the anime entry of the cache
+  defp build_anime(watched) do
+    Map.new(watched, fn %Animu.Media.Anime{id: id, episodes: episodes} ->
       {id, episodes}
     end)
   end

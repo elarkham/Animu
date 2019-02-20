@@ -1,5 +1,8 @@
 defmodule Animu.Media.Query do
-  use Animu.Query
+  @moduledoc """
+  Reusable media querys
+  """
+  use Animu.Util.Query
 
   @doc """
   Allows for all keys in the Media context to be queried

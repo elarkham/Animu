@@ -1,9 +1,12 @@
 defmodule Augur.Transmission do
+  @moduledoc """
+  Interface for Tranmissions JSON RPC API
+  """
   use GenServer
-  require Logger
 
   alias HTTPoison.Response
   alias Augur.Torrent
+  require Logger
 
   @url "http://192.168.5.115:9091/transmission/rpc"
 

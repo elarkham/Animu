@@ -1,8 +1,11 @@
 defmodule Animu.Media.Union do
+  @moduledoc """
+  Mixes Series and Franchise querys
+  """
   use Ecto.Schema
 
   import Ecto.{Query, Changeset}, warn: false
-  import Animu.Schema
+  import Animu.Util.Schema
   alias __MODULE__, as: Union
 
   embedded_schema do

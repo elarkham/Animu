@@ -1,7 +1,10 @@
 defmodule Animu.Application do
+  @moduledoc """
+  Starts and supervises Animu processes
+  """
   use Application
 
-  def start(_type, args) do
+  def start(_type, _args) do
     import Supervisor.Spec
 
     children = [
@@ -9,6 +12,8 @@ defmodule Animu.Application do
       supervisor(Animu.Repo, []),
       # Start the endpoint when the application starts
       supervisor(Animu.Web.Endpoint, []),
+      # Start Golem
+      supervisor(Golem.Supervisor, [])
     ]
 
     augur = [

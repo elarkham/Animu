@@ -1,9 +1,18 @@
 defmodule Animu.Media.Kitsu do
-
+  @moduledoc """
+  Interface for Kitsu's web API
+  """
   alias HTTPoison.Response
   alias Animu.Media.{Series, Episode}
+  require Logger
 
   @url "https://kitsu.io/api/edge/"
+
+  defp handle_error(type, id, error) do
+    msg = "http request for kitsu data failed, type: #{type}, id: #{id}"
+    Logger.error(msg <> ", reason: #{reason}")
+    {:error, msg}
+  end
 
   def request_collection(type, ids, offset \\ 0) when is_list(ids) do
     fields = Enum.join(ids, ",")
@@ -22,18 +31,14 @@ defmodule Animu.Media.Kitsu do
         {data["id"], Map.put(data["attributes"], "id", data["id"])}
       end)
 
-      cond do
-        offset >= Enum.count(ids) ->
-          {:ok, data}
-        true ->
-          IO.puts(offset)
-          {:ok, next} = request_collection(type, ids, offset + 20)
-          {:ok, Map.merge(data, next)}
+      if offset >= Enum.count(ids) do
+        {:ok, data}
+      else
+        {:ok, next} = request_collection(type, ids, offset + 20)
+        {:ok, Map.merge(data, next)}
       end
     else
-      reason ->
-        IO.inspect(reason)
-        {:error, "HTTP Request For Kitsu Data Failed, Type: #{type}, Ids: #{fields}"}
+      error -> handle_error(type, fields, error)
     end
   end
 
@@ -47,9 +52,7 @@ defmodule Animu.Media.Kitsu do
 
       {:ok, Map.put(body["data"]["attributes"], "id", id)}
     else
-      reason ->
-        IO.inspect(reason)
-        {:error, "HTTP Request For Kitsu Data Failed, Type: #{type}, Id: #{id}"}
+      error -> handle_error(type, id, error)
     end
   end
 
@@ -64,7 +67,7 @@ defmodule Animu.Media.Kitsu do
       {:ok, relations}
     else
       {:error, reason} -> {:error, reason}
-      _ -> {:error, "HTTP Request For Kitsu Data Failed"}
+      error -> handle_error(type, id, error)
     end
   end
 
@@ -95,7 +98,7 @@ defmodule Animu.Media.Kitsu do
          data <- format_related(data) do
       {:ok, data}
     else
-      _ -> {:error, "HTTP Request For Kitsu Data Failed"}
+      error -> handle_error(type, id, error)
     end
   end
 

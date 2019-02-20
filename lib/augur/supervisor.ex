@@ -1,4 +1,7 @@
 defmodule Augur.Supervisor do
+  @moduledoc """
+  Augur Supervisor
+  """
   use Supervisor
 
   def start_link do
