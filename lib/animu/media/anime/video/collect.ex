@@ -17,7 +17,7 @@ defmodule Animu.Media.Anime.Video.Collect do
       {:ok, bag}
     else
       {:error, reason} -> {:error, reason}
-      _ -> {:error, "Unexpected Error When Collecting Input Data"}
+      _ -> {:error, "unexpected error when collecting input data"}
     end
   end
 
@@ -41,9 +41,9 @@ defmodule Animu.Media.Anime.Video.Collect do
 
     cond do
       search_count == 0 ->
-        {:error, "Video Does Not Contain A Video Track"}
+        {:error, "video does not contain a video track"}
       search_count > 1 ->
-        {:error, "Video's With Multiple Video Track Are Not Supported"}
+        {:error, "video's with multiple video track are not supported"}
       true ->
         {:ok, Map.put(bag, :video_track, List.first(search))}
     end
@@ -56,7 +56,7 @@ defmodule Animu.Media.Anime.Video.Collect do
 
     cond do
       search_count == 0 ->
-        {:error, "Video Does Not Contain An Audio Track"}
+        {:error, "video does not contain an audio track"}
       search_count > 1 ->
         #{:error, "Video's With Multiple Audio Tracks Are Not Supported"}
         {:ok, Map.put(bag, :audio_track, List.first(search))}
@@ -103,7 +103,7 @@ defmodule Animu.Media.Anime.Video.Collect do
 
     case fonts do
       :error ->
-        {:error, "Failed To Collect Font Filenames"}
+        {:error, "failed to collect font filenames"}
       _ ->
         {:ok, Bag.put_font(bag, :filenames, fonts)}
     end

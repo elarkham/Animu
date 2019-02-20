@@ -6,14 +6,14 @@ defmodule Animu.Media.Anime.Video.Validate do
   def check_file_exists(file) do
     case File.regular?(file) do
       true -> :ok
-      false -> {:error, "Video Does Not Exist"}
+      false -> {:error, "video does not exist"}
     end
   end
 
   def validate_extension(extension) do
     case Enum.any?(@valid_extensions, &(&1 == extension)) do
       true -> :ok
-      false -> {:error, "Video Has Unsupported Extension"}
+      false -> {:error, "video has unsupported extension"}
     end
   end
 
@@ -23,7 +23,7 @@ defmodule Animu.Media.Anime.Video.Validate do
       "matroska,webm" ->
         {:ok, bag}
       _ ->
-        {:error, "Video Extension Does Not Match It's Format"}
+        {:error, "video extension does not match it's format"}
     end
   end
 
@@ -33,7 +33,7 @@ defmodule Animu.Media.Anime.Video.Validate do
       "matroska,webm" ->
         {:ok, bag}
       _ ->
-        {:error, "Video Extension Does Not Match It's Format"}
+        {:error, "video extension does not match it's format"}
     end
   end
 
@@ -43,7 +43,7 @@ defmodule Animu.Media.Anime.Video.Validate do
       "mov,mp4,m4a,3gp,3g2,mj2" ->
         {:ok, bag }
       _ ->
-        {:error, "Video Extension Does Not Match It's Format"}
+        {:error, "video extension does not match it's format"}
     end
   end
 end

@@ -13,7 +13,8 @@ defmodule Animu.Media.Anime.Video.Invoke do
       {:ok, video}
     else
       {:error, reason} -> {:error, reason}
-      _ -> {:error, "Unexpected Error When Invoking Video"}
+      error ->
+        {:error, "unexpected error when creating video: #{inspect(error)}"}
     end
   end
 

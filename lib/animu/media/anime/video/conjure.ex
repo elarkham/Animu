@@ -16,7 +16,8 @@ defmodule Animu.Media.Anime.Video.Conjure do
       {:ok, bag}
     else
       {:error, reason} -> {:error, reason}
-      _ -> {:error, "Unexpected Error When Conjuring Output"}
+      error ->
+        {:error, "unexpected error when conjuring output: #{inspect(error)}"}
     end
   end
 
@@ -27,7 +28,8 @@ defmodule Animu.Media.Anime.Video.Conjure do
       {:ok, bag}
     else
       {:error, reason} -> {:error, reason}
-      _ -> {:error, "Unexpected Error When Conjuring Output"}
+      error ->
+        {:error, "unexpected error when conjuring output: #{inspect(error)}"}
     end
   end
 
@@ -38,7 +40,8 @@ defmodule Animu.Media.Anime.Video.Conjure do
       {:ok, bag}
     else
       {:error, reason} -> {:error, reason}
-      _ -> {:error, "Unexpected Error When Conjuring Output"}
+      error ->
+        {:error, "unexpected error when conjuring output: #{inspect(error)}"}
     end
   end
 
@@ -51,7 +54,8 @@ defmodule Animu.Media.Anime.Video.Conjure do
       {:ok, bag}
     else
       {:error, reason} -> {:error, reason}
-      _ -> {:error, "Unexpected Error When Conjuring Output"}
+      error ->
+        {:error, "unexpected error when conjuring output: #{inspect(error)}"}
     end
   end
 
@@ -63,7 +67,7 @@ defmodule Animu.Media.Anime.Video.Conjure do
       :ok ->
         {:ok, bag}
       {:error, _} ->
-        {:error, "Failed To Create Output Directory"}
+        {:error, "failed to create output directory"}
     end
   end
 
@@ -86,7 +90,7 @@ defmodule Animu.Media.Anime.Video.Conjure do
          :ok <- File.mkdir_p(thumb_dir) do
       {:ok, bag}
     else
-      _ -> {:error, "Failed To Create Output Directories"}
+      _ -> {:error, "failed to create output directories"}
     end
   end
 
@@ -111,7 +115,7 @@ defmodule Animu.Media.Anime.Video.Conjure do
     	:ok ->
 				{:ok, %Bag{bag | output: output}}
 			{:error, _} ->
-				{:error, "Failed To Copy Video File"}
+				{:error, "failed to copy video file"}
 		end
   end
 
@@ -145,7 +149,7 @@ defmodule Animu.Media.Anime.Video.Conjure do
       {_, 0} ->
         {:ok, %Bag{bag | output: output}}
       {_, _} ->
-        {:error, "Failed To Convert MKV->MP4"}
+        {:error, "failed to convert mkv->mp4"}
     end
   end
 
@@ -157,7 +161,7 @@ defmodule Animu.Media.Anime.Video.Conjure do
       {_, 0} ->
         {:ok, Bag.put_subtitles(bag, :filename, filename)}
       {_, _} ->
-        {:error, "Failed to Extract Subtitles"}
+        {:error, "failed to extract subtitles"}
     end
   end
 
@@ -166,7 +170,7 @@ defmodule Animu.Media.Anime.Video.Conjure do
 
     case FFmpeg.extract_fonts(bag.input.file, font_dir) do
      {_, num} when num > 1 ->
-       {:error, "Failed To Extract Fonts"}
+       {:error, "failed to extract fonts"}
      {_, _} ->
        {:ok, bag}
     end
@@ -195,7 +199,7 @@ defmodule Animu.Media.Anime.Video.Conjure do
 
       {:ok, Bag.put_thumb(bag, :data, thumbs)}
     else
-      _ -> {:error, "Failed to conjure thumbnails"}
+      _ -> {:error, "failed to conjure thumbnails"}
     end
   end
 
