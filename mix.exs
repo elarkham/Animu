@@ -59,7 +59,9 @@ defmodule Animu.Mixfile do
 
      {:expat, "~> 1.0"},
      {:inquisitor, "~> 0.3.0"},
+
      {:distillery, "~> 0.9", runtime: false},
+     {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false}
    ]
   end
 
