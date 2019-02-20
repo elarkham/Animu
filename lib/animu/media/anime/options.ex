@@ -2,12 +2,8 @@ defmodule Animu.Media.Anime.Options do
   @moduledoc """
   Parses Anime options
   """
-  use Ecto.Schema
+  use Animu.Ecto.Schema
 
-  import Ecto.{Query, Changeset}, warn: false
-  import Animu.Util.Schema
-
-  alias Ecto.Changeset
   alias Animu.Media.Anime
   alias __MODULE__
 
@@ -42,13 +38,7 @@ defmodule Animu.Media.Anime.Options do
   end
 
   defp trim(%Changeset{valid?: false} = ch) do
-    errors =
-      traverse_errors(ch, fn {msg, opts} ->
-        Enum.reduce(opts, msg, fn {key, value}, acc ->
-          String.replace(acc, "%{#{key}}", to_error_string(value))
-        end)
-      end)
-
+    errors = Animu.Util.format_errors(ch)
     {:error, errors}
   end
   defp trim(ch) do
@@ -59,13 +49,6 @@ defmodule Animu.Media.Anime.Options do
       |> Map.to_list
 
     {:ok, opt}
-  end
-
-  defp to_error_string({type, inner_type}) do
-    "{#{to_string(type)}, #{to_string(inner_type)}}"
-  end
-  defp to_error_string(type) do
-    to_string(type)
   end
 
   defp changeset(%Options{} = opt, attrs) do
