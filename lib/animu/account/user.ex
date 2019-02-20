@@ -1,11 +1,8 @@
 defmodule Animu.Account.User do
-  use Ecto.Schema
+  use Animu.Ecto.Schema
 
-  import Ecto.Changeset
+  alias __MODULE__
 
-  alias __MODULE__, as: User
-
-  @derive {Poison.Encoder, except: [:__meta__]}
   schema "users" do
     field :first_name, :string
     field :last_name, :string

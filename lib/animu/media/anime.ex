@@ -2,22 +2,16 @@ defmodule Animu.Media.Anime do
   @moduledoc """
   Stores and builds Anime data
   """
-  use Ecto.Schema
-  import Ecto.{Query, Changeset}, warn: false
-  import Animu.Util.Schema
+  use Animu.Ecto.Schema
 
-  alias Ecto.Changeset
-  alias Animu.Repo
-
-  alias Animu.Media.Franchise
   alias Animu.Ecto.Image
 
-  alias Animu.Media.Anime.{Bag, Options}
-  alias Animu.Media.Anime.{Episode, Season, Genre}
   alias __MODULE__
+  alias Animu.Media
+  alias Media.Franchise
+  alias Anime.{Bag, Options}
+  alias Anime.{Episode, Season, Genre}
 
-  @derive {Poison.Encoder, except: [:__meta__]}
-  @timestamps_opts [type: :utc_datetime]
   schema "anime" do
 
     ## Meta Data
@@ -104,7 +98,8 @@ defmodule Animu.Media.Anime do
       {:ok, ch, bag.golems}
     else
       {:error, msg} -> {:error, msg}
-      error -> {:error, "Unexpected Error: #{inspect(error)}"}
+      error ->
+        {:error, "Unexpected Error: #{inspect(error)}"}
     end
   end
 
@@ -113,7 +108,8 @@ defmodule Animu.Media.Anime do
       %Changeset{valid?: true} = ch ->
         {:ok, ch}
       ch ->
-        {:error, ch} #TODO Traverse Errors
+        errors = Animu.Util.format_errors(ch)
+        {:error, errors}
     end
   end
 

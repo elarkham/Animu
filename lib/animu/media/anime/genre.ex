@@ -2,19 +2,14 @@ defmodule Animu.Media.Anime.Genre do
   @moduledoc """
   Organizes Anime by genre, mostly ones pulled from kitsu.io
   """
-  use Ecto.Schema
+  use Animu.Ecto.Schema
 
-  import Ecto.Query, only: [from: 2]
-  import Ecto.Changeset
-  import Animu.Util.Schema
-
-  alias Animu.Media.Anime
-  alias Animu.Ecto.Image
   alias Animu.Repo
+  alias Animu.Ecto.Image
+  alias Animu.Media.Anime
 
-  alias __MODULE__, as: Genre
+  alias __MODULE__
 
-  @derive {Poison.Encoder, except: [:__meta__]}
   schema "genres" do
     field :name,        :string # CS Required
     field :slug,        :string # CI Required

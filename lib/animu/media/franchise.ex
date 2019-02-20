@@ -2,14 +2,13 @@ defmodule Animu.Media.Franchise do
   @moduledoc """
   Organizes Anime by franchise
   """
-  use Ecto.Schema
+  use Animu.Ecto.Schema
+
 
   alias Animu.Ecto.Image
   alias Animu.Media.Anime
-
   alias __MODULE__
 
-  @derive {Poison.Encoder, except: [:__meta__]}
   schema "franchises" do
     field :name,          :string
     field :titles,        :map

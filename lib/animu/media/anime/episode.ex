@@ -2,15 +2,12 @@ defmodule Animu.Media.Anime.Episode do
   @moduledoc """
   Data format for Anime episodes
   """
-  use Ecto.Schema
-
-  import Ecto.Changeset
+  use Animu.Ecto.Schema
 
   alias Animu.Media.Anime
   alias Animu.Media.Anime.Video
   alias __MODULE__
 
-  @derive {Poison.Encoder, except: [:__meta__]}
   schema "episodes" do
     field :name,          :string
     field :titles,        {:map, :string}

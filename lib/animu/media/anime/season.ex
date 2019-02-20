@@ -2,19 +2,13 @@ defmodule Animu.Media.Anime.Season do
   @moduledoc """
   Organizes Anime by the seasons they aired
   """
-  use Ecto.Schema
+  use Animu.Ecto.Schema
 
-  import Ecto.Query, only: [from: 2]
-  import Ecto.Changeset
-  import Animu.Util.Schema
-
-  alias Animu.Media.Anime
-  alias Animu.Ecto.Image
   alias Animu.Repo
+  alias Animu.Media.Anime
 
   alias __MODULE__
 
-  @derive {Poison.Encoder, except: [:__meta__]}
   schema "seasons" do
     field :year,  :integer # Required
     field :cour,  :string  # Required, CI

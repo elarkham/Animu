@@ -3,11 +3,8 @@ defmodule Animu.Media.Anime.Video do
   Stores video metadata from ffprobe plus the location of the file.
   Should be immutable after initial generation.
   """
-  use Ecto.Schema
-
-  import Ecto.Changeset
-  import Animu.Util.Schema
-  alias __MODULE__, as: Video
+  use Animu.Ecto.Schema
+  alias __MODULE__
 
   @derive Jason.Encoder
   embedded_schema do
