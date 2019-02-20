@@ -2,7 +2,6 @@ defmodule Animu.Ecto.Image do
   @behaviour Ecto.Type
 
   alias HTTPoison.Response
-  alias __MODULE__, as: Image
   require Logger
 
   ## Ecto Type Functions
