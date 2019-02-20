@@ -40,7 +40,6 @@ defmodule Animu.Media.Anime.Bag do
   ]
 
   defdelegate invoke(bag),      to: Invoke
-  defdelegate invoke(bag, opt), to: Invoke
 
   def new(%Anime{} = anime, %{} = attrs, options \\ []) do
     ch =

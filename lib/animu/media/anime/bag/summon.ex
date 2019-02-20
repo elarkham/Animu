@@ -19,7 +19,17 @@ defmodule Animu.Media.Anime.Bag.Summon do
     :episodes
   ]
 
-  # Genre Compilation
+  ## Compilation
+  def compile(%Bag{} = bag, summons) do
+    bag =
+      bag
+      |> Map.put(:summons, summons)
+      |> compile_genres(summons)
+
+    {:ok, bag}
+  end
+
+  # Compile -> Genres
   def compile_genres(%Bag{} = bag, summons) do
     todo =
       summons
@@ -35,6 +45,18 @@ defmodule Animu.Media.Anime.Bag.Summon do
       genres = Genre.insert_or_get_all(genres)
       put_change(ch, :genres, genres)
     end
+  end
+
+  ## Gather from sources
+  def gather(%Bag{} = bag, params) do
+    Enum.reduce_while(params, {:ok, []}, fn source, acc ->
+      name = source.source
+      {:ok, acc} = acc
+      case Summon.summon(source, bag) do
+          {:ok, data} -> {:cont, {:ok, acc ++ [data]}}
+        {:error, msg} -> {:halt, {:error, %{name => msg}}}
+      end
+    end)
   end
 
   ## Source: Kitsu
