@@ -16,8 +16,8 @@ defmodule Animu.Util.FFmpeg do
          {:ok, probe_data} <- Poison.Parser.parse(json_output) do
       {:ok, probe_data}
     else
-      {:error, _} -> {:error, "Failed to parse FFprobe output"}
-      _           -> {:error, "FFProbe Failed"}
+      {:error, _} -> {:error, "failed to parse ffprobe output"}
+      _           -> {:error, "ffprobe failed"}
     end
   end
 
@@ -100,7 +100,7 @@ defmodule Animu.Util.FFmpeg do
          {duration, _} <- Integer.parse(duration) do
       random_thumbnail(input, duration, output)
     else
-      _ -> {:error, "Failed to generate random thumbnail"}
+      _ -> {:error, "failed to generate random thumbnail"}
     end
   end
 
