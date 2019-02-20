@@ -3,17 +3,14 @@ defmodule Animu.Util.ImageMagick do
   @exec  "convert"
 
   def identify(input) do
-    args =
-      [ input,
-        "json:"
-      ]
+    args = [input, "json:"]
 
     with {json_output,  0} <- System.cmd(@exec, args),
          {:ok, identity} <- Poison.Parser.parse(json_output) do
       {:ok, identity}
     else
-      {:error, _} -> {:error, "Failed to parse ImageMagick json"}
-      _           -> {:error, "ImageMagick identification Failed"}
+      {:error, _} -> {:error, "failed to parse ImageMagick json"}
+      _           -> {:error, "ImageMagick identification failed"}
     end
   end
 
@@ -48,7 +45,7 @@ defmodule Animu.Util.ImageMagick do
         {_, 0} ->
           {:cont, {:ok, Map.put(acc, name, thumb)}}
         _ ->
-          {:halt, {:error, "Resize of '#{image}' to '#{output}' Failed"}}
+          {:halt, {:error, "resize of '#{image}' to '#{output}' failed"}}
       end
     end)
   end
@@ -56,7 +53,7 @@ defmodule Animu.Util.ImageMagick do
   def write_image(data, path) do
     case File.write(path, data) do
       {:error, _} ->
-        {:error, "Failed to Write Image: '#{path}'"}
+        {:error, "failed to write image: '#{path}'"}
 
       :ok -> :ok
     end
