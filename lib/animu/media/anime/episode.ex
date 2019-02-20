@@ -45,40 +45,27 @@ defmodule Animu.Media.Anime.Episode do
   end
 
   ## Video Conjuring
-  # From Episode
-  def conjure_video(%Episode{video: nil} = ep, _), do: {:ok, ep}
-  def conjure_video(%Episode{video: video} = ep, anime_dir) do
-    case Video.new(video.original, anime_dir) do
-       {:ok, video} -> {:ok, video}
-      {:error, msg} -> {:error, msg}
-      _ -> {:error, "Unexpceted Error While Conjuring Video"}
+  # From Changeset
+  def conjure_video(%Changeset{valid?: false} = ch), do: ch
+  def conjure_video(%Changeset{changes: %{video_path: _}} = ch) do
+    anime =
+      ch
+      |> get_field(:anime_id)
+      |> Animu.Media.get_anime!()
+
+    conjure_video(ch, anime.directory)
+  end
+  def conjure_video(%Changeset{} = ch), do: ch
+  def conjure_video(%Changeset{changes: %{video_path: path}} = ch, anime_dir) do
+    case Video.Invoke.new(path, anime_dir) do
+          {:ok, video} -> put_embed(ch, :video, video)
+      {:error, reason} -> add_error(ch, :video_path, reason)
+
+      error ->
+        {:error, "unexpected error while conjuring video: #{error}"}
     end
   end
-  # From Changeset
-  #def conjure_video(%Changeset{valid?: false} = ch), do: ch
-  #def conjure_video(%Changeset{changes: %{video_path: _}} = ch) do
-  #  anime =
-  #    changeset
-  #    |> get_field(:anime_id)
-  #    |> Media.get_anime!()
-
-  #  conjure_video(changeset, anime.directory)
-  #end
-  #def conjure_video(%Changeset{} = changeset), do: changeset
-  #def conjure_video(%Changeset{changes: %{video_path: path}} = ch, anime_dir) do
-
-  #  case Video.Invoke.new(path, anime_dir) do
-  #    {:ok, video} ->
-  #      put_embed(changeset, :video, video)
-
-  #    {:error, reason} ->
-  #      add_error(changeset, :video_path, reason)
-
-  #    _ ->
-  #      {:error, "Unexpected Error When Conjuring Video"}
-  #  end
-  #end
-  #def conjure_video(%Changeset{} = changeset, _), do: changeset
+  def conjure_video(%Changeset{} = ch, _), do: ch
 
   ## Lazy Functions
   def new_lazy(number, video_path) do
