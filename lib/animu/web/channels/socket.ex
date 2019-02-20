@@ -8,7 +8,7 @@ defmodule Animu.Web.Socket do
 
   channel "golem:*", Animu.Web.GolemChannel
 
-  channel "series:*",    Animu.Web.SeriesChannel
+  channel "anime:*",    Animu.Web.AnimeChannel
   channel "episode:*",   Animu.Web.EpisodeChannel
   channel "franchise:*", Animu.Web.FranchiseChannel
 

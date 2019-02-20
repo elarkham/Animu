@@ -1,6 +1,6 @@
 defmodule Animu.Media do
   @moduledoc """
-  The boundary for the Media system
+  The boundary for the Media domain
   """
   import Ecto.{Query, Changeset}, warn: false
 
@@ -8,18 +8,8 @@ defmodule Animu.Media do
   import Animu.Util.Schema
 
   alias Animu.Repo
-  alias Animu.Media.{Franchise, Series, Episode, Union}
-
-  ##
-  # Series + Franchise Interactions
-  ##
-  def union_franchise_series do
-    franchise_query = Franchise |> Union.build_select("franchise")
-    series_query = Series |> Union.build_select("series")
-
-    union(franchise_query, ^series_query)
-    |> Repo.all()
-  end
+  alias Animu.Media.{Franchise, Anime, Union}
+  alias Animu.Media.Anime.{Episode, Video}
 
   ##
   # Franchise Interactions
@@ -29,13 +19,10 @@ defmodule Animu.Media do
   Returns `%Ecto.Changeset{}` for tracking Franchise changes
   """
   def franchise_changeset(%Franchise{} = franchise, attrs) do
-    virtual_fields =
-      [ :poster_url,
-        :cover_url,
-      ]
+    virtual_fields = [:poster_url, :cover_url]
 
     franchise
-    |> Repo.preload(:series)
+    |> Repo.preload(:anime)
     |> cast(attrs, all_fields(Franchise) ++ virtual_fields)
     |> Franchise.Invoke.summon_images
     |> validate_required([:canon_title, :slug])
@@ -49,10 +36,10 @@ defmodule Animu.Media do
   @doc """
   Returns a list of Franchises
   """
-  def list_franchises(params) do
+  def list_franchises(params \\ %{}) do
     Franchise
-      |> build_query(params)
-      |> Repo.all()
+    |> build_query(params)
+    |> Repo.all()
   end
 
   @doc """
@@ -61,12 +48,14 @@ defmodule Animu.Media do
   Raises `Ecto.NoResultsError` if the Franchise does not exist.
   """
   def get_franchise!(id) when is_integer(id) do
-    Repo.get!(Franchise, id)
-      |> Repo.preload(:series)
+    Franchise
+    |> Repo.get!(id)
+    |> Repo.preload(:anime)
   end
   def get_franchise!(slug) when is_binary(slug) do
-    Repo.get_by!(Franchise, slug: slug)
-      |> Repo.preload(:series)
+    Franchise
+    |> Repo.get_by!(slug: slug)
+    |> Repo.preload(:anime)
   end
 
   @doc """
@@ -95,100 +84,91 @@ defmodule Animu.Media do
   end
 
   ##
-  # Series Interactions
+  # Anime Interactions
   ##
 
   @doc """
-  Returns `%Ecto.Changeset{}` for tracking Series changes
+  Returns all watched Anime with Episodes that have nil Videos
   """
-  def series_changeset(%Series{} = series, attrs) do
-    virtual_fields =
-      [ :populate,
-        :audit,
-        :spawn_episodes,
-      ]
-
-    series
-    |> Repo.preload(:episodes)
-    |> Repo.preload(:franchise)
-    |> cast(attrs, all_fields(Series) ++ virtual_fields)
-    |> Series.Invoke.populate
-    |> Series.Invoke.audit
-    |> Series.Invoke.spawn_episodes
-    |> Series.Invoke.summon_images
-    |> validate_required([:canon_title, :slug, :directory])
-    |> unique_constraint(:slug)
-  end
-
-  def change_series(%Series{} = series) do
-    series_changeset(series, %{})
-  end
-
-  @doc """
-  Returns all watched Series with Episodes that have nil Videos
-  """
-  def all_watched_series do
+  def all_watched_anime do
     episode_query =
       from e in Episode,
        where: is_nil(e.video),
       select: {e.id, e.number}
-    series_query =
-      from s in Series,
+    anime_query =
+      from s in Anime,
       preload: [episodes: ^episode_query],
         where: s.watch == true,
        select: [:id, :rss_feed, :regex, :directory]
 
-    Repo.all(series_query)
+    Repo.all(anime_query)
   end
 
   @doc """
-  Returns a list of Series
+  Returns a list of Anime
   """
-  def list_series(params) do
-    Series
-      |> build_query(params)
-      |> Repo.all()
+  def list_anime(params \\ %{}) do
+    Anime
+    |> build_query(params)
+    |> Repo.all()
   end
 
   @doc """
-  Returns single Series using it's id or slug
+  Returns single Anime using it's id or slug
 
-  Raises `Ecto.NoResultsError` if the Series does not exist.
+  Raises `Ecto.NoResultsError` if the Anime does not exist.
   """
-  def get_series!(id) when is_integer(id) do
-    Repo.get!(Series, id)
-      |> Repo.preload(:franchise)
-      |> Repo.preload(:episodes)
+  def get_anime!(id) when is_integer(id) do
+    Anime
+    |> Repo.get!(Anime, id)
+    |> Repo.preload(:franchise)
+    |> Repo.preload(:episodes)
   end
-  def get_series!(slug) when is_binary(slug) do
-    Repo.get_by!(Series, slug: slug)
-      |> Repo.preload(:franchise)
-      |> Repo.preload(:episodes)
-  end
-
-  @doc """
-  Creates new Series
-  """
-  def create_series(attrs \\ %{}) do
-    %Series{}
-    |> series_changeset(attrs)
-    |> Repo.insert()
+  def get_anime!(slug) when is_binary(slug) do
+    Anime
+    |> Repo.get_by!(slug: slug)
+    |> Repo.preload(:franchise)
+    |> Repo.preload(:episodes)
   end
 
   @doc """
-  Updates a Series
+  Creates new Anime
   """
-  def update_series(%Series{} = series, attrs) do
-    series
-      |> series_changeset(attrs)
-      |> Repo.update()
+  def create_anime(attrs, opt \\ []) do
+    anime = %Anime{}
+    with {:ok, ch, jobs} <- Anime.build(anime, attrs, opt),
+            {:ok, anime} <- Repo.insert(ch),
+                   anime <- Repo.preload(anime, [:episodes]) do
+
+      Anime.start_golems(anime, jobs)
+      {:ok, anime}
+    else
+      {:error, msg} -> {:error, msg}
+      _ -> {:error, "Unexpected Error During Anime Creation"}
+    end
   end
 
   @doc """
-  Deletes a Series
+  Updates a Anime
   """
-  def delete_series(%Series{} = series) do
-    Repo.delete(series)
+  def update_anime(%Anime{} = anime, attrs, opt \\ %{}) do
+    with {:ok, ch, jobs} <- Anime.build(anime, attrs, opt),
+            {:ok, anime} <- Repo.update(ch),
+                   anime <- Repo.preload(anime, [:episodes]) do
+
+      Anime.start_golems(anime, jobs)
+      {:ok, anime}
+    else
+      {:error, msg} -> {:error, msg}
+      _ -> {:error, "Unexpected Error During Anime Creation"}
+    end
+  end
+
+  @doc """
+  Deletes a Anime
+  """
+  def delete_anime(%Anime{} = anime) do
+    Repo.delete(anime)
   end
 
   ##
@@ -201,9 +181,8 @@ defmodule Animu.Media do
   def episode_changeset(%Episode{} = episode, attrs) do
     episode
     |> cast(attrs, all_fields(Episode, except: [:video]) ++ [:video_path])
-    |> validate_required([:title, :number])
-    |> foreign_key_constraint(:series_id)
-    |> Episode.Invoke.conjure_video
+    |> validate_required([:name, :number])
+    |> foreign_key_constraint(:anime_id)
   end
 
   def change_episode(%Episode{} = episode) do
@@ -213,11 +192,11 @@ defmodule Animu.Media do
   @doc """
   Returns list of Episodes
   """
-  def list_episodes(params) do
+  def list_episodes(params \\ %{}) do
     Episode
-      |> build_query(params)
-      |> Repo.all()
-      |> Repo.preload(:series)
+    |> build_query(params)
+    |> Repo.all()
+    |> Repo.preload(:anime)
   end
 
   @doc """
@@ -226,8 +205,9 @@ defmodule Animu.Media do
   Raises `Ecto.NoResultsError` if the Episode does not exist.
   """
   def get_episode!(id) do
-    Repo.get!(Episode, id)
-    |> Repo.preload(:series)
+    Episode
+    |> Repo.get!(Episode, id)
+    |> Repo.preload(:anime)
   end
 
   @doc """
@@ -242,6 +222,12 @@ defmodule Animu.Media do
   @doc """
   Updates a Epiosde
   """
+  def update_episode(%Episode{} = episode, %Video{} = video) do
+    episode
+    |> cast(%{}, [])
+    |> put_embed(:video, video)
+    |> Repo.update()
+  end
   def update_episode(%Episode{} = episode, attrs) do
     episode
     |> episode_changeset(attrs)

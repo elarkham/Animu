@@ -1,33 +1,34 @@
-defmodule Animu.Media.Series.Season do
+defmodule Animu.Media.Anime.Season do
+  @moduledoc """
+  Organizes Anime by the seasons they aired
+  """
   use Ecto.Schema
 
+  import Ecto.Query, only: [from: 2]
   import Ecto.Changeset
   import Animu.Util.Schema
 
-  alias Animu.Media.Series
-  alias Animu.Util.Image
+  alias Animu.Media.Anime
+  alias Animu.Ecto.Image
   alias Animu.Repo
 
   alias __MODULE__
 
   @derive {Poison.Encoder, except: [:__meta__]}
-  schema "season" do
+  schema "seasons" do
     field :year,  :integer # Required
     field :cour,  :string  # Required, CI
 
-    field :title,       :string # CS ex: Winter 2019
-    field :slug,        :string # CI ex: winter-2019
-    field :poster,      Image
+    field :name,    :string # CS ex: Winter 2019
+    field :slug,    :string # CI ex: winter-2019
 
-    many_to_many :series, Series,
-      join_through: "series_season",
+    many_to_many :anime, Anime,
+      join_through: "anime_seasons",
       defaults: []
-
-    timestamps()
   end
 
   @required  [:year, :cour]
-  @generated [:title, :slug]
+  @generated [:name, :slug]
 
   @cours ["winter", "spring", "summer", "fall"]
 
@@ -37,22 +38,24 @@ defmodule Animu.Media.Series.Season do
   end
   def changeset(%Season{} = season, attrs) do
     season
-    |> cast(attrs, all_fields(Season, except: @generated)
+    |> cast(attrs, all_fields(Season, except: @generated))
     |> validate_required(@required)
-    |> validate_subset(:cour, @cours)
+    |> validate_inclusion(:cour, @cours)
     |> update_change(:cour, &String.downcase/1)
     |> unique_constraint(:cour, name: :seasons_cour_year_index)
+    |> unique_constraint(:name)
+    |> unique_constraint(:slug)
     |> generate_fields
   end
   defp generate_fields(ch) do
-    cour = ch.get_field(:cour)
-    year = ch.get_field(:year)
+    cour = get_field(ch, :cour)
+    year = get_field(ch, :year)
 
-    title = "#{String.capitalize(cour)} #{year}"
+    name  = "#{String.capitalize(cour)} #{year}"
     slug  = "#{cour}-#{year}"
 
     ch
-    |> put_change(:title, title)
+    |> put_change(:name,  name)
     |> put_change(:slug,  slug)
   end
 
@@ -72,9 +75,9 @@ defmodule Animu.Media.Series.Season do
   end
 
   defp insert_or_get_all(seasons) do
-    slugs = Enum.map(seasons, &apply_changes/1)
-    resolve = :replace_all_except_primary_key
-    Repo.insert_all(seasons, on_conflict: resolve)
+    slugs   = Enum.map(seasons, &(&1.slug))
+    resolve = :nothing
+    Repo.insert_all(Season, seasons, on_conflict: resolve)
     Repo.all(from s in Season, where: s.slug in ^slugs)
   end
 
@@ -82,9 +85,11 @@ defmodule Animu.Media.Series.Season do
   def in_range(nil, _), do: nil
   def in_range(_, nil), do: nil
   def in_range(start_date, end_date) do
+    # credo:disable-for-lines:5
     Date.range(start_date, end_date)
     |> MapSet.new(&Season.at/1)
-    |> Enum.map(&Repo.insert_or_update!/2)
+    |> MapSet.to_list
+    |> insert_or_get_all
   end
 
   def at(%Date{year: year} = date) do
@@ -92,6 +97,9 @@ defmodule Animu.Media.Series.Season do
 
     %Season{}
     |> changeset(params)
+    |> apply_changes
+    |> to_map
+    |> Map.drop([:anime])
   end
 
   def cour_at(%Date{} = date) do

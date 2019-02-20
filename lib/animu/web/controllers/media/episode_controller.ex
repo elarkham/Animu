@@ -2,7 +2,7 @@ defmodule Animu.Web.EpisodeController do
   use Animu.Web, :controller
 
   alias Animu.Media
-  alias Animu.Media.Episode
+  alias Animu.Media.Anime.Episode
 
   action_fallback Animu.Web.FallbackController
 

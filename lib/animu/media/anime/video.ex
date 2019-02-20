@@ -1,8 +1,12 @@
-defmodule Animu.Media.Video do
+defmodule Animu.Media.Anime.Video do
+  @moduledoc """
+  Stores video metadata from ffprobe plus the location of the file.
+  Should be immutable after initial generation.
+  """
   use Ecto.Schema
 
   import Ecto.Changeset
-  import Animu.Schema
+  import Animu.Util.Schema
   alias __MODULE__, as: Video
 
   @derive Jason.Encoder
@@ -10,6 +14,7 @@ defmodule Animu.Media.Video do
     field :filename,    :string
     field :dir,         :string, default: "videos"
     field :extension,   :string
+    field :path,        :string
 
     field :format,      :string
     field :format_name, :string
@@ -21,8 +26,9 @@ defmodule Animu.Media.Video do
     field :bit_rate,    :integer
     field :probe_score, :integer
 
-    field :thumbnail,   {:map, :string}
     field :original,    :string
+
+    field :thumbnail,   {:map, :string}
 
     embeds_one :video_track, VideoTrack, on_replace: :delete do
       field :index,           :integer
@@ -84,9 +90,6 @@ defmodule Animu.Media.Video do
   Protocol.derive(Jason.Encoder, Video.AudioTrack)
   Protocol.derive(Jason.Encoder, Video.Subtitles)
 
-  @doc """
-  Returns `%Ecto.Changeset{}` for tracking Video changes
-  """
   def changeset(%Video{} = video, attrs) do
     video
     |> cast(attrs, all_fields(Video, except: [:video_track, :audio_track, :subtitles]))
@@ -94,6 +97,7 @@ defmodule Animu.Media.Video do
     |> cast_embed(:video_track, with: &video_track_changeset/2)
     |> cast_embed(:audio_track, with: &audio_track_changeset/2)
     |> cast_embed(:subtitles,   with: &subtitles_changeset/2)
+    |> update_path
   end
 
   def change(%Video{} = video) do
@@ -114,4 +118,17 @@ defmodule Animu.Media.Video do
     subtitles
     |> cast(attrs, all_fields(Video.Subtitles))
   end
+
+  def update_path(ch) do
+    case ch.valid? do
+      true ->
+        dir  = get_field(ch, :dir)
+        name = get_field(ch, :filename)
+        path = Path.join(dir, name)
+        update_change(ch, :path, path)
+      _ -> ch
+    end
+  end
+
+  defdelegate new(video_path, anime_dir), to: Video.Invoke
 end

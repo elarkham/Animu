@@ -1,8 +1,8 @@
-defmodule Animu.Media.Video.Collect do
-  import Animu.Media.FFmpeg, only: [probe: 1]
-  import Animu.Media.Video.Validate
+defmodule Animu.Media.Anime.Video.Collect do
+  import Animu.Util.FFmpeg, only: [probe: 1]
+  import Animu.Media.Anime.Video.Validate
 
-  alias Animu.Media.Video.Bag
+  alias Animu.Media.Anime.Video.Bag
 
   def collect_input_data(bag) do
     with :ok <- check_file_exists(bag.input.file),

@@ -1,27 +1,27 @@
-defmodule Animu.Web.SeriesChannel do
+defmodule Animu.Web.AnimeChannel do
   use Phoenix.Channel
 
   alias Animu.Web
   alias Animu.Media
-  alias Animu.Media.Series
+  alias Animu.Media.Anime
 
-  def join("series:", _payload, socket) do
+  def join("anime:", _payload, socket) do
     {:ok, socket}
   end
 
-  def join("series:" <> id, _payload, socket) do
+  def join("anime:" <> id, _payload, socket) do
     {:ok, socket}
   end
 
   def handle_in("index", _params, socket) do
-    series = Media.list_series(%{})
-    view = Web.SeriesView.render("index.json", series: series)
+    anime = Media.list_anime(%{})
+    view = Web.AnimeView.render("index.json", anime: anime)
     {:reply, {:ok, view}, socket}
   end
 
   def handle_in("get", %{"id" => id}, socket) do
-    series = Media.get_series!(id)
-    view = Web.SeriesView.render("show.json", series: series)
+    anime = Media.get_anime!(id)
+    view = Web.AnimeView.render("show.json", anime: anime)
     {:reply, {:ok, view}, socket}
   end
 

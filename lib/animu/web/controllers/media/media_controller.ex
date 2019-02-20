@@ -2,13 +2,13 @@ defmodule Animu.Web.MediaController do
   use Animu.Web, :controller
 
   alias Animu.Media
-  alias Animu.Media.{Series, Franchise}
+  alias Animu.Media.{Anime, Franchise}
 
   action_fallback Animu.Web.FallbackController
 
   def index(conn, params) do
-    series = Media.list_series(params)
-    render(conn, "index.json", series: series)
+    anime = Media.list_anime(params)
+    render(conn, "index.json", anime: anime)
   end
 
 end

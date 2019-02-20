@@ -1,23 +1,23 @@
-defmodule Animu.Media.Series.Transmute do
-
+defmodule Animu.Media.Anime.Transmute do
+  """
   import Ecto.Changeset
   import Animu.Media.Episode.Invoke
 
   alias Ecto.Changeset
-  alias Animu.Media.Series.Bag
-  alias Animu.Media.{Series, Episode}
+  alias Animu.Media.Anime.Bag
+  alias Animu.Media.{Anime, Episode}
   alias Animu.Schema
 
-  def transmute(%Changeset{} = changeset, :series) do
-    %Series{} = apply_changes(changeset)
+  def transmute(%Changeset{} = changeset, :anime) do
+    %Anime{} = apply_changes(changeset)
   end
 
-  def transmute(%Series{} = series, :bag) do
-    Bag.new(series)
+  def transmute(%Anime{} = anime, :bag) do
+    Bag.new(anime)
   end
 
-  def transmute(%Bag{} = bag, :series) do
-    %Series{}
+  def transmute(%Bag{} = bag, :anime) do
+    %Anime{}
     |> struct(nil_to_map(bag.kitsu_data))
     |> Map.put(:poster_image, bag.poster_image)
     |> Map.put(:cover_image, bag.cover_image)
@@ -27,17 +27,17 @@ defmodule Animu.Media.Series.Transmute do
     |> Map.put(:regex, transmute_regex(bag.regex, :string))
   end
 
-  def transmute(%Series{} = series, %Changeset{} = changeset) do
+  def transmute(%Anime{} = anime, %Changeset{} = changeset) do
     changeset.data
-      |> cast(Schema.to_params(series), Schema.all_fields(Series))
+      |> cast(Schema.to_params(anime), Schema.all_fields(Anime))
   end
-  def transmute(%Series{} = series, %Changeset{} = changeset, :merge) do
+  def transmute(%Anime{} = anime, %Changeset{} = changeset, :merge) do
     episodes =
-      transmute_episodes(series.episodes, series.directory)
+      transmute_episodes(anime.episodes, anime.directory)
 
     IO.puts "Episodes Transmuted"
     changeset.data
-      |> cast(Schema.to_params(series), Schema.all_fields(Series))
+      |> cast(Schema.to_params(anime), Schema.all_fields(Anime))
       |> merge(changeset)
       |> put_assoc(:episodes, episodes)
   end
@@ -50,29 +50,29 @@ defmodule Animu.Media.Series.Transmute do
     end
   end
 
-  def transmute_episodes(episodes, series_dir) do
+  def transmute_episodes(episodes, anime_dir) do
     Task.async_stream(episodes, fn episode ->
       IO.puts "Conjuring Video"
       episode
       |> Map.from_struct()
-      |> episode_changeset(series_dir)
+      |> episode_changeset(anime_dir)
     end, timeout: 1000 * 60 * 60)
     |> Enum.to_list()
     |> Enum.map(fn {:ok, ep} -> ep end)
   end
 
-  defp episode_changeset(attrs, series_dir) do
+  defp episode_changeset(attrs, anime_dir) do
     %Episode{}
     |> cast(attrs, Schema.all_fields(Episode, except: [:video]) ++ [:video_path])
     |> validate_required([:title, :number])
-    |> conjure_video_if_nil(series_dir)
+    |> conjure_video_if_nil(anime_dir)
     |> delete_change(:video_path)
   end
 
-  defp conjure_video_if_nil(changeset, series_dir) do
+  defp conjure_video_if_nil(changeset, anime_dir) do
     #case changeset do
     #  %Changeset{params: %{"video" => nil}} ->
-    #    conjure_video(changeset, series_dir)
+    #    conjure_video(changeset, anime_dir)
 
     #  %Changeset{params: %{"video" => video}} ->
     #    put_embed(changeset, :video, video)
@@ -80,7 +80,7 @@ defmodule Animu.Media.Series.Transmute do
     #   _ ->
     #    changeset
     #end
-    conjure_video(changeset, series_dir)
+    conjure_video(changeset, anime_dir)
   end
 
   defp nil_to_map(value) do
@@ -89,4 +89,5 @@ defmodule Animu.Media.Series.Transmute do
       _ -> value
     end
   end
+  """
 end

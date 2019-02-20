@@ -1,5 +1,5 @@
-defmodule Animu.Media.Video.Validate do
-  alias Animu.Media.Video.Bag
+defmodule Animu.Media.Anime.Video.Validate do
+  alias Animu.Media.Anime.Video.Bag
 
   @valid_extensions ~w(.mkv .webm .mp4)
 

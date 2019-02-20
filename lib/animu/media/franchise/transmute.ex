@@ -5,7 +5,7 @@ defmodule Animu.Media.Franchise.Transmute do
   alias Ecto.Changeset
   alias Animu.Media.Franchise
   alias Animu.Media.Franchise.Bag
-  alias Animu.Schema
+  alias Animu.Util.Schema
 
   def transmute(%Changeset{} = changeset, :franchise) do
     %Franchise{} = apply_changes(changeset)
@@ -23,7 +23,7 @@ defmodule Animu.Media.Franchise.Transmute do
 
   def transmute(%Franchise{} = franchise, %Changeset{} = changeset) do
     changeset.data
-      |> cast(Schema.to_params(franchise), Schema.all_fields(Franchise))
+      |> cast(Schema.to_map(franchise), Schema.all_fields(Franchise))
       |> merge(changeset)
   end
 

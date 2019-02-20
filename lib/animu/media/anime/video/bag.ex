@@ -1,4 +1,4 @@
-defmodule Animu.Media.Video.Bag do
+defmodule Animu.Media.Anime.Video.Bag do
   alias __MODULE__, as: Bag
   #alias Animu.Media.Video
 
@@ -49,16 +49,16 @@ defmodule Animu.Media.Video.Bag do
     ]
   end
 
-  def new(input_path, series_dir) do
+  def new(input_path, anime_dir) do
     dir = Path.dirname(input_path)
     filename = Path.basename(input_path)
     extension = Path.extname(input_path)
     name = Path.rootname(filename)
 
     input_root =
-      Path.join(Application.get_env(:animu, :input_root), series_dir)
+      Path.join(Application.get_env(:animu, :input_root), anime_dir)
     output_root =
-      Path.join(Application.get_env(:animu, :output_root), series_dir)
+      Path.join(Application.get_env(:animu, :output_root), anime_dir)
 
     file = Path.join([input_root, input_path])
 

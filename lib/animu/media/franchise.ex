@@ -1,13 +1,18 @@
 defmodule Animu.Media.Franchise do
+  @moduledoc """
+  Organizes Anime by franchise
+  """
   use Ecto.Schema
 
-  alias Animu.Media.Series
-  alias __MODULE__, as: Franchise
+  alias Animu.Ecto.Image
+  alias Animu.Media.Anime
+
+  alias __MODULE__
 
   @derive {Poison.Encoder, except: [:__meta__]}
   schema "franchises" do
+    field :name,          :string
     field :titles,        :map
-    field :canon_title,   :string
     field :slug,          :string
 
     field :creator,       :string
@@ -20,12 +25,11 @@ defmodule Animu.Media.Franchise do
 
     field :tags,          {:array, :string}
 
-    has_many :series, Series, default: []
+    has_many :anime, Anime
 
-    # TODO maybe
-    many_to_many :related, Franchise,
-      join_through: "related_franchises"
-      default: []
+    # TODO
+    #many_to_many :related, Franchise.Related,
+    #  join_through: "related_franchises"
 
     timestamps()
   end

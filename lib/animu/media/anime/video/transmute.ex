@@ -1,7 +1,7 @@
-defmodule Animu.Media.Video.Transmute do
+defmodule Animu.Media.Anime.Video.Transmute do
   import Ecto.Changeset
 
-  alias Animu.Media.Video
+  alias Animu.Media.Anime.Video
   alias Video.{VideoTrack, AudioTrack, Subtitles, Bag}
 
   def transmute(%Bag{} = bag, :video) do

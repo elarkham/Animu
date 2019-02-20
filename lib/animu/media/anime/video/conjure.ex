@@ -1,7 +1,7 @@
-defmodule Animu.Media.Video.Conjure do
-  alias Animu.Media.FFmpeg
-  alias Animu.Media.ImageMagick, as: Image
-  alias Animu.Media.Video.Bag
+defmodule Animu.Media.Anime.Video.Conjure do
+  alias Animu.Util.FFmpeg
+  alias Animu.Util.ImageMagick, as: Image
+  alias Animu.Media.Anime.Video.Bag
   require Bag
 
   @output_dir "videos"

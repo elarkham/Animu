@@ -1,45 +1,50 @@
-defmodule Animu.Media.Genre do
+defmodule Animu.Media.Anime.Genre do
+  @moduledoc """
+  Organizes Anime by genre, mostly ones pulled from kitsu.io
+  """
   use Ecto.Schema
 
+  import Ecto.Query, only: [from: 2]
   import Ecto.Changeset
   import Animu.Util.Schema
 
-  alias Animu.Media.Series
-  alias Animu.Util.Image
+  alias Animu.Media.Anime
+  alias Animu.Ecto.Image
+  alias Animu.Repo
 
   alias __MODULE__, as: Genre
 
   @derive {Poison.Encoder, except: [:__meta__]}
-  schema "genre" do
-    field :title,       :string # CS Required
+  schema "genres" do
+    field :name,        :string # CS Required
     field :slug,        :string # CI Required
-    field :nsfw,        :bool
+    field :nsfw,        :boolean
 
     field :description, :string
 
     field :poster, Image
 
-    many_to_many :series, Series,
-      join_through: "series_genres",
+    many_to_many :anime, Anime,
+      join_through: "anime_genres",
       defaults: []
-
-    timestamps()
   end
 
-  @required [:title, :slug]
+  @required [:name, :slug]
 
-  def changeset(%Genre{}, attrs) do
+  def changeset(%Genre{} = genre, attrs) do
     genre
     |> cast(attrs, all_fields(Genre))
     |> validate_required(@required)
-    |> unique_constraint(:title)
+    |> unique_constraint(:name)
     |> unique_constraint(:slug)
   end
 
   def insert_or_get_all(genres) do
-    slugs = Enum.map(genres, &apply_changes/1)
+    slugs   = Enum.map(genres, &(&1.slug))
     resolve = :replace_all_except_primary_key
-    Repo.insert_all(genres, on_conflict: resolve)
+    target  = [:slug]
+    opt = [on_conflict: resolve, conflict_target: target]
+    Repo.insert_all(Genre, genres, opt)
     Repo.all(from g in Genre, where: g.slug in ^slugs)
   end
 

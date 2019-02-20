@@ -26,18 +26,18 @@ defmodule Animu.Web.Router do
 
     post   "/rpc", RpcController, :rpc
 
-    # Union of franchise and series
+    # Union of franchise and anime
     get "/media", MediaController, :index
 
-    # /franchises/:id/series/:id/episode/:id
+    # /franchises/:id/anime/:id/episode/:id
     resources "/franchises", FranchiseController, except: [:new, :edit] do
-      resources "/series", SeriesController, except: [:new, :edit] do
+      resources "/anime", AnimeController, except: [:new, :edit] do
         resources "/episodes", EpisodeController, except: [:new, :edit]
       end
     end
 
-    # /series/:id/episodes/:id
-    resources "/series", SeriesController, except: [:new, :edit] do
+    # /anime/:id/episodes/:id
+    resources "/anime", AnimeController, except: [:new, :edit] do
       resources "/episodes", EpisodeController, except: [:new, :edit]
     end
 
@@ -62,7 +62,7 @@ defmodule Animu.Web.Router do
     post   "/rpc", RpcController, :rpc
 
     resources "/franchises", FranchiseController, except: [:new, :edit]
-    resources "/series", SeriesController, except: [:new, :edit]
+    resources "/series", AnimeController, except: [:new, :edit]
     resources "/episodes", EpisodeController, except: [:new, :edit]
   end
 end

@@ -1,14 +1,13 @@
-defmodule Animu.Media.Video.Invoke do
+defmodule Animu.Media.Anime.Video.Invoke do
 
-  import Animu.Media.Video.{Collect, Conjure, Transmute}
+  import Animu.Media.Anime.Video.{Collect, Conjure, Transmute}
+  alias Animu.Media.Anime.Video.Bag
 
-  alias Animu.Media.Video.Bag
-
-  def new(input_path, series_dir) do
-    with       bag  <- Bag.new(input_path, series_dir),
+  def new(input_path, anime_dir) do
+    with       bag  <- Bag.new(input_path, anime_dir),
          {:ok, bag} <- collect_input_data(bag),
          {:ok, bag} <- conjure_output(bag),
-         #        {:ok, bag} <- conjure_thumbnails(bag),
+         {:ok, bag} <- conjure_thumbnails(bag),
          {:ok, bag} <- collect_output_data(bag),
              video  <- transmute(bag, :video) do
       {:ok, video}
