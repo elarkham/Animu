@@ -10,7 +10,7 @@ defmodule Animu.Media.Kitsu do
 
   defp handle_error(type, id, error) do
     msg = "http request for kitsu data failed, type: #{type}, id: #{id}"
-    Logger.error(msg <> ", reason: #{reason}")
+    Logger.error(msg <> ", reason: #{error}")
     {:error, msg}
   end
 
