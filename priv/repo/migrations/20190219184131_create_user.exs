@@ -1,4 +1,4 @@
-defmodule Animu.Repo.Migrations.CreateUser do
+defmodule Animu.Repo.Migrations.CreateUsers do
   use Ecto.Migration
 
   def change do
@@ -10,7 +10,7 @@ defmodule Animu.Repo.Migrations.CreateUser do
       add :username,           :string, null: false
       add :encrypted_password, :string, null: false
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
     create unique_index(:users, [:username])
