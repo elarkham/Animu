@@ -144,7 +144,9 @@ defmodule Animu.Media do
       {:ok, anime}
     else
       {:error, msg} -> {:error, msg}
-      _ -> {:error, "Unexpected Error During Anime Creation"}
+      error ->
+        msg = "Unexpected Error During Anime Creation: #{inspect(error)}"
+        {:error, msg}
     end
   end
 
@@ -160,7 +162,9 @@ defmodule Animu.Media do
       {:ok, anime}
     else
       {:error, msg} -> {:error, msg}
-      _ -> {:error, "Unexpected Error During Anime Creation"}
+      error ->
+        msg = "Unexpected Error During Anime Update: #{inspect(error)}"
+        {:error, msg}
     end
   end
 
