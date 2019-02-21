@@ -19,5 +19,4 @@ config :animu,
 # Nightlys should print debug information
 config :logger, level: :debug
 
-# Uses same keys as production
-import_config "prod.secret.exs"
+import_config "nightly.secret.exs"
