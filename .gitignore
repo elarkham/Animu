@@ -7,6 +7,7 @@
 /mix.lock
 /assets/npm-debug.log*
 /rel/animu
+/.iex.exs
 
 # Testing artifacts
 #/test/scripts/json
