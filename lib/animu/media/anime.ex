@@ -88,7 +88,7 @@ defmodule Animu.Media.Anime do
            {:ok, bag} <- Bag.new(anime, params, opt),
                   bag <- Bag.invoke(bag),
          {:ok, attrs} <- Bag.compile(bag),
-            {:ok, ch} <- valid_changeset(anime, attrs, bag)
+            {:ok, ch} <- valid_changeset(anime, attrs)
     do
       ch =
         ch
@@ -103,7 +103,7 @@ defmodule Animu.Media.Anime do
     end
   end
 
-  defp valid_changeset(%Anime{} = anime, attrs, bag) do
+  defp valid_changeset(%Anime{} = anime, attrs) do
     case changeset(anime, attrs) do
       %Changeset{valid?: true} = ch ->
         {:ok, ch}

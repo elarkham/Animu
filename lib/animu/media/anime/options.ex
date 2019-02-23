@@ -108,7 +108,6 @@ defmodule Animu.Media.Anime.Options do
   end
 
   defp update_to_atoms(ch, field) do
-    list = get_field(ch, field, [])
     case ch.valid? do
       true -> update_change(ch, field, &update_to_atoms/1)
       _ -> ch
