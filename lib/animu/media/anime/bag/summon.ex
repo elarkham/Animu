@@ -219,8 +219,9 @@ defmodule Animu.Media.Anime.Bag.Summon do
         nsfw: kitsu["nsfw"],
 
         description: kitsu["description"],
-
         poster: format_kitsu_image(kitsu["image"]),
+
+        kitsu_id: kitsu["id"],
       }
 
     %Genre{}

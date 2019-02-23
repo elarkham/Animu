@@ -8,8 +8,9 @@ defmodule Animu.Repo.Migrations.CreateGenre do
       add :nsfw,  :boolean
 
       add :description, :text
-
       add :poster, {:map, :string}
+
+      add :kitsu_id, :string
     end
     create unique_index(:genres, [:name])
     create unique_index(:genres, [:slug])

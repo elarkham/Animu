@@ -16,8 +16,9 @@ defmodule Animu.Media.Anime.Genre do
     field :nsfw,        :boolean
 
     field :description, :string
-
     field :poster, Image
+
+    field :kitsu_id, :string
 
     many_to_many :anime, Anime,
       join_through: "anime_genres",
@@ -36,9 +37,7 @@ defmodule Animu.Media.Anime.Genre do
 
   def insert_or_get_all(genres) do
     slugs   = Enum.map(genres, &(&1.slug))
-    resolve = :replace_all_except_primary_key
-    target  = [:slug]
-    opt = [on_conflict: resolve, conflict_target: target]
+    opt = [on_conflict: :nothing]
     Repo.insert_all(Genre, genres, opt)
     Repo.all(from g in Genre, where: g.slug in ^slugs)
   end
