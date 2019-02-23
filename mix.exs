@@ -56,11 +56,12 @@ defmodule Animu.Mixfile do
      {:corsica, "~> 0.5"},
 
      {:que, "~> 0.8.0"},
+     {:ex_utils, "~> 0.1.6"},
 
      {:expat, "~> 1.0"},
      {:inquisitor, "~> 0.3.0"},
 
-     {:distillery, "~> 0.9", runtime: false},
+     {:distillery, "~> 2.0"},
      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false}
    ]
   end

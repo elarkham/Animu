@@ -19,6 +19,11 @@ defmodule Golem do
     Que.add(module, params)
   end
 
+  def setup!, do: QueDB.Mnesia.setup!
+  def setup!(nodes) do
+    QueDB.Mnesia.setup!(nodes)
+  end
+
   defdelegate initialize, to: QueDB
 
   defdelegate all, to: QueDB

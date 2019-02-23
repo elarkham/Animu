@@ -1,5 +1,5 @@
 ## Node name
--name <%= release_name %>-nightly@192.168.5.115
+-name <%= release_name %>-nightly@${HOST}
 
 ## Node cookie, used for distribution
 -setcookie ${NODE_COOKIE}

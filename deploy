@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+export VERSION=${VERSION:-3.1.0}
+
 nightly() {
-  export VERSION="$(date +%Y.%m.%d%H%M%S)"
+  export VERSION=$VERSION+"$(date +%Y.%m.%d%H%M%S)"
   export MIX_ENV="nightly"
   export RELEASE_ENV="nightly"
 
@@ -11,9 +13,9 @@ nightly() {
     exit 1
   fi
 
-  TAR="rel/animu/releases/$VERSION/animu.tar.gz"
+  TAR="_build/nightly/rel/animu/releases/$VERSION/animu.tar.gz"
 
-  scp "$TAR" cthulhu:"/opt/animu/tmp/nightly.tar.gz"
+  scp "$TAR" cthulhu:"/opt/animu/nightly.tar.gz"
   ssh cthulhu "/opt/animu/scripts/deploy" "nightly" "$VERSION"
 }
 
@@ -33,9 +35,9 @@ release() {
     exit 1
   fi
 
-  TAR="rel/animu/releases/$VERSION/animu.tar.gz"
+  TAR="_build/nightly/rel/animu/releases/$VERSION/animu.tar.gz"
 
-  scp "$TAR" cthulhu:"/opt/animu/tmp/release.tar.gz"
+  scp "$TAR" cthulhu:"/opt/animu/release.tar.gz"
   ssh cthulhu "/opt/animu/scripts/deploy" "release" "$VERSION"
 }
 
@@ -48,7 +50,7 @@ case $1 in
     release "$2"
     ;;
   *)
-    echo "Usage: deploy {nightly | release [version]}"
+    echo "Usage: deploy {nightly | release} [version]"
     ;;
 esac
 

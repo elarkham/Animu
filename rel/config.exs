@@ -28,7 +28,6 @@ end
 environment :nightly do
   set include_erts: true
   set include_src: false
-  set cookie: :nightly
   set vm_args: "rel/nightly.vm.args.eex"
 end
 
@@ -40,7 +39,13 @@ end
 release :animu do
   set version: System.get_env("VERSION") || current_version(:animu)
   set commands: [
-    "migrate": "rel/commands/migrate.sh"
+    "setup": "rel/commands/setup.sh",
+
+    #"golem.setup":  "rel/commands/golem_setup.sh",
+
+    "repo.migrate": "rel/commands/repo_migrate.sh",
+    "repo.seed":    "rel/commands/repo_seed.sh",
+    "repo.create":  "rel/commands/repo_create.sh",
   ]
 end
 
