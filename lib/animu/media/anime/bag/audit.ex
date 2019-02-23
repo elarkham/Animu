@@ -110,7 +110,9 @@ defmodule Animu.Media.Anime.Bag.Audit do
 
       {:ok, bag}
     else
-      {:error, reason} -> {:error, reason}
+      # if directory doesn't exist, there is nothing to scan
+      {:error, :enoent} -> {:ok, bag}
+      {:error, reason}  -> {:error, reason}
       _ -> {:error, "Unexpected Error During Episode Scan"}
     end
   end

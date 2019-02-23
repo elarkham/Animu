@@ -12,6 +12,7 @@ defmodule Animu.Media.Anime.Bag.Compile do
     with     episodes <- compile_episodes(bag),
              summoned <- compile_summons(bag),
                 anime <- compile_anime(bag, summoned, episodes),
+                  :ok <- make_directory(bag),
          {:ok, anime} <- write_images(anime, bag) do
 
     {:ok, anime}
@@ -102,11 +103,24 @@ defmodule Animu.Media.Anime.Bag.Compile do
     end)
   end
 
+  ## Writing
+
+  # Write -> Directory
+  defp make_directory(bag = %Bag{}) do
+    with :ok <- File.mkdir_p(bag.output_dir),
+         :ok <- File.mkdir_p(bag.input_dir) do
+      :ok
+    else
+      {:error, reason} -> {:error, reason}
+      error ->
+        msg = "unexpected error while making anime directory #{inspect error}"
+        {:error, msg}
+    end
+  end
+
   # Write -> Images
   defp write_images(anime, bag = %Bag{}) do
-    with :ok <- File.mkdir_p(bag.output_dir),
-         :ok <- File.mkdir_p(bag.input_dir),
-         :ok <- File.mkdir_p(Path.join(bag.output_dir, @poster_dir)),
+    with :ok <- File.mkdir_p(Path.join(bag.output_dir, @poster_dir)),
          :ok <- File.mkdir_p(Path.join(bag.output_dir, @cover_dir)),
          {:ok, anime} <- write_poster_images(anime, bag),
          {:ok, anime} <- write_cover_images(anime, bag) do
@@ -114,7 +128,8 @@ defmodule Animu.Media.Anime.Bag.Compile do
     else
       {:error, reason} -> {:error, reason}
       error ->
-        {:error, "unexpected error while writing anime images #{inspect error}"}
+        msg = "unexpected error while writing anime images #{inspect error}"
+        {:error, msg}
     end
   end
   defp write_images(binary, sizes, image, dir, output_dir) do
