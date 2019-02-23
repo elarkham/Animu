@@ -90,7 +90,7 @@ defmodule Animu.Media do
   @doc """
   Returns all watched Anime with Episodes that have nil Videos
   """
-  def all_watched_anime do
+  def all_tracked_anime do
     episode_query =
       from e in Episode,
        where: is_nil(e.video),
@@ -98,7 +98,7 @@ defmodule Animu.Media do
     anime_query =
       from s in Anime,
       preload: [episodes: ^episode_query],
-        where: s.watch == true,
+        where: s.augur == true,
        select: [:id, :rss_feed, :regex, :directory]
 
     Repo.all(anime_query)
@@ -145,7 +145,7 @@ defmodule Animu.Media do
     else
       {:error, msg} -> {:error, msg}
       error ->
-        msg = "Unexpected Error During Anime Creation: #{inspect(error)}"
+        msg = "unexpected error during anime creation: #{inspect(error)}"
         {:error, msg}
     end
   end
@@ -163,7 +163,7 @@ defmodule Animu.Media do
     else
       {:error, msg} -> {:error, msg}
       error ->
-        msg = "Unexpected Error During Anime Update: #{inspect(error)}"
+        msg = "unexpected error during anime update: #{inspect(error)}"
         {:error, msg}
     end
   end
@@ -178,20 +178,6 @@ defmodule Animu.Media do
   ##
   # Episode Interactions
   ##
-
-  @doc """
-  Returns `%Ecto.Changeset{}` for tracking Episode changes
-  """
-  def episode_changeset(%Episode{} = episode, attrs) do
-    episode
-    |> cast(attrs, all_fields(Episode, except: [:video]) ++ [:video_path])
-    |> validate_required([:name, :number])
-    |> foreign_key_constraint(:anime_id)
-  end
-
-  def change_episode(%Episode{} = episode) do
-    episode_changeset(episode, %{})
-  end
 
   @doc """
   Returns list of Episodes
@@ -219,7 +205,7 @@ defmodule Animu.Media do
   """
   def create_episode(attrs \\ %{}) do
     %Episode{}
-    |> episode_changeset(attrs)
+    |> Episode.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -234,7 +220,7 @@ defmodule Animu.Media do
   end
   def update_episode(%Episode{} = episode, attrs) do
     episode
-    |> episode_changeset(attrs)
+    |> Episode.changeset(attrs)
     |> Repo.update()
   end
 

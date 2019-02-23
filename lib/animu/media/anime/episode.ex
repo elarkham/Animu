@@ -9,11 +9,11 @@ defmodule Animu.Media.Anime.Episode do
   alias __MODULE__
 
   schema "episodes" do
-    field :name,          :string
+    field :name,          :string, null: false
     field :titles,        {:map, :string}
     field :synopsis,      :string
 
-    field :number,        :float
+    field :number,        :float, null: false
     field :rel_number,    :float
 
     field :airdate,       :date
@@ -29,6 +29,47 @@ defmodule Animu.Media.Anime.Episode do
     timestamps()
   end
 
+  @doc """
+  Returns `%Ecto.Changeset{}` for tracking Episode changes
+  """
+  def changeset(%Episode{} = episode, attrs) do
+    episode
+    |> cast(attrs, all_fields(Episode, except: [:video]) ++ [:video_path])
+    |> validate_required([:name, :number])
+    |> foreign_key_constraint(:anime_id)
+    |> unique_constraint(:number, name: :episode_number_anime_id_index)
+    |> prepare_changes(&handle_augured_at/1)
+    |> prepare_changes(&handle_rel_number/1)
+    |> conjure_video()
+  end
+
+  def change(%Episode{} = episode) do
+    changeset(episode, %{})
+  end
+
+  ## Pre-Transaction Functions
+
+  def handle_augured_at(%Changeset{} = ch) do
+    if augured_at = get_change(ch, :augured_at) do
+      get_field(ch, :anime_id)
+      |> Media.get_anime
+      |> Media.update_anime(%{augured_at: augured_at})
+    end
+    ch
+  end
+
+  # fallback rel_number to number if nil
+  def handle_rel_number(%Changeset{} = ch) do
+    with nil <- get_field(ch, :rel_number),
+         num <- get_field(ch, :number),
+         ch  <- put_change(ch, :rel_number, num) do
+      ch
+    else
+      _ -> ch
+    end
+  end
+
+  ## Episode Generating
   def new(number) do
     name_num = format_number(number)
     %Episode{
@@ -56,8 +97,8 @@ defmodule Animu.Media.Anime.Episode do
     conjure_video(ch, anime.directory)
   end
   def conjure_video(%Changeset{} = ch), do: ch
-  def conjure_video(%Changeset{changes: %{video_path: path}} = ch, anime_dir) do
-    case Video.Invoke.new(path, anime_dir) do
+  def conjure_video(%Changeset{changes: %{video_path: path}} = ch, %Anime{} = anime) do
+    case Video.Invoke.new(path, anime.directory) do
           {:ok, video} -> put_embed(ch, :video, video)
       {:error, reason} -> add_error(ch, :video_path, reason)
 
