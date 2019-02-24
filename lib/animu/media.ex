@@ -120,7 +120,7 @@ defmodule Animu.Media do
   """
   def get_anime!(id) when is_integer(id) do
     Anime
-    |> Repo.get!(Anime, id)
+    |> Repo.get!(id)
     |> Repo.preload(:franchise)
     |> Repo.preload(:episodes)
   end
@@ -196,7 +196,7 @@ defmodule Animu.Media do
   """
   def get_episode!(id) do
     Episode
-    |> Repo.get!(Episode, id)
+    |> Repo.get!(id)
     |> Repo.preload(:anime)
   end
 

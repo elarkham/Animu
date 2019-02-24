@@ -4,6 +4,7 @@ defmodule Animu.Media.Anime.Episode do
   """
   use Animu.Ecto.Schema
 
+  alias Animu.Media
   alias Animu.Media.Anime
   alias Animu.Media.Anime.Video
   alias __MODULE__
@@ -17,7 +18,7 @@ defmodule Animu.Media.Anime.Episode do
     field :rel_number,    :float
 
     field :airdate,       :date
-    field :augured_at,    :date
+    field :augured_at,    :utc_datetime
 
     field :kitsu_id,      :string
 
@@ -51,8 +52,9 @@ defmodule Animu.Media.Anime.Episode do
 
   def handle_augured_at(%Changeset{} = ch) do
     if augured_at = get_change(ch, :augured_at) do
+      IO.inspect augured_at
       get_field(ch, :anime_id)
-      |> Media.get_anime
+      |> Media.get_anime!
       |> Media.update_anime(%{augured_at: augured_at})
     end
     ch
@@ -94,7 +96,7 @@ defmodule Animu.Media.Anime.Episode do
       |> get_field(:anime_id)
       |> Animu.Media.get_anime!()
 
-    conjure_video(ch, anime.directory)
+    conjure_video(ch, anime)
   end
   def conjure_video(%Changeset{} = ch), do: ch
   def conjure_video(%Changeset{changes: %{video_path: path}} = ch, %Anime{} = anime) do

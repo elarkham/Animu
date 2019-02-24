@@ -31,6 +31,7 @@ defmodule Animu.Media.Anime do
 
     many_to_many :genres, Genre,
       join_through: "anime_genres",
+      on_replace: :delete,
       defaults: []
 
     field :nsfw,           :boolean
@@ -62,7 +63,7 @@ defmodule Animu.Media.Anime do
 
     ## Augur Data
     field :augur,          :boolean
-    field :augured_at,     :date
+    field :augured_at,     :utc_datetime
 
     field :regex,          :string
     field :rss_feed,       :string

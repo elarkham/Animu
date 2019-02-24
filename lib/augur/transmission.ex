@@ -36,11 +36,11 @@ defmodule Augur.Transmission do
   @doc """
   Creates torrents using given paramaters and then adds it
   """
-  def add_torrent(ep_id, downloadDir, url) do
+  def add_torrent(ep_id, download_dir, url) do
     torrent =
       %Torrent{
         ep_id: ep_id,
-        downloadDir: downloadDir,
+        download_dir: download_dir,
         url: url
       }
 
@@ -71,7 +71,7 @@ defmodule Augur.Transmission do
     path = Application.get_env(:animu, :input_root)
     arguments =
       %{"filename"     => torrent.url,
-        "download-dir" => Path.join(path, torrent.downloadDir),
+        "download-dir" => Path.join(path, torrent.download_dir),
         "paused"       => false,
       }
 

@@ -38,6 +38,13 @@ defmodule Augur do
   end
 
   @doc """
+  Request Augur scan feeds
+  """
+  def scan do
+    GenServer.cast(Scanner, {:scan, cache()})
+  end
+
+  @doc """
   Track active torrents
   """
   def cache_torrents(torrents) do
@@ -80,7 +87,7 @@ defmodule Augur do
 
     finished =
       torrents
-      |> Enum.filter(fn {_id, torrent} -> torrent.percentDone >= 1.0 end)
+      |> Enum.filter(fn {_id, torrent} -> torrent.percent_done >= 1.0 end)
       |> Enum.map(&proccess_finished_torrent/1)
 
     torrents =
@@ -111,22 +118,26 @@ defmodule Augur do
   ## Helper Functions
 
   defp proccess_finished_torrent({_id, torrent = %Torrent{ep_id: nil}}) do
-    Logger.warn "Augur attempted to add a torrent with nil ep_id!"
+    Logger.warn "augur attempted to add a torrent with nil ep_id!"
     torrent
   end
   defp proccess_finished_torrent({_id, torrent}) do
-    episode_params = %{"video_path" => torrent.name}
+    timestamp = DateTime.utc_now()
+    episode_params =
+      %{"video_path" => torrent.name,
+        "augured_at" => timestamp
+      }
+
     episode = Animu.Media.get_episode!(torrent.ep_id)
-    #Task.start(Animu.Media, :update_episode, [episode, episode_params])
-    #Task.start(fn -> end)
-    Logger.info "Adding new episode: #{}"
+    Logger.info "adding new episode: #{inspect episode}"
+
     case Animu.Media.update_episode(episode, episode_params) do
       {:ok, _} ->
         rebuild_cache()
       {:error, changeset} ->
-        Logger.error "Failed to process video: #{inspect changeset.errors}"
-      _ ->
-        Logger.error "Failed to process video for unkown reasons!"
+        Logger.error "failed to process video: #{inspect changeset.errors}"
+      error ->
+        Logger.error "unexpected error while processing video: #{inspect error}"
     end
     torrent
   end
@@ -134,13 +145,13 @@ defmodule Augur do
   # Build new cache
   defp rebuild, do: rebuild(%__MODULE__{})
   defp rebuild(cache) do
-    watched =
-      Animu.Media.all_watched_anime()
+    anime =
+      Animu.Media.all_tracked_anime()
 
     %__MODULE__{
       cache |
-      feeds: build_feeds(watched),
-      anime: build_anime(watched)
+      feeds: build_feeds(anime),
+      anime: build_anime(anime)
     }
   end
 
@@ -150,8 +161,8 @@ defmodule Augur do
   end
 
   # Format internal anime data stored within a feed
-  defp anime_format(watched) do
-    {watched.regex, watched.directory, watched.id}
+  defp anime_format(anime) do
+    {anime.regex, anime.directory, anime.id}
   end
 
   # TODO Use non-media-internal structure

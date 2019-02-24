@@ -6,9 +6,9 @@ defmodule Augur.Torrent do
   defstruct id: nil,
             ep_id: nil,
             url: nil,
-            downloadDir: nil,
+            download_dir: nil,
             name: nil,
-            percentDone: 0.0
+            percent_done: 0.0
 
   def new(
     %{"id" => id,
@@ -19,8 +19,8 @@ defmodule Augur.Torrent do
 
     %__MODULE__{
       id: id,
-      downloadDir: dir,
-      percentDone: pd,
+      download_dir: dir,
+      percent_done: pd,
       name: name,
     }
   end

@@ -132,7 +132,7 @@ defmodule Augur.Scanner do
         ep_id: m.ep_id,
         name: m.title,
         url: m.link,
-        downloadDir: dir
+        download_dir: dir
       }
     end)
   end
