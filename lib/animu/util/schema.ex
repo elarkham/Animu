@@ -23,6 +23,10 @@ defmodule Animu.Util.Schema do
     end
   end
 
+  def all_assoc(module, opt \\ []) do
+    module.__schema__(:associations)
+  end
+
   @drop [
     :__struct__, :__schema__, :__meta__,
     :__cardinality__, :__field__, :__owner__,

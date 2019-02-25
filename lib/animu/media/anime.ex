@@ -89,13 +89,14 @@ defmodule Animu.Media.Anime do
            {:ok, bag} <- Bag.new(anime, params, opt),
                   bag <- Bag.invoke(bag),
          {:ok, attrs} <- Bag.compile(bag),
-            {:ok, ch} <- valid_changeset(anime, attrs)
+            {:ok, ch} <- valid_changeset(bag.anime, attrs)
     do
       ch =
         ch
         |> Bag.add_todos(bag)
         |> put_assoc(:episodes, attrs.episodes)
 
+      IO.inspect ch
       {:ok, ch, bag.golems}
     else
       {:error, msg} -> {:error, msg}
@@ -116,11 +117,7 @@ defmodule Animu.Media.Anime do
 
   def changeset(%Anime{} = anime, attrs) do
     anime
-    |> Repo.preload(:episodes)
-    |> Repo.preload(:franchise)
-    |> Repo.preload(:genres)
-    |> Repo.preload(:season)
-    |> cast(attrs, all_fields(Anime, except: [:poster_image]))
+    |> cast(attrs, all_fields(Anime))
     |> validate_required([:name, :slug, :directory])
     |> unique_constraint(:slug)
   end

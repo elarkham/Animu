@@ -50,9 +50,9 @@ defmodule Animu.Media.Anime.Episode do
 
   ## Pre-Transaction Functions
 
+  # update series augured_at to match
   def handle_augured_at(%Changeset{} = ch) do
     if augured_at = get_change(ch, :augured_at) do
-      IO.inspect augured_at
       get_field(ch, :anime_id)
       |> Media.get_anime!
       |> Media.update_anime(%{augured_at: augured_at})

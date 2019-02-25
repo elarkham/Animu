@@ -29,40 +29,19 @@ defmodule Animu.Web.Router do
     # Union of franchise and anime
     get "/media", MediaController, :index
 
-    # /franchises/:id/anime/:id/episode/:id
-    resources "/franchises", FranchiseController, except: [:new, :edit] do
-      resources "/anime", AnimeController, except: [:new, :edit] do
-        resources "/episodes", EpisodeController, except: [:new, :edit]
+    # /franchises/:id/anime/:num/episode/:num
+    resources "/media/franchises", FranchiseController, except: [:new, :edit] do
+      resources "/anime", AnimeController, param: "num", except: [:new, :edit] do
+        resources "/episodes", EpisodeController, param: "num", except: [:new, :edit]
       end
     end
 
-    # /anime/:id/episodes/:id
-    resources "/anime", AnimeController, except: [:new, :edit] do
-      resources "/episodes", EpisodeController, except: [:new, :edit]
+    # /anime/:id/episodes/:num
+    resources "/media/anime", AnimeController, except: [:new, :edit] do
+      resources "/episodes", EpisodeController, param: "num", except: [:new, :edit]
     end
 
-    resources "/episodes", EpisodeController, except: [:new, :edit]
+    resources "/media/episodes", EpisodeController, except: [:new, :edit]
   end
 
-  ## Versioned API
-
-  # No Auth
-  scope "/api/v1", Animu.Web do
-    pipe_through :api
-
-    post   "/session", SessionController, :create
-  end
-
-  scope "/api/v1", Animu.Web do
-    pipe_through [:api, :auth]
-
-    resources "/users", UserController, except: [:new, :edit]
-    get "/current_user", CurrentUserController, :show
-
-    post   "/rpc", RpcController, :rpc
-
-    resources "/franchises", FranchiseController, except: [:new, :edit]
-    resources "/series", AnimeController, except: [:new, :edit]
-    resources "/episodes", EpisodeController, except: [:new, :edit]
-  end
 end

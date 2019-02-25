@@ -61,7 +61,7 @@ defmodule Animu.Media do
   @doc """
   Creates new Franchise
   """
-  def create_franchise(attrs \\ %{}) do
+  def create_franchise(attrs, opt \\ %{}) do
     %Franchise{}
     |> franchise_changeset(attrs)
     |> Repo.insert()
@@ -70,7 +70,7 @@ defmodule Animu.Media do
   @doc """
   Updates a Franchise
   """
-  def update_franchise(%Franchise{} = franchise, attrs) do
+  def update_franchise(%Franchise{} = franchise, attrs, opt \\ %{}) do
     franchise
     |> franchise_changeset(attrs)
     |> Repo.update()
@@ -130,16 +130,21 @@ defmodule Animu.Media do
     |> Repo.preload(:franchise)
     |> Repo.preload(:episodes)
   end
+  def get_anime!(franchise_id, anime_num) do
+    Anime
+    |> where(franchise_id: ^franchise_id, number: ^anime_num)
+    |> select([a], a)
+    |> Repo.one!
+  end
 
   @doc """
   Creates new Anime
   """
-  def create_anime(attrs, opt \\ []) do
+  def create_anime(attrs, opt \\ %{}) do
     anime = %Anime{}
     with {:ok, ch, jobs} <- Anime.build(anime, attrs, opt),
             {:ok, anime} <- Repo.insert(ch),
                    anime <- Repo.preload(anime, [:episodes]) do
-
       Anime.start_golems(anime, jobs)
       {:ok, anime}
     else
@@ -157,7 +162,6 @@ defmodule Animu.Media do
     with {:ok, ch, jobs} <- Anime.build(anime, attrs, opt),
             {:ok, anime} <- Repo.update(ch),
                    anime <- Repo.preload(anime, [:episodes]) do
-
       Anime.start_golems(anime, jobs)
       {:ok, anime}
     else
@@ -201,9 +205,43 @@ defmodule Animu.Media do
   end
 
   @doc """
+  Returns single Episode using it's number and parent id
+
+  Raises `Ecto.NoResultsError` if the Episode does not exist.
+  """
+  def get_episode!(anime_id, num) when is_integer(num) do
+    get_episode!(anime_id, (num / 1))
+  end
+  def get_episode!(anime_id, num) do
+    Episode
+    |> where(anime_id: ^anime_id, number: ^num)
+    |> preload(:anime)
+    |> select([e], e)
+    |> Repo.one!
+  end
+
+  @doc """
+  Returns single Episode using it's number and parent number
+
+  Raises `Ecto.NoResultsError` if the Episode does not exist.
+  """
+  def get_episode!(franchise_id, anime_num, num) when is_integer(num) do
+    get_episode!(franchise_id, anime_num, (num / 1))
+  end
+  def get_episode!(franchise_id, anime_num, num) do
+    ep_query = where(Episode, number: ^num)
+
+    Anime
+    |> where(franchise_id: ^franchise_id, number: ^anime_num)
+    |> join(:left, [a], ep in ^ep_query, on: a.id == ep.anime_id)
+    |> select([a, ep], ep)
+    |> Repo.one!
+  end
+
+  @doc """
   Creates new Episode
   """
-  def create_episode(attrs \\ %{}) do
+  def create_episode(attrs, opt \\ %{}) do
     %Episode{}
     |> Episode.changeset(attrs)
     |> Repo.insert()
@@ -212,13 +250,14 @@ defmodule Animu.Media do
   @doc """
   Updates a Epiosde
   """
-  def update_episode(%Episode{} = episode, %Video{} = video) do
+  def update_episode(episode, attrs, opt \\ %{})
+  def update_episode(%Episode{} = episode, %Video{} = video, opt) do
     episode
     |> cast(%{}, [])
     |> put_embed(:video, video)
     |> Repo.update()
   end
-  def update_episode(%Episode{} = episode, attrs) do
+  def update_episode(%Episode{} = episode, attrs, opt) do
     episode
     |> Episode.changeset(attrs)
     |> Repo.update()

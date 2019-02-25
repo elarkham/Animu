@@ -45,10 +45,7 @@ defmodule Animu.Media.Anime.Bag do
   def new(%Anime{} = anime, %{} = attrs, options \\ []) do
     ch =
       anime
-      |> Repo.preload(:episodes)
-      |> Repo.preload(:franchise)
-      |> Repo.preload(:genres)
-      |> Repo.preload(:season)
+      |> Repo.preload(all_assoc(Anime))
       |> cast(attrs, all_fields(Anime))
       |> validate_required([:directory])
 

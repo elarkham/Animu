@@ -34,8 +34,10 @@ defmodule Animu.Web do
       alias Animu.Web.SessionView
       alias Animu.Web.ChangesetView
 
-      import Ecto
-      import Ecto.Query
+      alias Animu.Media
+
+      #import Ecto
+      #import Ecto.Query
 
       import Animu.Web.Router.Helpers
       import Animu.Web.Gettext
@@ -70,8 +72,6 @@ defmodule Animu.Web do
       use Phoenix.Channel
 
       alias Animu.Repo
-      import Ecto
-      import Ecto.Query
       import Animu.Web.Gettext
     end
   end
