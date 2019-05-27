@@ -191,6 +191,22 @@ defmodule Animu.Media do
     |> Repo.preload(anime: from(a in Anime, select: a.slug))
   end
 
+  @doc """
+  Returns single Season using it's id or slug
+
+  Raises `Ecto.NoResultsError` if the Season does not exist.
+  """
+  def get_season!(slug) when is_binary(slug) do
+    Season
+    |> Repo.get_by!(slug: slug)
+    |> Repo.preload(:anime)
+  end
+  def get_season!(id) do
+    Season
+    |> Repo.get!(id)
+    |> Repo.preload(:anime)
+  end
+
   ##
   # Genre Interactions
   ##
@@ -199,6 +215,22 @@ defmodule Animu.Media do
     Genre
     |> build_query(params)
     |> Repo.all()
+  end
+
+  @doc """
+  Returns single Genre using it's id or slug
+
+  Raises `Ecto.NoResultsError` if the Genre does not exist.
+  """
+  def get_genre!(slug) when is_binary(slug) do
+    Genre
+    |> Repo.get_by!(slug: slug)
+    |> Repo.preload(:anime)
+  end
+  def get_genre!(id) do
+    Genre
+    |> Repo.get!(id)
+    |> Repo.preload(:anime)
   end
 
   ##

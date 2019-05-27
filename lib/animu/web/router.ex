@@ -40,11 +40,13 @@ defmodule Animu.Web.Router do
     # /anime/:id/episodes/:num
     resources "/media/anime", AnimeController, except: [:new, :edit] do
       resources "/episodes", EpisodeController, param: "num", except: [:new, :edit]
-      resources "/seasons", EpisodeController, param: "num", except: [:new, :edit]
-      resources "/genres", EpisodeController, param: "num", except: [:new, :edit]
+      resources "/seasons", GenreController, param: "num", except: [:new, :edit]
+      resources "/genres", GenreController, param: "num", except: [:new, :edit]
     end
 
     resources "/media/episodes", EpisodeController, except: [:new, :edit]
+    resources "/media/seasons", SeasonController, except: [:new, :edit]
+    resources "/media/genres", GenreController, except: [:new, :edit]
   end
 
 end
