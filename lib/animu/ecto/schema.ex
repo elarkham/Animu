@@ -2,6 +2,7 @@ defmodule Animu.Ecto.Schema do
   defmacro __using__(_opts) do
     quote do
       use Ecto.Schema
+      use Animu.Util.Access
 
       import Ecto.{Query, Changeset}, warn: false
       import Animu.Util.Schema

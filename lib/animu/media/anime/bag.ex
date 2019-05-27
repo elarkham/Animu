@@ -6,6 +6,7 @@ defmodule Animu.Media.Anime.Bag do
   import Animu.Util.Schema
 
   alias Ecto.Changeset
+  alias Animu.Util.Schema
   alias Animu.Media.Anime
   alias Animu.Ecto.Image
   alias Animu.Repo
@@ -74,10 +75,8 @@ defmodule Animu.Media.Anime.Bag do
     input_dir  = Path.join(input_root, dir)
 
     episodes =
-      case data.episodes do
-        nil -> []
-        eps -> [eps]
-      end
+      (data[:episodes] || [])
+      |> Enum.map(&Schema.to_map/1)
 
     %Bag {
       output_root: output_root,
@@ -101,7 +100,7 @@ defmodule Animu.Media.Anime.Bag do
       valid?: true,
       errors: [],
 
-      episodes: episodes,
+      episodes: [episodes],
       data: data,
     }
   end

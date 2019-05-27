@@ -12,6 +12,8 @@ defmodule Animu.Media.Anime do
   alias Anime.{Bag, Options}
   alias Anime.{Episode, Season, Genre}
 
+  @behaviour Access
+
   schema "anime" do
 
     ## Meta Data

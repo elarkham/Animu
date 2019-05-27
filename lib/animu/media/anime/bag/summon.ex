@@ -19,7 +19,7 @@ defmodule Animu.Media.Anime.Bag.Summon do
     :episodes
   ]
 
-  ## Compilation
+  ## Summon Compilation
   def compile(%Bag{} = bag, summons) do
     bag =
       bag

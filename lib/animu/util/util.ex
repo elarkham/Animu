@@ -26,4 +26,18 @@ defmodule Animu.Util do
     to_string(type)
   end
 
+  def to_kwlist(%Date{} = date), do: date
+  def to_kwlist(%Time{} = time), do: time
+  def to_kwlist(%DateTime{} = dt), do: dt
+  def to_kwlist(%{} = map) do
+    list = Map.to_list(map)
+    Enum.reduce(list, list, fn {key, value}, list ->
+      case value do
+        v when is_map(v)  -> Keyword.put(map, key, to_kwlist(v))
+        _ -> list
+      end
+    end)
+  end
+  def to_kwlist(value), do: value
+
 end

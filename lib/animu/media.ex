@@ -10,6 +10,7 @@ defmodule Animu.Media do
   alias Animu.Repo
   alias Animu.Media.{Franchise, Anime, Union}
   alias Animu.Media.Anime.{Episode, Video}
+  alias Animu.Media.Anime.{Genre, Season}
 
   ##
   # Franchise Interactions
@@ -111,6 +112,7 @@ defmodule Animu.Media do
     Anime
     |> build_query(params)
     |> Repo.all()
+    |> load_assoc(Anime, params)
   end
 
   @doc """
@@ -121,19 +123,18 @@ defmodule Animu.Media do
   def get_anime!(id) when is_integer(id) do
     Anime
     |> Repo.get!(id)
-    |> Repo.preload(:franchise)
-    |> Repo.preload(:episodes)
+    |> Repo.preload(all_assoc(Anime))
   end
   def get_anime!(slug) when is_binary(slug) do
     Anime
     |> Repo.get_by!(slug: slug)
-    |> Repo.preload(:franchise)
-    |> Repo.preload(:episodes)
+    |> Repo.preload(all_assoc(Anime))
   end
   def get_anime!(franchise_id, anime_num) do
     Anime
     |> where(franchise_id: ^franchise_id, number: ^anime_num)
     |> select([a], a)
+    |> Repo.preload(all_assoc(Anime))
     |> Repo.one!
   end
 
@@ -144,7 +145,7 @@ defmodule Animu.Media do
     anime = %Anime{}
     with {:ok, ch, jobs} <- Anime.build(anime, attrs, opt),
             {:ok, anime} <- Repo.insert(ch),
-                   anime <- Repo.preload(anime, [:episodes]) do
+                   anime <- Repo.preload(anime, all_assoc(Anime)) do
       Anime.start_golems(anime, jobs)
       {:ok, anime}
     else
@@ -161,7 +162,7 @@ defmodule Animu.Media do
   def update_anime(%Anime{} = anime, attrs, opt \\ %{}) do
     with {:ok, ch, jobs} <- Anime.build(anime, attrs, opt),
             {:ok, anime} <- Repo.update(ch),
-                   anime <- Repo.preload(anime, [:episodes]) do
+                   anime <- Repo.preload(anime, all_assoc(Anime)) do
       Anime.start_golems(anime, jobs)
       {:ok, anime}
     else
@@ -177,6 +178,27 @@ defmodule Animu.Media do
   """
   def delete_anime(%Anime{} = anime) do
     Repo.delete(anime)
+  end
+
+  ###
+  # Season Interactions
+  ##
+  def list_seasons(params \\ %{}) do
+    Season
+    |> order_by(asc: :sort)
+    |> build_query(params)
+    |> Repo.all()
+    |> Repo.preload(anime: from(a in Anime, select: a.slug))
+  end
+
+  ##
+  # Genre Interactions
+  ##
+
+  def list_genres(params \\ %{}) do
+    Genre
+    |> build_query(params)
+    |> Repo.all()
   end
 
   ##
@@ -215,7 +237,7 @@ defmodule Animu.Media do
   def get_episode!(anime_id, num) do
     Episode
     |> where(anime_id: ^anime_id, number: ^num)
-    |> preload(:anime)
+    |> preload([:anime, anime: :genres, anime: :season])
     |> select([e], e)
     |> Repo.one!
   end

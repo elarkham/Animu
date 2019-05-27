@@ -7,6 +7,35 @@ defmodule Animu.Media.Anime.Options do
   alias Animu.Media.Anime
   alias __MODULE__
 
+  defmodule Numbers do
+    @behaviour Ecto.Type
+    def type, do: {:array, :float}
+
+    defguard is_integers(from, to)
+      when is_integer(from) and is_integer(to)
+
+    ## Total, ex: 25
+    def cast(total) when is_integer(total) do
+      cast(%{from: 1, to: total})
+    end
+    ## From -> To, ex: {from: 1, to: 5}
+    def cast(%{"from" => from, "to" => to}) do
+      cast(%{from: from, to: to})
+    end
+    def cast(%{from: from, to: to}) when is_integers(from, to) do
+      from..to
+      |> Enum.to_list
+      |> cast
+    end
+    ## Integer Array, ex: [1,2,3]
+    def cast(array) when is_list(array) do
+      Ecto.Type.cast({:array, :float}, array)
+    end
+    def cast(_), do: :error
+    def load(_), do: :error
+    def dump(_), do: :error
+  end
+
   embedded_schema do
     embeds_many :summon, Summon do
       field :source, :string
@@ -20,9 +49,9 @@ defmodule Animu.Media.Anime.Options do
       field :force, :boolean, default: false
     end
     embeds_one :conjure, Conjure do
-      embeds_one :episode, Episode do
-        field :numbers, {:array, :float}
-        field :type,   :string
+      embeds_one :episodes, Episodes do
+        field :numbers, Numbers
+        field :type,    :string, default: "spawn"
       end
       embeds_many :image, Image do
         field :field, :string
@@ -86,15 +115,15 @@ defmodule Animu.Media.Anime.Options do
   defp conjure_changeset(%_{}, attrs) do
     %Options.Conjure{}
     |> cast(attrs, [])
-    |> cast_embed(:episode,  with: &conj_episode_changeset/2)
+    |> cast_embed(:episodes, with: &conj_episodes_changeset/2)
     |> cast_embed(:image,    with: &conj_image_changeset/2)
   end
 
-  defp conj_episode_changeset(%_{}, attrs) do
+  defp conj_episodes_changeset(%_{}, attrs) do
     types = ["spawn", "conjure_video", "conjure_thumb"]
 
-    %Options.Conjure.Episode{}
-    |> cast(attrs, all_fields(Options.Conjure.Episode))
+    %Options.Conjure.Episodes{}
+    |> cast(attrs, all_fields(Options.Conjure.Episodes))
     |> validate_inclusion(:type, types)
   end
 

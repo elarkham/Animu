@@ -3,11 +3,12 @@ defmodule Animu.Repo.Migrations.CreateSeason do
 
   def change do
     create table(:seasons) do
-      add :year,  :integer
-      add :cour,  :citext
+      add :year, :integer
+      add :cour, :citext
 
-      add :name,  :string
-      add :slug,  :citext
+      add :name, :string
+      add :slug, :citext
+      add :sort, :citext
     end
     create unique_index(:seasons, [:cour, :year], name: :seasons_cour_year_index)
     create unique_index(:seasons, [:name])

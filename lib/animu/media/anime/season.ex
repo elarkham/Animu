@@ -10,11 +10,12 @@ defmodule Animu.Media.Anime.Season do
   alias __MODULE__
 
   schema "seasons" do
-    field :year,  :integer # Required
-    field :cour,  :string  # Required, CI
+    field :year, :integer # Required
+    field :cour, :string  # Required, CI
 
-    field :name,    :string # CS ex: Winter 2019
-    field :slug,    :string # CI ex: winter-2019
+    field :name,  :string # CS ex: Winter 2019
+    field :slug,  :string # CI ex: winter-2019
+    field :sort,  :string # CI ex: 2019-0
 
     many_to_many :anime, Anime,
       join_through: "anime_seasons",
@@ -22,7 +23,7 @@ defmodule Animu.Media.Anime.Season do
   end
 
   @required  [:year, :cour]
-  @generated [:name, :slug]
+  @generated [:name, :slug, :sort]
 
   @cours ["winter", "spring", "summer", "fall"]
 
@@ -47,10 +48,12 @@ defmodule Animu.Media.Anime.Season do
 
     name  = "#{String.capitalize(cour)} #{year}"
     slug  = "#{cour}-#{year}"
+    sort  = "#{year}-#{cour_index(cour)}"
 
     ch
-    |> put_change(:name,  name)
-    |> put_change(:slug,  slug)
+    |> put_change(:name, name)
+    |> put_change(:slug, slug)
+    |> put_change(:sort, sort)
   end
 
   # Param Lists
@@ -99,6 +102,10 @@ defmodule Animu.Media.Anime.Season do
   def cour_at(%Date{} = date) do
     index = Date.quarter_of_year(date)
     Enum.at(@cours, index + 1)
+  end
+
+  def cour_index(cour) do
+    Enum.find_index(@cours, fn c -> c == cour end)
   end
 
 end

@@ -27,9 +27,11 @@ defmodule Animu.Media.Anime.Bag.Compile do
   # Compile -> Episodes
   defp compile_episodes(%Bag{} = bag) do
     {force, fallback} = summoned_eps(bag)
-    episodes = fallback ++ bag.episodes ++ force
 
-    merge_episode_lists(episodes)
+    fallback ++ bag.episodes ++ force
+    |> merge_episode_lists
+    |> post_process_episodes
+    |> IO.inspect
   end
 
   defp summoned_eps(%Bag{} = bag) do
@@ -47,12 +49,14 @@ defmodule Animu.Media.Anime.Bag.Compile do
   defp merge_episode_lists(ep_lists) do
     ep_lists
     |> Enum.concat
+    |> Enum.filter(&Map.has_key?(&1, :number))
     |> Enum.group_by(&(&1.number))
     |> Enum.map(fn {_k, eps} ->
          Enum.reduce(eps, %{}, fn ep, acc ->
            merge_episodes(acc, ep)
          end)
        end)
+    |> Enum.filter(&Map.has_key?(&1, :name))
   end
 
   defp merge_episodes(ep1, ep2) do
@@ -64,6 +68,17 @@ defmodule Animu.Media.Anime.Bag.Compile do
       end
     end)
   end
+
+  defp post_process_episodes(episodes) do
+    Enum.map(episodes, fn ep ->
+      fallback_rel_number(ep)
+    end)
+  end
+
+  defp fallback_rel_number(%{number: num} = ep) do
+    Map.put_new(ep, :rel_number, num)
+  end
+  defp fallback_rel_number(ep), do: ep
 
   # Compile -> Summons
   defp compile_summons(%Bag{} = bag) do

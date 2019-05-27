@@ -35,7 +35,7 @@ defmodule Animu.Media.Anime.Bag.Invoke do
 
   # Conjure
   defp invoke(%Bag{} = bag, conjure: params) do
-    with {:ok, bag} <- Conjure.episode(params[:episode], bag),
+    with {:ok, bag} <- Conjure.episodes(params[:episodes], bag),
          {:ok, bag} <- Conjure.image(params[:image], bag) do
 
       {:ok, bag}

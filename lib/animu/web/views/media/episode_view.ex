@@ -2,7 +2,7 @@ defmodule Animu.Web.EpisodeView do
   use Animu.Web, :view
 
   alias __MODULE__, as: EpisodeView
-  alias Animu.Web.SeriesView
+  alias Animu.Web.AnimeView
 
   def render("index.json", %{episodes: episodes}) do
     %{episodes: render_many(episodes, EpisodeView, "episode_index.json")}
@@ -12,21 +12,24 @@ defmodule Animu.Web.EpisodeView do
     %{episode: render_one(episode, EpisodeView, "episode.json")}
   end
 
-def render("episode_index.json", %{episode: episode}) do
+  def render("episode_index.json", %{episode: episode}) do
     %{id: episode.id,
-      title: episode.title,
+      name: episode.name,
+      titles: episode.titles,
       synopsis: episode.synopsis,
-      thumbnail: episode.thumbnail,
-      kitsu_id: episode.kitsu_id,
 
       number: episode.number,
-      season_number: episode.season_number,
-      airdate: episode.airdate,
+      rel_number: episode.rel_number,
 
-      series: %{
-        id: episode.series.id,
-        slug: episode.series.slug,
-        canon_title: episode.series.canon_title,
+      airdate: episode.airdate,
+      augured_at: episode.augured_at,
+
+      kitsu_id: episode.kitsu_id,
+
+      anime: %{
+        id: episode.anime.id,
+        slug: episode.anime.slug,
+        name: episode.anime.name,
       },
 
       video: episode.video,
@@ -35,14 +38,17 @@ def render("episode_index.json", %{episode: episode}) do
 
   def render("episodes.json", %{episode: episode}) do
     %{id: episode.id,
-      title: episode.title,
+      name: episode.name,
+      titles: episode.titles,
       synopsis: episode.synopsis,
-      thumbnail: episode.thumbnail,
-      kitsu_id: episode.kitsu_id,
 
       number: episode.number,
-      season_number: episode.season_number,
+      rel_number: episode.rel_number,
+
       airdate: episode.airdate,
+      augured_at: episode.augured_at,
+
+      kitsu_id: episode.kitsu_id,
 
       video: episode.video,
     }
@@ -50,17 +56,21 @@ def render("episode_index.json", %{episode: episode}) do
 
   def render("episode.json", %{episode: episode}) do
     %{id: episode.id,
-      title: episode.title,
+      name: episode.name,
+      titles: episode.titles,
       synopsis: episode.synopsis,
-      thumbnail: episode.thumbnail,
-      kitsu_id: episode.kitsu_id,
 
       number: episode.number,
-      season_number: episode.season_number,
-      airdate: episode.airdate,
+      rel_number: episode.rel_number,
 
-      series: render_one(episode.series, SeriesView, "series_many.json"),
+      airdate: episode.airdate,
+      augured_at: episode.augured_at,
+
+      kitsu_id: episode.kitsu_id,
+
+      anime: render_one(episode.anime, AnimeView, "anime_many.json"),
       video: episode.video,
     }
   end
+
 end

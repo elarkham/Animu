@@ -6,6 +6,6 @@ URL=${URL:-http://localhost:4000}
 curl -s -X POST \
      -H "Content-Type: application/json" \
      -d "$(cat $LOGIN)" \
-     "$URL/api/v1/session" \
+     "$URL/api/session" \
 | jq -r .jwt > "$HOME/var/auth/animu-token"
 #| python -c "import sys, json; print json.load(sys.stdin)['jwt']" > token

@@ -4,11 +4,16 @@ defmodule Animu.Media.Anime.Bag.Conjure do
   new or writing to the filesystem
   """
   alias Animu.Media.Anime.{Bag, Episode}
-  alias Animu.Util.ImageMagick, as: Image
+  alias Animu.Util.ImageMagick
+  alias Animu.Util.Schema
 
   ## Episode Conjuring
-  def episode(%{type: "spawn", numbers: numbers}, %Bag{} = bag) do
-    episodes = Enum.map(numbers, &Episode.new/1)
+  def episodes(%{type: "spawn", numbers: numbers}, %Bag{} = bag) do
+    episodes = Enum.map(numbers, fn ep ->
+      ep
+      |> Episode.new
+      |> Schema.to_map
+    end)
     bag = Map.put(bag, :episodes, bag.episodes ++ [episodes])
 
     {:ok, bag}

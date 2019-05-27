@@ -57,6 +57,7 @@ defmodule Animu.Media.Anime.Episode do
       |> Media.get_anime!
       |> Media.update_anime(%{augured_at: augured_at})
     end
+    IO.puts("HANDLE AUGURED_AT: #{inspect ch}")
     ch
   end
 
