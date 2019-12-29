@@ -9,7 +9,7 @@ defmodule Animu.Media.Franchise do
   alias Animu.Media.Anime
   alias __MODULE__
 
-  schema "franchises" do
+  schema "franchise" do
     field :name,          :string, null: false
     field :titles,        :map
     field :slug,          :string, null: false

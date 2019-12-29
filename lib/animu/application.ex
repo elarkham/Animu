@@ -9,16 +9,16 @@ defmodule Animu.Application do
 
     children = [
       # Start the Ecto repository
-      supervisor(Animu.Repo, []),
+      {Animu.Repo, []},
       # Start the endpoint when the application starts
-      supervisor(Animu.Web.Endpoint, []),
+      {Animu.Web.Endpoint, []},
       # Start Golem
-      supervisor(Golem.Supervisor, [])
+      {Golem.Supervisor, []},
     ]
 
     augur = [
       # Auto downlaod new episodes by scanning RSS Feeds
-      supervisor(Augur.Supervisor, [])
+      {Augur.Supervisor, []}
     ]
 
     children =

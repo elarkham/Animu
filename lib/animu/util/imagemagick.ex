@@ -1,6 +1,6 @@
 defmodule Animu.Util.ImageMagick do
 
-  @exec  "convert"
+  @exec "convert"
 
   def identify(input) do
     args = [input, "json:"]

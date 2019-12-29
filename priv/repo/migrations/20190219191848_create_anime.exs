@@ -31,7 +31,7 @@ defmodule Animu.Repo.Migrations.CreateAnime do
       add :anidb_id,     :string
 
       ## Franchise Data
-      add :franchise_id, references(:franchises)
+      add :franchise_id, references(:franchise)
       add :subtitle,     :string
       add :subtype,      :citext, null: false, default: "tv"
       add :number,       :integer, default: 1

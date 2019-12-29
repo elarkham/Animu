@@ -7,7 +7,7 @@ defmodule Animu.Util.Query do
   alias Ecto.Query
 
   def build_query(query, params = %{}) do
-    params = Animu.Util.to_kwlist(params)
+    params = Map.to_list(params)
     build_query(query, params)
   end
   def build_query(query, params) when is_list(params) do
@@ -29,6 +29,10 @@ defmodule Animu.Util.Query do
     Query.limit(q, ^amount)
   end
 
+  def build_query(q, {"offset", amount}) do
+    Query.offset(q, ^amount)
+  end
+
   def build_query(q, {"order_by", "-" <> field}) do
     field = String.to_existing_atom field
     Query.order_by(q, desc: ^field)
@@ -42,6 +46,13 @@ defmodule Animu.Util.Query do
   def build_query(q, {"order_by", field}) do
     field = String.to_existing_atom field
     Query.order_by(q, asc: ^field)
+  end
+
+  def build_query(q, {"filter", map}) do
+    Enum.reduce(map, q, fn {field, val}, q ->
+      field = String.to_existing_atom field
+      Query.where(q, ^[{field, val}])
+    end)
   end
 
   def build_query(q, _), do: q

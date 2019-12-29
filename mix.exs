@@ -51,7 +51,7 @@ defmodule Animu.Mixfile do
      {:feeder_ex, "~> 1.0"},
      {:feeder, "~> 2.1"},
 
-     {:httpoison, "~> 0.9.0"},
+     {:httpoison, "~> 1.6.0"},
      {:poison, "~> 3.1"},
      {:corsica, "~> 0.5"},
 

@@ -9,7 +9,7 @@ defmodule Animu.Media.Anime.Episode do
   alias Animu.Media.Anime.Video
   alias __MODULE__
 
-  schema "episodes" do
+  schema "episode" do
     field :name,          :string, null: false
     field :titles,        {:map, :string}
     field :synopsis,      :string
@@ -73,6 +73,7 @@ defmodule Animu.Media.Anime.Episode do
   end
 
   ## Episode Generating
+
   def new(number) do
     name_num = format_number(number)
     %Episode{
@@ -89,6 +90,7 @@ defmodule Animu.Media.Anime.Episode do
   end
 
   ## Video Conjuring
+
   # From Changeset
   def conjure_video(%Changeset{valid?: false} = ch), do: ch
   def conjure_video(%Changeset{changes: %{video_path: _}} = ch) do
@@ -100,6 +102,8 @@ defmodule Animu.Media.Anime.Episode do
     conjure_video(ch, anime)
   end
   def conjure_video(%Changeset{} = ch), do: ch
+
+  def conjure_video(%Changeset{valid?: false} = ch, _anime), do: ch
   def conjure_video(%Changeset{changes: %{video_path: path}} = ch, %Anime{} = anime) do
     case Video.Invoke.new(path, anime.directory) do
           {:ok, video} -> put_embed(ch, :video, video)
@@ -112,6 +116,7 @@ defmodule Animu.Media.Anime.Episode do
   def conjure_video(%Changeset{} = ch, _), do: ch
 
   ## Lazy Functions
+
   def new_lazy(number, video_path) do
     golem = {Golem.Video, path: video_path, num: number}
     ep = new(number)
@@ -123,6 +128,7 @@ defmodule Animu.Media.Anime.Episode do
   end
 
   ## Utility
+
   defp format_number(int) when is_integer(int), do: int
   defp format_number(float) when is_float(float) do
     case Float.ratio(float) do

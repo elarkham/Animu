@@ -2,7 +2,7 @@ defmodule Animu.Repo.Migrations.CreateEpisode do
   use Ecto.Migration
 
   def change do
-    create table(:episodes) do
+    create table(:episode) do
       add :name,     :string, null: false
       add :titles,   :string
       add :synopsis, :text
@@ -20,7 +20,7 @@ defmodule Animu.Repo.Migrations.CreateEpisode do
 
       timestamps(type: :utc_datetime)
     end
-    create unique_index(:episodes, [:number, :anime_id], name: :episode_number_anime_id_index)
+    create unique_index(:episode, [:number, :anime_id], name: :episode_number_anime_id_index)
 
   end
 end

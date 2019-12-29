@@ -9,7 +9,7 @@ defmodule Animu.Media.Anime.Season do
 
   alias __MODULE__
 
-  schema "seasons" do
+  schema "season" do
     field :year, :integer # Required
     field :cour, :string  # Required, CI
 
@@ -18,7 +18,7 @@ defmodule Animu.Media.Anime.Season do
     field :sort,  :string # CI ex: 2019-0
 
     many_to_many :anime, Anime,
-      join_through: "anime_seasons",
+      join_through: "anime_season",
       defaults: []
   end
 

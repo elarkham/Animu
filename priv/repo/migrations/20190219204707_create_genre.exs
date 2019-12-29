@@ -2,7 +2,7 @@ defmodule Animu.Repo.Migrations.CreateGenre do
   use Ecto.Migration
 
   def change do
-    create table(:genres) do
+    create table(:genre) do
       add :name,  :string
       add :slug,  :citext
       add :nsfw,  :boolean
@@ -12,12 +12,12 @@ defmodule Animu.Repo.Migrations.CreateGenre do
 
       add :kitsu_id, :string
     end
-    create unique_index(:genres, [:name])
-    create unique_index(:genres, [:slug])
+    create unique_index(:genre, [:name])
+    create unique_index(:genre, [:slug])
 
-    create table(:anime_genres) do
+    create table(:anime_genre) do
       add :anime_id, references(:anime, on_delete: :delete_all)
-      add :genre_id, references(:genres, on_delete: :delete_all)
+      add :genre_id, references(:genre, on_delete: :delete_all)
     end
   end
 end

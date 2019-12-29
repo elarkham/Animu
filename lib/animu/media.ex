@@ -116,7 +116,7 @@ defmodule Animu.Media do
   end
 
   @doc """
-  Returns single Anime using it's id or slug
+  Returns a single Anime using it's id or slug
 
   Raises `Ecto.NoResultsError` if the Anime does not exist.
   """
@@ -139,7 +139,7 @@ defmodule Animu.Media do
   end
 
   @doc """
-  Creates new Anime
+  Creates a new Anime
   """
   def create_anime(attrs, opt \\ %{}) do
     anime = %Anime{}
@@ -157,7 +157,7 @@ defmodule Animu.Media do
   end
 
   @doc """
-  Updates a Anime
+  Updates an Anime
   """
   def update_anime(%Anime{} = anime, attrs, opt \\ %{}) do
     with {:ok, ch, jobs} <- Anime.build(anime, attrs, opt),
@@ -174,7 +174,7 @@ defmodule Animu.Media do
   end
 
   @doc """
-  Deletes a Anime
+  Deletes an Anime
   """
   def delete_anime(%Anime{} = anime) do
     Repo.delete(anime)
@@ -183,7 +183,22 @@ defmodule Animu.Media do
   ###
   # Season Interactions
   ##
-  def list_seasons(params \\ %{}) do
+
+  @doc """
+  Returns list of Seasons
+  """
+  def list_seasons(params \\ %{})
+  def list_seasons(params = %{"anime_id" => id}) do
+    Season
+    |> preload([:anime])
+    |> join(:left, [s], as in "anime_seasons", on: s.id == as.season_id)
+    |> join(:left, [_s, as], a in Anime, on: a.id == as.anime_id)
+    |> where([_s, _as, a], a.id == ^id)
+    |> order_by(asc: :sort)
+    |> build_query(params)
+    |> Repo.all()
+  end
+  def list_seasons(params) do
     Season
     |> order_by(asc: :sort)
     |> build_query(params)
@@ -211,10 +226,24 @@ defmodule Animu.Media do
   # Genre Interactions
   ##
 
-  def list_genres(params \\ %{}) do
+  @doc """
+  Returns list of Genres
+  """
+  def list_genres(params \\ %{})
+  def list_genres(params = %{"anime_id" => id}) do
+    Genre
+    |> preload([:anime])
+    |> join(:left, [g], ag in "anime_genres", on: g.id == ag.genre_id)
+    |> join(:left, [_g, ag], a in Anime, on: a.id == ag.anime_id)
+    |> where([_g, _ag, a], a.id == ^id)
+    |> build_query(params)
+    |> Repo.all()
+  end
+  def list_genres(params) do
     Genre
     |> build_query(params)
     |> Repo.all()
+    |> Repo.preload(anime: from(a in Anime, select: a.slug))
   end
 
   @doc """
@@ -240,7 +269,15 @@ defmodule Animu.Media do
   @doc """
   Returns list of Episodes
   """
-  def list_episodes(params \\ %{}) do
+  def list_episodes(params \\ %{})
+  def list_episodes(params = %{"anime_id" => id}) do
+    Episode
+    |> where(anime_id: ^id)
+    |> build_query(params)
+    |> Repo.all()
+    |> Repo.preload(:anime)
+  end
+  def list_episodes(params) do
     Episode
     |> build_query(params)
     |> Repo.all()

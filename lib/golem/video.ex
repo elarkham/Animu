@@ -2,18 +2,23 @@ defmodule Golem.Video do
   @moduledoc """
   Handles video transcoding jobs
   """
-  use Que.Worker, concurrency: 4
+  use Que.Worker, concurrency: 15
   require Logger
 
   alias Animu.Media
   alias Animu.Media.Anime.Video
   alias Animu.Repo
 
+  def on_setup(%Que.Job{} = job) do
+    golem = Golem.job_to_golem(job)
+    Golem.assign_pid(job.pid, golem)
+  end
+
   def perform(path: path, num: num, anime: anime) do
     with {:ok, video} <- Video.new(path, anime.directory),
                    ep <- find_ep(anime.episodes, num),
             {:ok, ep} <- Media.update_episode(ep, video) do
-      #TODO notify success
+
       {:ok, ep}
     else
       # {:error, msg} when is_binary(msg) -> raise msg

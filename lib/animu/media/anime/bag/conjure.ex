@@ -18,7 +18,7 @@ defmodule Animu.Media.Anime.Bag.Conjure do
 
     {:ok, bag}
   end
-  def episode(%{type: "conjure_video", numbers: numbers}, %Bag{} = bag) do
+  def episodes(%{type: "conjure_video", numbers: numbers}, %Bag{} = bag) do
     episodes =
       bag.data.episodes
       |> Enum.filter(&Enum.member?(numbers, &1.number))
@@ -35,7 +35,7 @@ defmodule Animu.Media.Anime.Bag.Conjure do
 
     {:ok, bag}
   end
-  #def episode(%{type: "conjure_thumbs", numbers: numbers}, %Bag{} = bag) do
+  #def episodes(%{type: "conjure_thumbs", numbers: numbers}, %Bag{} = bag) do
   #  episodes =
   #    bag.episodes
   #    |> Enum.filter(&Enum.member?(numbers, &1))
@@ -52,7 +52,7 @@ defmodule Animu.Media.Anime.Bag.Conjure do
 
   #  {:ok, bag}
   #end
-  def episode(_, %Bag{} = bag), do: {:ok, bag}
+  def episodes(_, %Bag{} = bag), do: {:ok, bag}
 
   ## Image Handling
   def image(_, %Bag{} = bag), do: {:ok, bag}

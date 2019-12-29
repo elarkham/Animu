@@ -1,17 +1,21 @@
 defmodule Animu.Media.Anime.Video.Bag do
   alias __MODULE__, as: Bag
-  #alias Animu.Media.Video
 
   defstruct [
     :name,
+
     :output_root,
     :input_root,
+
     :video_track,
     :audio_track,
+
     :input,
     :output,
+
     :subtitles,
     :font,
+
     :thumb,
   ]
 

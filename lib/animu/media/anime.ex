@@ -17,6 +17,7 @@ defmodule Animu.Media.Anime do
   schema "anime" do
 
     ## Meta Data
+
     field :name,           :string
     field :titles,         {:map, :string}
     field :synopsis,       :string
@@ -32,7 +33,7 @@ defmodule Animu.Media.Anime do
     field :tags,           {:array, :string}
 
     many_to_many :genres, Genre,
-      join_through: "anime_genres",
+      join_through: "anime_genre",
       on_replace: :delete,
       defaults: []
 
@@ -42,6 +43,7 @@ defmodule Animu.Media.Anime do
     field :age_guide,      :string
 
     ## External Data
+
     field :kitsu_rating,   :float
     field :kitsu_id,       :string
 
@@ -50,12 +52,14 @@ defmodule Animu.Media.Anime do
     field :anidb_id,       :string
 
     ## Franchise Data
+
     belongs_to :franchise, Franchise
     field :subtitle,       :string
     field :subtype,        :string # CI
     field :number,         :integer
 
     ## Episode Data
+
     has_many   :episodes,  Episode,
       on_replace: :delete,
       defaults: []
@@ -64,6 +68,7 @@ defmodule Animu.Media.Anime do
     field :episode_length, :integer
 
     ## Augur Data
+
     field :augur,          :boolean
     field :augured_at,     :utc_datetime
 
@@ -72,9 +77,10 @@ defmodule Animu.Media.Anime do
     field :subgroup,       :string
     field :quality,        :string
 
-    # Time Data
+    ## Time Data
+
     many_to_many :season, Season,
-      join_through: "anime_seasons",
+      join_through: "anime_season",
       defaults: []
 
     field :airing,     :boolean

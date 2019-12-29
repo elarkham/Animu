@@ -14,12 +14,9 @@ defmodule Animu.Ecto.Image do
   def cast(image) when is_binary(image) do
     uri = URI.parse(image)
     case uri do
-      %URI{scheme: "http"} ->
-        download_image_data(image)
-      %URI{scheme: "https"} ->
-        download_image_data(image)
-      %URI{scheme: "data"} ->
-        decode_image_data(image)
+      %URI{scheme: "http" } -> download_image_data(image)
+      %URI{scheme: "https"} -> download_image_data(image)
+      %URI{scheme: "data" } -> decode_image_data(image)
       _ ->
         read_image_data(image)
     end

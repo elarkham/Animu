@@ -10,7 +10,7 @@ defmodule Animu.Media.Anime.Genre do
 
   alias __MODULE__
 
-  schema "genres" do
+  schema "genre" do
     field :name,        :string # CS Required
     field :slug,        :string # CI Required
     field :nsfw,        :boolean
@@ -21,7 +21,7 @@ defmodule Animu.Media.Anime.Genre do
     field :kitsu_id, :string
 
     many_to_many :anime, Anime,
-      join_through: "anime_genres",
+      join_through: "anime_genre",
       defaults: []
   end
 

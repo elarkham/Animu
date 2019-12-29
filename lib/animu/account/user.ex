@@ -3,7 +3,7 @@ defmodule Animu.Account.User do
 
   alias __MODULE__
 
-  schema "users" do
+  schema "user" do
     field :first_name, :string
     field :last_name, :string
     field :email, :string

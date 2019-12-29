@@ -3,7 +3,7 @@ defmodule Animu.Repo.Migrations.CreateFranchise do
 
   def change do
     execute "CREATE EXTENSION citext;"
-    create table(:franchises) do
+    create table(:franchise) do
       add :name,          :string, null: false
       add :titles,        :map
       add :slug,          :citext, null: false
@@ -21,6 +21,6 @@ defmodule Animu.Repo.Migrations.CreateFranchise do
       timestamps(type: :utc_datetime)
     end
 
-    create unique_index(:franchises, [:slug])
+    create unique_index(:franchise, [:slug])
   end
 end
