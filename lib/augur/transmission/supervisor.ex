@@ -1,6 +1,6 @@
-defmodule Augur.Supervisor do
+defmodule Augur.Transmission.Supervisor do
   @moduledoc """
-  Augur Supervisor
+  Transmission Supervisor
   """
   use Supervisor
 
@@ -11,19 +11,11 @@ defmodule Augur.Supervisor do
   def init([]) do
 
     children = [
-
-      # Shared PubSub
-      {Phoenix.PubSub.PG2, name: Augur.PubSub},
-
-      # Primary command interface
-      {Augur, []},
-
-      # Handles RSS feed Scanning
-      {Augur.Scanner, []},
-
       # Interface that facilitates interactions with transmission
       {Augur.Transmission, []},
 
+      # Cache that stores transmission torrent status
+      {Augur.Transmission.Cache, []},
     ]
 
     opts = [strategy: :one_for_all, name: __MODULE__]

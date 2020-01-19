@@ -1,122 +1,130 @@
 defmodule Augur.Transmission do
   @moduledoc """
-  Interface for Tranmissions JSON RPC API
+  Interface for Tranmission's JSON RPC API
   """
   use GenServer
-
-  alias HTTPoison.Response
-  alias Augur.Torrent
   require Logger
 
-  @url "http://192.168.5.115:9091/transmission/rpc"
+  alias HTTPoison.Response
 
-  ## Client
+  alias Augur.Transmission.{
+    Torrent,
+    Cache,
+  }
+
+  ##############
+  #   Config   #
+  ##############
+
+  def config do
+    :animu
+    |> Application.get_env(__MODULE__)
+    |> Map.new
+  end
+
+  ##############
+  #   Client   #
+  ##############
 
   @doc """
   Start Link
   """
-  def start_link(name \\ nil) do
-    GenServer.start_link(__MODULE__, :ok, [name: name])
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
   @doc """
   Adds multiple torrent to transmission
   """
   def add_torrents(torrents) do
-    Enum.map(torrents, &add_torrent/1)
+    torrents
+    |> Enum.map(&add_torrent/1)
   end
 
   @doc """
   Adds a torrent to transmission
   """
   def add_torrent(%Torrent{} = torrent) do
-    GenServer.cast(Augur.Transmission, {:add_torrent, torrent})
+    GenServer.cast(__MODULE__, {:add_torrent, torrent})
   end
 
-  @doc """
-  Creates torrents using given paramaters and then adds it
-  """
-  def add_torrent(ep_id, download_dir, url) do
-    torrent =
-      %Torrent{
-        ep_id: ep_id,
-        download_dir: download_dir,
-        url: url
-      }
-
-    GenServer.cast(Augur.Transmission, {:add_torrent, torrent})
-  end
-  @doc """
-  Polls status of torrents from list of ids
-  """
-  def poll(ids) do
-    GenServer.cast(Augur.Transmission, {:poll, ids})
-  end
-
-  ## Server Callbacks
+  #############
+  #   Server  #
+  #############
 
   @doc """
-  Gets a session_id from transmission rpc
+  Initializes cache, schedules first poll and gets a
+  session_id from transmission rpc
   """
-  def init(:ok) do
-    {:ok, _, s_id} = request("session-get", %{}, "0")
-    {:ok, s_id}
+  def init(_) do
+    Cache.init
+    schedule_poll()
+    {:ok, _, sid} = request("session-get", %{}, "0")
+    {:ok, %{sid: sid, ids: MapSet.new()}}
   end
 
   @doc """
   Adds torrent to transmission
   """
-  def handle_cast({:add_torrent, torrent}, s_id) do
+  def handle_cast({:add_torrent, %Torrent{} = torrent}, %{sid: sid, ids: ids}) do
     method = "torrent-add"
     path = Application.get_env(:animu, :input_root)
     arguments =
-      %{"filename"     => torrent.url,
+      %{"filename"     => torrent.input,
         "download-dir" => Path.join(path, torrent.download_dir),
         "paused"       => false,
       }
 
-    case request(method, arguments, s_id) do
-      {:ok, %{"arguments" => %{"torrent-added" => torrent_info}}, s_id} ->
-        id = torrent_info["id"]
-        torrent = %Torrent{torrent | id: id}
-        Augur.cache_torrents(%{id => torrent})
+    case request(method, arguments, sid) do
+      {:ok, %{"arguments" => %{"torrent-added" => t_meta}}, sid} ->
+        torrent = %Torrent{torrent | id: t_meta["id"]}
+        Cache.upsert(torrent)
         Logger.info("Added torrent: #{inspect torrent.name}")
-        {:noreply, s_id}
-      {:ok, %{"arguments" => %{"torrent-duplicate" => torrent_info}}, s_id} ->
-        id = torrent_info["id"]
-        torrent = %Torrent{torrent | id: id}
-        Augur.cache_torrents(%{id => torrent})
+
+        {:noreply, %{sid: sid, ids: MapSet.put(ids, torrent.id)}}
+
+      {:ok, %{"arguments" => %{"torrent-duplicate" => t_meta}}, sid} ->
+        torrent = %Torrent{torrent | id: t_meta["id"]}
+        Cache.upsert(torrent)
         Logger.info("Added duplicate torrent: #{inspect torrent.name}")
-        {:noreply, s_id}
+
+        {:noreply, %{sid: sid, ids: MapSet.put(ids, torrent.id)}}
+
       reply ->
-        Logger.error("Failed to add torrent due to: #{reply}")
-        {:noreply, s_id}
+        Logger.warn("Failed to add torrent due to: #{inspect reply}")
+        {:noreply, %{sid: sid, ids: ids}}
     end
   end
 
   @doc """
-  Polls the status of torrents from a list of ids
+  Polls the status of torrents in cache
   """
-  def handle_cast({:poll, ids}, s_id) do
-    {torrents, s_id} = poll(ids, s_id)
-    Augur.cache_torrents(torrents)
-    {:noreply, s_id}
+  def handle_info(:poll, %{sid: sid, ids: ids}) do
+    %{sid: sid} = poll(sid, ids)
+    schedule_poll()
+    {:noreply, %{sid: sid, ids: ids}}
   end
 
-  ## Helpers
+  ###############
+  #   Helpers   #
+  ###############
 
   # Helper function that keeps session_id up to date and sends requests to
   # Transmission's RPC API.
   defp request(method, arguments, session_id) do
-    options = [recv_timeout: 20 * 1000]
-
-    headers = [{"X-Transmission-Session-Id", session_id},
-               {"Accept", "application/json; charset=utf-8"}]
+    url = config().url
+    headers = [
+      {"X-Transmission-Session-Id", session_id},
+      {"Accept", "application/json; charset=utf-8"}
+    ]
+    options = [
+      recv_timeout: config().recv_timeout
+    ]
 
     body =
       Poison.encode!(%{method: method, arguments: arguments})
 
-    case HTTPoison.post(@url, body, headers, options) do
+    case HTTPoison.post(url, body, headers, options) do
       {:ok, %Response{status_code: 200, body: body}} ->
         {:ok, Poison.decode!(body), session_id}
 
@@ -134,23 +142,45 @@ defmodule Augur.Transmission do
     end
   end
 
-  # Polls status of tracked torrents
-  defp poll([], s_id), do: {%{}, s_id}
-  defp poll(ids, s_id) do
+  defp poll(sid, ids = %MapSet{map: map}) when map_size(map) <= 0 do
+    %{sid: sid, ids: ids}
+  end
+  defp poll(sid, ids) do
     method = "torrent-get"
-    arguments =
-      %{"fields" => ["id", "percentDone", "downloadDir", "name"],
-        "ids" => ids
-      }
+    arguments = %{
+      "fields" => [
+        "id",
+        "name",
 
-    case request(method, arguments, s_id) do
-      {:ok, %{"arguments" => %{"torrents" => torrents}, "result" => "success"}, s_id} ->
-        torrents =
-           Map.new(torrents, fn t -> {t["id"], Torrent.new(t)} end)
-        {torrents, s_id}
+        "downloadDir",
+        "hashString",
 
+        "errorString",
+        "comment",
+        "percentDone",
+      ],
+      "ids" => MapSet.to_list(ids)
+    }
+
+    case request(method, arguments, sid) do
+      {:ok, %{
+        "arguments" => %{"torrents" => torrents},
+        "result" => "success"
+      }, sid} ->
+
+        torrents
+        |> Enum.map(&Torrent.new/1)
+        |> Cache.upsert
+
+        %{sid: sid, ids: ids}
       _ ->
-        {%{}, s_id}
+        Logger.warn("Failed to poll transmission state")
+        %{sid: sid, ids: ids}
     end
   end
+
+  defp schedule_poll do
+    Process.send_after(self(), :poll, config().poll_interval)
+  end
+
 end
