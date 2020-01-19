@@ -2,15 +2,17 @@ defmodule Animu.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :animu,
-     version: System.get_env("VERSION") || "3.1.0",
-     elixir: "~> 1.2",
-     elixirc_paths: elixirc_paths(Mix.env),
-     compilers: [:phoenix, :gettext] ++ Mix.compilers,
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     aliases: aliases(),
-     deps: deps()]
+    [
+      app: :animu,
+      version: System.get_env("VERSION") || "3.1.0",
+      elixir: "~> 1.2",
+      elixirc_paths: elixirc_paths(Mix.env),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers,
+      build_embedded: Mix.env == :prod,
+      start_permanent: Mix.env == :prod,
+      aliases: aliases(),
+      deps: deps()
+    ]
   end
 
   # Configuration for the OTP application.
@@ -30,7 +32,7 @@ defmodule Animu.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [{:phoenix, "~> 1.4.0"},
-     {:phoenix_pubsub, "~> 1.0"},
+     {:phoenix_pubsub, "~> 1.1"},
      {:phoenix_html, "~> 2.6"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:gettext, "~> 0.11"},
@@ -55,7 +57,7 @@ defmodule Animu.Mixfile do
      {:poison, "~> 3.1"},
      {:corsica, "~> 0.5"},
 
-     {:que, "~> 0.8.0"},
+     {:kiln, path: "/home/ethan/src/proj/kiln"},
      {:ex_utils, "~> 0.1.6"},
 
      {:expat, "~> 1.0"},
