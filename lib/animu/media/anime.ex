@@ -12,8 +12,6 @@ defmodule Animu.Media.Anime do
   alias Anime.{Bag, Options}
   alias Anime.{Episode, Season, Genre}
 
-  @behaviour Access
-
   schema "anime" do
 
     ## Meta Data
@@ -130,13 +128,94 @@ defmodule Animu.Media.Anime do
     |> unique_constraint(:slug)
   end
 
-  def start_golems(anime, jobs) do
+  def bake_golems(anime, jobs) do
     jobs
     |> Enum.dedup
     |> Enum.map(fn {module, params} ->
          params = params ++ [anime: anime]
-         Golem.add(module, params)
+         Kiln.bake(module, params)
        end)
   end
 
+end
+
+defimpl Inspect, for: Animu.Media.Anime do
+  import Inspect.Algebra
+
+  @fields [
+    ## Meta
+    :name,
+    :titles,
+    :synopsis,
+    :slug,
+
+    :directory,
+
+    :cover_image,
+    :poster_image,
+    :gallery,
+
+    #:trailers,
+    :tags,
+
+    :genres,
+
+    :nsfw,
+
+    :age_rating,
+    :age_guide,
+
+    ## External Data
+    :kitsu_rating,
+    :kitsu_id,
+
+    :mal_id,
+    :tvdb_id,
+    :anidb_id,
+
+    ## Franchise Data
+    :franchise,
+    :subtitle,
+    :subtype,
+    :number,
+
+    ## Episode Data
+    :episodes,
+    :episode_count,
+    :episode_length,
+
+    ## Augur Data
+    :augur,
+    :augured_at,
+
+    :regex,
+    :rss_feed,
+    :subgroup,
+    :quality,
+
+    ## Time Data
+    :season,
+    :airing,
+    :airing_at,
+
+    :start_date,
+    :end_date,
+  ]
+
+  def inspect(changeset, opts) do
+    list = for attr <- @fields do
+      {attr, Map.get(changeset, attr)}
+    end
+
+    container_doc("#Anime<", list, ">", opts, fn
+      {field, value = %Ecto.Association.NotLoaded{}}, opts ->
+        concat(color("#{field}: ", :atom, opts), to_doc(:not_loaded, opts))
+
+      {field, value}, opts -> concat(color("#{field}: ", :atom, opts), to_doc(value, opts))
+    end)
+  end
+
+
+  defp to_struct(%{__struct__: struct}, _opts), do: "#" <> Kernel.inspect(struct) <> "<>"
+  defp to_struct(other, opts), do: to_doc(other, opts)
 end

@@ -91,8 +91,9 @@ defmodule Animu.Media.Anime.Bag.Compile do
   defp merge_summons([]),  do: %{}
   defp merge_summons(nil), do: %{}
   defp merge_summons(summons) do
-    summons = Enum.map(summons, &(&1.data))
-    Enum.reduce(summons, fn sum, acc ->
+    summons
+    |> Enum.map(&(&1.data))
+    |> Enum.reduce(summons, fn sum, acc ->
       Map.merge(sum, acc)
     end)
   end
@@ -100,13 +101,11 @@ defmodule Animu.Media.Anime.Bag.Compile do
   # Compile -> Anime
   defp compile_anime(%Bag{} = bag, summoned, episodes) do
     {force, fallback} = summoned
-    anime =
-      bag.params
-      |> Map.merge(force)
-      |> merge_if_nil(fallback)
-      |> Map.put(:episodes, episodes)
 
-    anime
+    bag.params
+    |> Map.merge(force)
+    |> merge_if_nil(fallback)
+    |> Map.put(:episodes, episodes)
   end
 
   defp merge_if_nil(anime1, anime2) do
@@ -147,6 +146,7 @@ defmodule Animu.Media.Anime.Bag.Compile do
         {:error, msg}
     end
   end
+
   defp write_images(binary, sizes, image, dir, output_dir) do
     dir_path   = Path.join(output_dir, dir)
     image_path = Path.join(output_dir, image)

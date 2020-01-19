@@ -5,15 +5,16 @@ defmodule Animu.Application do
   use Application
 
   def start(_type, _args) do
-    import Supervisor.Spec
 
     children = [
       # Start the Ecto repository
       {Animu.Repo, []},
+
       # Start the endpoint when the application starts
       {Animu.Web.Endpoint, []},
+
       # Start Golem
-      {Golem.Supervisor, []},
+      {Kiln.Supervisor, []},
     ]
 
     augur = [

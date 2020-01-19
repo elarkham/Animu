@@ -6,7 +6,7 @@ defmodule Animu.Media.Anime.Video.Validate do
   def check_file_exists(file) do
     case File.regular?(file) do
       true -> :ok
-      false -> {:error, "video does not exist"}
+      false -> {:error, "video does not exist: #{inspect file}"}
     end
   end
 

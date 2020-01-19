@@ -9,7 +9,7 @@ defmodule Animu.Media.Anime.Video.Conjure do
   @font_dir "fonts"
   @thumb_dir "thumbs"
 
-  def conjure_output(bag = %Bag{input: %Bag.IO{format: "WebM"}}) do
+  def conjure_output(_golem, bag = %Bag{input: %Bag.IO{format: "WebM"}}) do
     with {:ok, bag} <- conjure_directories(bag),
          {:ok, bag} <- copy_input(bag),
          {:ok, bag} <- probe_output_file(bag) do
@@ -21,7 +21,7 @@ defmodule Animu.Media.Anime.Video.Conjure do
     end
   end
 
-  def conjure_output(bag = %Bag{input: %Bag.IO{format: "MPEG-4"}}) do
+  def conjure_output(_golem, bag = %Bag{input: %Bag.IO{format: "MPEG-4"}}) do
     with {:ok, bag} <- conjure_directories(bag),
          {:ok, bag} <- copy_input(bag),
          {:ok, bag} <- probe_output_file(bag) do
@@ -33,9 +33,9 @@ defmodule Animu.Media.Anime.Video.Conjure do
     end
   end
 
-  def conjure_output(bag = %Bag{input: %Bag.IO{format: "Matroska"}, subtitles: nil}) do
+  def conjure_output(golem, bag = %Bag{input: %Bag.IO{format: "Matroska"}, subtitles: nil}) do
     with {:ok, bag} <- conjure_directories(bag),
-         {:ok, bag} <- convert_mkv_to_mp4(bag),
+         {:ok, bag} <- convert_mkv_to_mp4(golem, bag),
          {:ok, bag} <- probe_output_file(bag) do
       {:ok, bag}
     else
@@ -45,9 +45,9 @@ defmodule Animu.Media.Anime.Video.Conjure do
     end
   end
 
-  def conjure_output(bag = %Bag{input: %Bag.IO{format: "Matroska"}}) do
+  def conjure_output(golem, bag = %Bag{input: %Bag.IO{format: "Matroska"}}) do
     with {:ok, bag} <- conjure_directories(bag),
-         {:ok, bag} <- convert_mkv_to_mp4(bag),
+         {:ok, bag} <- convert_mkv_to_mp4(golem, bag),
          {:ok, bag} <- extract_subtitles(bag),
          {:ok, bag} <- extract_fonts(bag),
          {:ok, bag} <- probe_output_file(bag) do
@@ -121,14 +121,15 @@ defmodule Animu.Media.Anime.Video.Conjure do
 
   def probe_output_file(bag = %Bag{}) do
     case FFmpeg.probe(bag.output.file) do
-      {:error, reason} ->
-        {:error, reason}
       {:ok, probe_data} ->
         {:ok, Bag.put_output(bag, :probe_data, probe_data)}
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
-  def convert_mkv_to_mp4(bag = %Bag{input: %Bag.IO{format: "Matroska"}}) do
+  def convert_mkv_to_mp4(golem, bag = %Bag{input: %Bag.IO{format: "Matroska"}}) do
     extension = ".mp4"
     filename = bag.name <> extension
     dir = @output_dir
@@ -145,11 +146,12 @@ defmodule Animu.Media.Anime.Video.Conjure do
          format: format,
        }
 
-    case FFmpeg.mkv_to_mp4(bag.input.file, output.file) do
-      {_, 0} ->
+    case FFmpeg.mkv_to_mp4(golem, bag.input.file, output.file) do
+      :ok ->
         {:ok, %Bag{bag | output: output}}
-      {_, _} ->
-        {:error, "failed to convert mkv->mp4"}
+
+      {:error, status} ->
+        {:error, "failed to convert mkv->mp4 - status: #{inspect status}"}
     end
   end
 

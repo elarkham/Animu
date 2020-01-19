@@ -3,13 +3,9 @@ defmodule Animu.Web.RpcController do
 
   action_fallback Animu.Web.FallbackController
 
-  def rpc(conn, %{"augur" => %{"exec" => "rebuild_cache"}}) do
-    Augur.rebuild_cache()
+  def rpc(conn, %{"augur" => %{"exec" => "scan"}}) do
+    Augur.Scanner.scan
     render(conn, "rpc.json", success: true)
   end
 
-  def rpc(conn, %{"augur" => %{"exec" => "scan"}}) do
-    Augur.Scanner.scan(Augur.cache)
-    render(conn, "rpc.json", success: true)
-  end
 end

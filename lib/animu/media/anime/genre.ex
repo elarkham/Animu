@@ -50,3 +50,12 @@ defmodule Animu.Media.Anime.Genre do
   #end
 
 end
+
+defimpl Inspect, for: Animu.Media.Anime.Genre do
+  import Inspect.Algebra
+
+  def inspect(genre, opts) do
+    concat(["#Genre<", to_doc(genre.name, opts), ">"])
+  end
+end
+

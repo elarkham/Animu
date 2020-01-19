@@ -16,11 +16,6 @@ defmodule Animu.ReleaseTasks do
   def setup(_argv \\ []) do
     repo_create()
     seed()
-    golem_setup()
-  end
-
-  def golem_setup(_argv \\ []) do
-    Golem.setup!()
   end
 
   def repo_create(_argv \\ []) do

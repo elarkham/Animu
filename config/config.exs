@@ -1,10 +1,8 @@
-#
-#This file is responsible for configuring your application
-# and its dependencies with the aid of the Mix.Config module.
-#
-# This configuration file is loaded before any dependency and
-# is restricted to this project.
-use Mix.Config
+import Config
+
+#############
+#   ANIMU   #
+#############
 
 # General application configuration
 config :animu,
@@ -27,29 +25,55 @@ config :animu, Animu.Auth.Guardian,
   verify_issuer: true,
   secret_key: "default_key"
 
+#############
+#   Augur   #
+#############
+
+config :animu, Augur.Scanner,
+  scan_interval: 5 * 60_000 # 5min
+
+config :animu, Augur.Transmission,
+  url: "http://cthulhu:9091/transmission/rpc",
+  recv_timeout: 20 * 1000, # 20 seconds
+  poll_interval: 2 * 1000  # 2 seconds
+
+############
+#   Kiln   #
+############
+
+# Configure Kiln
+config :kiln,
+  ledger: Animu.Kiln.Ledger
+
+##############
+#   Elixir   #
+##############
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
+###############
+#   Pheonix   #
+###############
 
 # Configure Phoenix generators
 config :phoenix, :generators,
   migration: true,
   binary_id: false
 
-# Configure Ecto
-#config :ecto, json_library: Jason
-
 # Configure Json encoder
 config :phoenix, :format_encoders,
   json: Jason
 
-# Configure Mnesia
-config :mnesia,
-  dir: '_mnesia/#{Mix.env}/#{node()}'
+############
+#   Ecto   #
+############
 
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
+# Configure Ecto
+#config :ecto, json_library: Jason
+
 import_config "#{Mix.env}.exs"
 
 

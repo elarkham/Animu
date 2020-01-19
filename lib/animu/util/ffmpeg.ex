@@ -1,7 +1,8 @@
 defmodule Animu.Util.FFmpeg do
+  require Logger
 
-  @exec  "ffmpeg"
-  @probe "ffprobe"
+  @exec  "/usr/bin/ffmpeg"
+  @probe "/usr/bin/ffprobe"
 
   def probe(input) do
     args =
@@ -26,19 +27,70 @@ defmodule Animu.Util.FFmpeg do
     probe_data
   end
 
-  def mkv_to_mp4(input, output) do
-    args =
-      [ "-i", input,
-        "-hide_banner",
-        "-loglevel", "panic",
-        "-nostats",
+  def get_duration(input) do
+    args = [
+      "-v", "quiet",
+      "-show_entries", "format=duration",
+      "-of", "default=noprint_wrappers=1:nokey=1",
+      input
+    ]
+    {duration, 0} = System.cmd(@probe, args)
+    {duration, _} = Float.parse(duration)
+
+    # Convert seconds to microseconds
+    duration * 1000.0 * 1000.0
+  end
+
+  def mkv_to_mp4(golem, input, output) do
+    run_cmd = Application.app_dir(:animu, "priv/run_cmd")
+    duration = get_duration(input)
+
+    args = [
+        @exec,
+        "-i", input,
+        "-v", "quiet",
+        "-progress", "-",
         "-y",
         "-c:v", "copy",
         "-c:a", "copy",
         output
       ]
 
-    System.cmd @exec, args
+    options = [:stderr_to_stdout, :binary, :exit_status, args: args]
+    port = Port.open({:spawn_executable, run_cmd}, options)
+
+    stream_output(golem, port, duration)
+  end
+
+  defp stream_output(golem, port, duration) do
+    receive do
+      {^port, {:data, data}} ->
+        progress(golem, data, duration)
+        stream_output(golem, port, duration)
+
+      {^port, {:exit_status, 0}}      -> :ok
+      {^port, {:exit_status, status}} -> {:error, status}
+    end
+  end
+
+  defp progress(golem, data, duration) do
+    status =
+      data
+      |> String.split("\n", trim: true)
+      |> Enum.map(fn str -> String.split(str, "=", trim: true) end)
+      |> Enum.map(fn [s1, s2] -> {s1, s2} end)
+      |> Map.new
+
+    out_time = String.to_integer(status["out_time_ms"])
+    prog = Float.round(out_time / duration, 6)
+
+    status =
+      status
+      |> Map.put("status", status["progress"])
+      |> Map.put("duration_ms", duration)
+      |> Map.put("progress", prog)
+
+    Kiln.set_progress(golem, {prog, status})
   end
 
   def vc_10bit_to_8bit(input, output) do

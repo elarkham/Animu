@@ -45,6 +45,7 @@ defmodule Animu.Media.Anime.Season do
   defp generate_fields(ch) do
     cour = get_field(ch, :cour)
     year = get_field(ch, :year)
+    IO.inspect cour, label: "COUR: "
 
     name  = "#{String.capitalize(cour)} #{year}"
     slug  = "#{cour}-#{year}"
@@ -92,6 +93,7 @@ defmodule Animu.Media.Anime.Season do
   def at(%Date{year: year} = date) do
     params = %{year: year, cour: cour_at(date)}
 
+    IO.inspect(params)
     %Season{}
     |> changeset(params)
     |> apply_changes
@@ -101,7 +103,8 @@ defmodule Animu.Media.Anime.Season do
 
   def cour_at(%Date{} = date) do
     index = Date.quarter_of_year(date)
-    Enum.at(@cours, index + 1)
+    IO.inspect(index)
+    Enum.at(@cours, index)
   end
 
   def cour_index(cour) do
@@ -109,3 +112,12 @@ defmodule Animu.Media.Anime.Season do
   end
 
 end
+
+#defimpl Inspect, for: Animu.Media.Anime.Season do
+#  import Inspect.Algebra
+#
+#  def inspect(season, opts) do
+#    concat(["#Season<", to_doc(season.name, opts), ">"])
+#  end
+#end
+#

@@ -1,6 +1,8 @@
-use Mix.Config
+import Config
 
-# Nightly Config
+#############
+#   ANIMU   #
+#############
 
 # Configure HTTP Endpoint
 config :animu, Animu.Web.Endpoint,
@@ -16,7 +18,11 @@ config :animu,
   input_root:  "/mnt/charon/videos/anime/animu",
   output_root: "/mnt/hydra/animu"
 
-# Nightlys should print debug information
+##############
+#   Elixir   #
+##############
+
+# Nightly should print debug information
 config :logger, level: :debug
 
 import_config "nightly.secret.exs"

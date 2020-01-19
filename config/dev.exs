@@ -1,4 +1,8 @@
-use Mix.Config
+import Config
+
+#############
+#   ANIMU   #
+#############
 
 # Configure file paths for dev
 config :animu,
@@ -12,7 +16,7 @@ config :animu,
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 config :animu, Animu.Web.Endpoint,
-  http: [port: 4000],
+  http: [port: 4005],
   debug_errors: true,
   code_reloader: true,
   check_origin: false
@@ -30,12 +34,31 @@ config :animu, Animu.Web.Endpoint,
 #    ]
 #  ]
 
+# Configure Authentication
+config :animu, Animu.Auth.Guardian,
+  issuer: "Animu-Dev",
+  ttl: {3, :days},
+  secret_key: "dev_key"
+
+##############
+#   Elixir   #
+##############
+
 # Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
+config :logger, :console,
+  format: "[$level] $message\n"
+
+###############
+#   Pheonix   #
+###############
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
+
+############
+#   Ecto   #
+############
 
 # Configure your database
 config :animu, Animu.Repo,
@@ -45,8 +68,4 @@ config :animu, Animu.Repo,
   hostname: "localhost",
   pool_size: 10
 
-# Configure Authentication
-config :animu, Animu.Auth.Guardian,
-  issuer: "Animu-Dev",
-  ttl: {3, :days},
-  secret_key: "dev_key"
+

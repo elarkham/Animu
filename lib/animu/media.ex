@@ -12,9 +12,9 @@ defmodule Animu.Media do
   alias Animu.Media.Anime.{Episode, Video}
   alias Animu.Media.Anime.{Genre, Season}
 
-  ##
-  # Franchise Interactions
-  ##
+  ##############################
+  #   Franchise Interactions   #
+  ##############################
 
   @doc """
   Returns `%Ecto.Changeset{}` for tracking Franchise changes
@@ -84,9 +84,9 @@ defmodule Animu.Media do
     Repo.delete(franchise)
   end
 
-  ##
-  # Anime Interactions
-  ##
+  ##########################
+  #   Anime Interactions   #
+  ##########################
 
   @doc """
   Returns all watched Anime with Episodes that have nil Videos
@@ -95,12 +95,12 @@ defmodule Animu.Media do
     episode_query =
       from e in Episode,
        where: is_nil(e.video),
-      select: {e.id, e.number}
+      select: e.number
     anime_query =
       from s in Anime,
       preload: [episodes: ^episode_query],
         where: s.augur == true,
-       select: [:id, :rss_feed, :regex, :directory]
+       select: [:id, :name, :rss_feed, :regex, :directory]
 
     Repo.all(anime_query)
   end
@@ -146,7 +146,7 @@ defmodule Animu.Media do
     with {:ok, ch, jobs} <- Anime.build(anime, attrs, opt),
             {:ok, anime} <- Repo.insert(ch),
                    anime <- Repo.preload(anime, all_assoc(Anime)) do
-      Anime.start_golems(anime, jobs)
+      Anime.bake_golems(anime, jobs)
       {:ok, anime}
     else
       {:error, msg} -> {:error, msg}
@@ -163,7 +163,7 @@ defmodule Animu.Media do
     with {:ok, ch, jobs} <- Anime.build(anime, attrs, opt),
             {:ok, anime} <- Repo.update(ch),
                    anime <- Repo.preload(anime, all_assoc(Anime)) do
-      Anime.start_golems(anime, jobs)
+      Anime.bake_golems(anime, jobs)
       {:ok, anime}
     else
       {:error, msg} -> {:error, msg}
@@ -180,9 +180,9 @@ defmodule Animu.Media do
     Repo.delete(anime)
   end
 
-  ###
-  # Season Interactions
-  ##
+  ###########################
+  #   Season Interactions   #
+  ###########################
 
   @doc """
   Returns list of Seasons
@@ -222,9 +222,9 @@ defmodule Animu.Media do
     |> Repo.preload(:anime)
   end
 
-  ##
-  # Genre Interactions
-  ##
+  ##########################
+  #   Genre Interactions   #
+  ##########################
 
   @doc """
   Returns list of Genres
@@ -262,9 +262,9 @@ defmodule Animu.Media do
     |> Repo.preload(:anime)
   end
 
-  ##
-  # Episode Interactions
-  ##
+  ############################
+  #   Episode Interactions   #
+  ############################
 
   @doc """
   Returns list of Episodes
@@ -342,6 +342,11 @@ defmodule Animu.Media do
   Updates a Epiosde
   """
   def update_episode(episode, attrs, opt \\ %{})
+  def update_episode(%Episode{} = episode, %Video{} = video, attrs, opt) do
+    episode
+    |> Episode.changeset(video, attrs)
+    |> Repo.update()
+  end
   def update_episode(%Episode{} = episode, %Video{} = video, opt) do
     episode
     |> cast(%{}, [])
