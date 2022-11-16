@@ -13,6 +13,13 @@ defmodule Animu.Web.SeasonView do
   end
 
   def render("seasons.json", %{season: season}) do
+    season = %{season | anime:
+      case season.anime do
+        %{}  -> []
+         any -> any
+      end
+    }
+
     %{id: season.id,
       year: season.year,
       cour: season.cour,
@@ -20,11 +27,13 @@ defmodule Animu.Web.SeasonView do
       name: season.name,
       slug: season.slug,
       sort: season.sort,
+
+      anime: season.anime,
     }
   end
 
   def render("season_slugs.json", %{season: season}) do
-    season.slug
+    %{slug: season.slug}
   end
 
   def render("season.json", %{season: season}) do

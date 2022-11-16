@@ -25,7 +25,7 @@ defmodule Animu.Web.GenreView do
   end
 
   def render("genre_slugs.json", %{genre: genre}) do
-    genre.slug
+    %{slug: genre.slug}
   end
 
   def render("genre.json", %{genre: genre}) do

@@ -203,7 +203,7 @@ defmodule Animu.Media do
     |> order_by(asc: :sort)
     |> build_query(params)
     |> Repo.all()
-    |> Repo.preload(anime: from(a in Anime, select: a.slug))
+    |> Repo.preload(anime: from(a in Anime, select: %{slug: a.slug}))
   end
 
   @doc """
@@ -243,7 +243,7 @@ defmodule Animu.Media do
     Genre
     |> build_query(params)
     |> Repo.all()
-    |> Repo.preload(anime: from(a in Anime, select: a.slug))
+    |> Repo.preload(anime: from(a in Anime, select: %{slug: a.slug}))
   end
 
   @doc """

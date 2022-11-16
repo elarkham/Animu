@@ -15,7 +15,7 @@ defmodule Animu.Media.Anime.Season do
 
     field :name,  :string # CS ex: Winter 2019
     field :slug,  :string # CI ex: winter-2019
-    field :sort,  :string # CI ex: 2019-0
+    field :sort,  :string # CI ex: 2019-1
 
     many_to_many :anime, Anime,
       join_through: "anime_season",
@@ -45,7 +45,6 @@ defmodule Animu.Media.Anime.Season do
   defp generate_fields(ch) do
     cour = get_field(ch, :cour)
     year = get_field(ch, :year)
-    IO.inspect cour, label: "COUR: "
 
     name  = "#{String.capitalize(cour)} #{year}"
     slug  = "#{cour}-#{year}"
@@ -93,7 +92,6 @@ defmodule Animu.Media.Anime.Season do
   def at(%Date{year: year} = date) do
     params = %{year: year, cour: cour_at(date)}
 
-    IO.inspect(params)
     %Season{}
     |> changeset(params)
     |> apply_changes
@@ -103,12 +101,14 @@ defmodule Animu.Media.Anime.Season do
 
   def cour_at(%Date{} = date) do
     index = Date.quarter_of_year(date)
-    IO.inspect(index)
-    Enum.at(@cours, index)
+    Enum.at(@cours, index - 1)
   end
+  #def cour_at(index) when is_integer(index) do
+  #  List.at(@cours, index)
+  #end
 
   def cour_index(cour) do
-    Enum.find_index(@cours, fn c -> c == cour end)
+    Enum.find_index(@cours, fn c -> c == cour end) + 1
   end
 
 end
