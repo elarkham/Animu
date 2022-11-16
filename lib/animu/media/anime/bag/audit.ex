@@ -2,7 +2,7 @@ defmodule Animu.Media.Anime.Bag.Audit do
   @moduledoc """
   Trys to determine value of field using existing local data
   """
-  import Ecto.Query, only: [from: 2]
+  #import Ecto.Query, only: [from: 2]
   alias Ecto.Changeset
 
   alias Animu.Media.Anime.Bag

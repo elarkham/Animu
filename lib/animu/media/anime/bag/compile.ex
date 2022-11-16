@@ -31,7 +31,6 @@ defmodule Animu.Media.Anime.Bag.Compile do
     fallback ++ bag.episodes ++ force
     |> merge_episode_lists
     |> post_process_episodes
-    |> IO.inspect
   end
 
   defp summoned_eps(%Bag{} = bag) do
@@ -93,7 +92,7 @@ defmodule Animu.Media.Anime.Bag.Compile do
   defp merge_summons(summons) do
     summons
     |> Enum.map(&(&1.data))
-    |> Enum.reduce(summons, fn sum, acc ->
+    |> Enum.reduce(fn sum, acc ->
       Map.merge(sum, acc)
     end)
   end

@@ -7,6 +7,7 @@ defmodule Animu.Media.Kitsu do
   require Logger
 
   @url "https://kitsu.io/api/edge/"
+  @timeout 30 * 1000 # 30 seconds
 
   defp handle_error(type, id, error) do
     msg = "http request for kitsu data failed, type: #{type}, id: #{id}"
@@ -22,7 +23,7 @@ defmodule Animu.Media.Kitsu do
         "page[offset]" => offset})
     url = @url <> type <> "?" <> querystring
     headers = ["Accept": "application/vnd.api+json"]
-    options = [follow_redirect: true]
+    options = [follow_redirect: true, timeout: @timeout]
 
     with {:ok, %Response{body: body}} <- HTTPoison.get(url, headers, options),
          {:ok, body} <- Poison.Parser.parse(body) do
@@ -45,7 +46,7 @@ defmodule Animu.Media.Kitsu do
   def request(type, id) do
     url = @url <> type <> "/" <> to_string(id)
     headers = ["Accept": "application/vnd.api+json"]
-    options = [follow_redirect: true]
+    options = [follow_redirect: true, timeout: @timeout]
 
     with {:ok, %Response{body: body}} <- HTTPoison.get(url, headers, options),
          {:ok, body} <- Poison.Parser.parse(body) do
@@ -59,7 +60,7 @@ defmodule Animu.Media.Kitsu do
   def request_relationship(type, relation, id) do
     url = @url <> type <> "/" <> to_string(id) <> "/relationships/" <> relation
     headers = ["Accept": "application/vnd.api+json"]
-    options = [follow_redirect: true]
+    options = [follow_redirect: true, timeout: @timeout]
 
     with {:ok, %Response{body: body}} <- HTTPoison.get(url, headers, options),
          {:ok, %{"data" => relations}} <- Poison.Parser.parse(body),
@@ -91,7 +92,7 @@ defmodule Animu.Media.Kitsu do
   def request_related(type, related, id) do
     url = @url <> type <> "/" <> to_string(id) <> "/" <> related
     headers = ["Accept": "application/vnd.api+json"]
-    options = [follow_redirect: true]
+    options = [follow_redirect: true, timeout: @timeout]
 
     with {:ok, %Response{body: body}} <- HTTPoison.get(url, headers, options),
          {:ok, %{"data" => data}} <- Poison.Parser.parse(body),

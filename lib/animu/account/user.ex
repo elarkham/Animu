@@ -23,7 +23,7 @@ defmodule Animu.Account.User do
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
     |> validate_length(:password, min: 5)
-    |> validate_confirmation(:passowrd, message: "Password does not match")
+    |> validate_confirmation(:password, message: "Password does not match")
     |> unique_constraint(:username, message: "Username already taken")
     |> gen_password_hash
   end

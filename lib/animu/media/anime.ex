@@ -102,7 +102,6 @@ defmodule Animu.Media.Anime do
         |> Bag.add_todos(bag)
         |> put_assoc(:episodes, attrs.episodes)
 
-      IO.inspect ch
       {:ok, ch, bag.golems}
     else
       {:error, msg} -> {:error, msg}
@@ -208,14 +207,14 @@ defimpl Inspect, for: Animu.Media.Anime do
     end
 
     container_doc("#Anime<", list, ">", opts, fn
-      {field, value = %Ecto.Association.NotLoaded{}}, opts ->
+      {field, %Ecto.Association.NotLoaded{}}, opts ->
         concat(color("#{field}: ", :atom, opts), to_doc(:not_loaded, opts))
 
       {field, value}, opts -> concat(color("#{field}: ", :atom, opts), to_doc(value, opts))
     end)
   end
 
+  #defp to_struct(%{__struct__: struct}, _opts), do: "#" <> Kernel.inspect(struct) <> "<>"
+  #defp to_struct(other, opts), do: to_doc(other, opts)
 
-  defp to_struct(%{__struct__: struct}, _opts), do: "#" <> Kernel.inspect(struct) <> "<>"
-  defp to_struct(other, opts), do: to_doc(other, opts)
 end
