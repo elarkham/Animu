@@ -8,7 +8,8 @@ defmodule Animu.Media.Anime.Bag do
   alias Ecto.Changeset
   alias Animu.Util.Schema
   alias Animu.Media.Anime
-  alias Animu.Ecto.Image
+  alias Animu.Media.Anime.Season
+  #alias Animu.Ecto.Image
   alias Animu.Repo
 
   alias __MODULE__
@@ -126,7 +127,28 @@ defmodule Animu.Media.Anime.Bag do
       Enum.reduce(bag.todo, ch, fn todo, acc ->
         todo.(acc)
       end)
+      |> create_meta_json(bag)
+      |> create_season_sym(bag)
     end)
+  end
+
+  def create_meta_json(ch, bag) do
+    anime = apply_changes(ch) |> Schema.to_map |> Poison.encode!
+    path  = Path.join(bag.input_dir, "meta.json")
+    File.write!(path, anime)
+    ch
+  end
+
+  def create_season_sym(ch, bag) do
+    anime = apply_changes(ch) |> Schema.to_map
+    root_path = Path.join(bag.input_root, "seasons")
+    Enum.each(anime[:season] || [], fn season ->
+      dir  = Path.join(root_path, "#{season.sort}-#{season.cour}")
+      path = Path.join(dir, Path.basename(anime.directory))
+      File.mkdir_p!(dir)
+      File.ln_s(bag.input_dir, path)
+    end)
+    ch
   end
 
 end
