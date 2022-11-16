@@ -1,4 +1,4 @@
-use Mix.Releases.Config,
+use Distillery.Releases.Config,
   # This sets the default release built by `mix release`
   default_release: :default,
   # This sets the default environment used by `mix release`
@@ -46,6 +46,8 @@ release :animu do
     "repo.migrate": "rel/commands/repo_migrate.sh",
     "repo.seed":    "rel/commands/repo_seed.sh",
     "repo.create":  "rel/commands/repo_create.sh",
+    "repo.drop":  "rel/commands/repo_drop.sh",
+    "repo.reset":  "rel/commands/repo_reset.sh",
   ]
 end
 

@@ -4,7 +4,7 @@ defmodule Animu.Mixfile do
   def project do
     [
       app: :animu,
-      version: System.get_env("VERSION") || "3.1.0",
+      version: System.get_env("VERSION") || "3.2.0",
       elixir: "~> 1.2",
       elixirc_paths: elixirc_paths(Mix.env),
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -63,7 +63,7 @@ defmodule Animu.Mixfile do
      {:expat, "~> 1.0"},
      {:inquisitor, "~> 0.3.0"},
 
-     {:distillery, "~> 2.0"},
+     {:distillery, "~> 2.1"},
      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false}
    ]
   end
