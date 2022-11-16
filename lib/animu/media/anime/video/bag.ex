@@ -1,6 +1,8 @@
 defmodule Animu.Media.Anime.Video.Bag do
   alias __MODULE__, as: Bag
 
+  alias Animu.Media.Anime.Video.Hints
+
   defstruct [
     :name,
 
@@ -17,6 +19,9 @@ defmodule Animu.Media.Anime.Video.Bag do
     :font,
 
     :thumb,
+
+    :hints,
+    :progress_cb,
   ]
 
   defmodule IO do
@@ -53,7 +58,7 @@ defmodule Animu.Media.Anime.Video.Bag do
     ]
   end
 
-  def new(input_path, anime_dir) do
+  def new(input_path, anime_dir, prog_cb \\ fn _prog -> nil end) do
     dir = Path.dirname(input_path)
     filename = Path.basename(input_path)
     extension = Path.extname(input_path)
@@ -64,7 +69,8 @@ defmodule Animu.Media.Anime.Video.Bag do
     output_root =
       Path.join(Application.get_env(:animu, :output_root), anime_dir)
 
-    file = Path.join([input_root, input_path])
+    file  = Path.join([input_root, input_path])
+    hints = Hints.parse_video_name(filename)
 
     %Bag{
       name: name,
@@ -88,6 +94,9 @@ defmodule Animu.Media.Anime.Video.Bag do
       subtitles: %Subtitles{},
       font: %Font{},
       thumb: %Thumb{},
+
+      hints: hints,
+      progress_cb: prog_cb,
     }
   end
 

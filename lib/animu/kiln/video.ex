@@ -9,10 +9,13 @@ defmodule Animu.Kiln.Video do
 
   alias Animu.Media
   alias Animu.Media.Anime.Video
-  alias Animu.Repo
 
   def perform(golem, path: path, num: num, anime: anime) do
-    with {:ok, video} <- Video.new(golem, path, anime.directory),
+    progress_cb = fn {prog, status} ->
+      Kiln.set_progress(golem, {prog, status})
+    end
+
+    with {:ok, video} <- Video.new(path, anime.directory, progress_cb),
                    ep <- find_ep(anime.episodes, num),
             {:ok, ep} <- Media.update_episode(ep, video) do
 
@@ -25,7 +28,11 @@ defmodule Animu.Kiln.Video do
   end
 
   def perform(golem, path: {dir, name}, ep_id: {anime_id, ep_num}, augured_at: ts) do
-    with {:ok, video} <- Video.new(golem, name, dir),
+    progress_cb = fn {prog, status} ->
+      Kiln.set_progress(golem, {prog, status})
+    end
+
+    with {:ok, video} <- Video.new(name, dir, progress_cb),
                    ep <- Media.get_episode!(anime_id, ep_num),
             {:ok, ep} <- Media.update_episode(ep, video, %{augured_at: ts}) do
 
@@ -36,7 +43,6 @@ defmodule Animu.Kiln.Video do
         {:error, "Unexpected error: #{inspect error}"}
     end
   end
-
 
   defp find_ep(episodes, number) do
     Enum.find(episodes, fn ep -> ep.number == number end)

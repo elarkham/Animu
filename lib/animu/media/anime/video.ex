@@ -127,5 +127,5 @@ defmodule Animu.Media.Anime.Video do
     end
   end
 
-  defdelegate new(golem, video_path, anime_dir), to: Video.Invoke
+  defdelegate new(video_path, anime_dir, prog_cb), to: Video.Invoke
 end
